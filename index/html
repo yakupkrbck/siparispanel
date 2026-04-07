@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiparişPanel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#FF4500;--primary-dark:#CC3700;--dark:#0f0f0f;--card:#1e1e1e;--border:rgba(255,255,255,0.08);--text:#f0f0f0;--muted:#888;--success:#22c55e;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(15,15,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}.nav-logo span{color:var(--primary);}
+.nav-btns{display:flex;gap:10px;}
+.btn-ghost{padding:9px 20px;border:1px solid var(--border);border-radius:100px;background:transparent;color:var(--text);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.05);}
+.btn-primary{padding:9px 22px;border:none;border-radius:100px;background:var(--primary);color:white;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-primary:hover{background:var(--primary-dark);}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 20px 80px;position:relative;}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(255,69,0,0.12) 0%,transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,69,0,0.12);border:1px solid rgba(255,69,0,0.3);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--primary);margin-bottom:28px;letter-spacing:0.5px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(38px,7vw,72px);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:20px;}
+.hero h1 .accent{color:var(--primary);}
+.hero p{font-size:clamp(15px,2vw,18px);color:var(--muted);line-height:1.7;max-width:520px;margin:0 auto 36px;}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-large{padding:14px 32px;border-radius:100px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .25s;border:none;}
+.btn-large.primary{background:var(--primary);color:white;box-shadow:0 8px 30px rgba(255,69,0,0.35);}
+.btn-large.primary:hover{transform:translateY(-2px);}
+.btn-large.outline{background:transparent;color:var(--text);border:1.5px solid var(--border);}
+.stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-top:60px;padding-top:60px;border-top:1px solid var(--border);}
+.stat-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;text-align:center;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:4px;text-align:center;}
+.section{padding:100px 20px;}.section-inner{max-width:1100px;margin:0 auto;text-align:center;}
+.section-label{font-size:11px;font-weight:700;color:var(--primary);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;}
+.section h2{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,48px);font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px;}
+.section p.sub{font-size:16px;color:var(--muted);max-width:480px;margin:0 auto;line-height:1.7;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;margin-top:60px;}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;transition:border-color .2s,transform .2s;text-align:left;}
+.feature-card:hover{border-color:rgba(255,69,0,0.3);transform:translateY(-3px);}
+.feature-icon{width:44px;height:44px;border-radius:12px;background:rgba(255,69,0,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;}
+.feature-card h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:8px;}
+.feature-card p{font-size:13px;color:var(--muted);line-height:1.6;}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;max-width:960px;margin:60px auto 0;}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px;position:relative;overflow:hidden;transition:transform .2s;}
+.price-card:hover{transform:translateY(-4px);}
+.price-card.featured{border-color:var(--primary);background:linear-gradient(135deg,rgba(255,69,0,0.08),var(--card));}
+.price-badge{position:absolute;top:20px;right:20px;background:var(--primary);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.5px;}
+.price-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
+.price-amount{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;line-height:1;margin:12px 0 4px;}
+.price-amount span{font-size:16px;font-weight:400;color:var(--muted);}
+.price-desc{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.price-features li{font-size:13px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.price-features li .chk{color:var(--success);font-weight:700;font-size:12px;margin-top:2px;flex-shrink:0;}
+.price-features li .nochk{color:#555;font-size:12px;margin-top:2px;flex-shrink:0;}
+.select-plan-btn{width:100%;padding:14px;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;transition:all .2s;}
+.select-plan-btn.prim{background:var(--primary);color:white;box-shadow:0 6px 20px rgba(255,69,0,0.3);}
+.select-plan-btn.prim:hover{background:var(--primary-dark);}
+.select-plan-btn.outl{background:transparent;color:var(--text);border:1.5px solid var(--border);}
+.select-plan-btn.outl:hover{border-color:rgba(255,255,255,.25);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:28px;width:100%;max-width:480px;padding:36px;position:relative;animation:modalIn .35s cubic-bezier(.34,1.2,.64,1);max-height:90vh;overflow-y:auto;}
+@keyframes modalIn{from{transform:scale(.92);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.07);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+.tab-row{display:flex;gap:4px;background:rgba(255,255,255,.05);border-radius:12px;padding:4px;margin-bottom:24px;}
+.tab-btn{flex:1;padding:9px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.tab-btn.active{background:var(--primary);color:white;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:.3px;text-transform:uppercase;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;resize:none;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:rgba(255,69,0,.5);}
+.form-group input::placeholder,.form-group textarea::placeholder{color:#555;}
+.form-group select option{background:#1e1e1e;}
+.auth-btn{width:100%;padding:14px;border:none;border-radius:12px;background:var(--primary);color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;box-shadow:0 8px 24px rgba(255,69,0,.3);}
+.auth-btn:disabled{background:#333;box-shadow:none;cursor:not-allowed;}
+.auth-error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#f87171;margin-top:10px;display:none;}
+.payment-box{background:rgba(255,69,0,.06);border:1.5px solid rgba(255,69,0,.25);border-radius:14px;padding:18px;margin:16px 0;}
+.payment-box h4{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:10px;}
+.payment-iban{font-family:monospace;font-size:13px;background:rgba(0,0,0,.3);border-radius:8px;padding:10px 14px;color:#fff;letter-spacing:.5px;word-break:break-all;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.copy-btn{background:rgba(255,69,0,.2);border:1px solid rgba(255,69,0,.4);color:var(--primary);padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;}
+.plan-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,69,0,.12);border:1px solid rgba(255,69,0,.3);border-radius:100px;padding:5px 14px;font-size:13px;font-weight:600;color:var(--primary);margin-bottom:16px;}
+.success-screen{display:none;text-align:center;padding:10px 0;}
+.success-check{width:64px;height:64px;border-radius:50%;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;}
+.success-screen h3{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:8px;}
+.success-screen p{font-size:14px;color:var(--muted);line-height:1.6;white-space:pre-line;}
+footer{padding:40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+footer .logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+footer .logo span{color:var(--primary);}
+footer p{font-size:12px;color:var(--muted);}
+.modal-box h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;}
+.modal-box .sub{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
+@media(max-width:600px){nav{padding:14px 20px;}.hero{padding:100px 16px 60px;}.section{padding:70px 16px;}footer{padding:24px 20px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Sipariş<span>Panel</span></div>
+  <div class="nav-btns">
+    <button class="btn-ghost" onclick="openAuth('login')">Giriş Yap</button>
+    <button class="btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Başla</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">🚀 Komisyon yok — sabit aylık ücret</div>
+  <h1>Restoranınız için<br><span class="accent">Online Sipariş</span><br>Sistemi</h1>
+  <p>Menü yönetimi, canlı sipariş takibi, push bildirimleri, kurye paneli — hepsi tek sistemde. Kurulum 5 dakika.</p>
+  <div class="hero-cta">
+    <button class="btn-large primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Paketi Seç →</button>
+    <button class="btn-large outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Özelliklere Bak</button>
+  </div>
+  <div class="stats">
+    <div><div class="stat-num">%0</div><div class="stat-lbl">Komisyon</div></div>
+    <div><div class="stat-num">5dk</div><div class="stat-lbl">Kurulum</div></div>
+    <div><div class="stat-num">7/24</div><div class="stat-lbl">Sipariş Al</div></div>
+    <div><div class="stat-num">∞</div><div class="stat-lbl">Müşteri</div></div>
+  </div>
+</section>
+
+<section class="section" id="features" style="background:rgba(255,255,255,.015);">
+  <div class="section-inner">
+    <div class="section-label">Özellikler</div>
+    <h2>İhtiyacınız olan her şey</h2>
+    <p class="sub">Profesyonel restoran teknolojisi, küçük işletme fiyatına.</p>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">🛒</div><h3>Online Sipariş</h3><p>Müşteriler kendi linklerinden kolayca sipariş verir. PIN ile hızlı giriş.</p></div>
+      <div class="feature-card"><div class="feature-icon">📊</div><h3>Canlı Sipariş Paneli</h3><p>Kanban görünümü. Onayla → Hazırla → Yola Çıkar → Teslim Et.</p></div>
+      <div class="feature-card"><div class="feature-icon">🖨️</div><h3>Otomatik Fiş</h3><p>Termal yazıcıya otomatik gönderim. Font, boyut, şablon ayarlanabilir.</p></div>
+      <div class="feature-card"><div class="feature-icon">🔔</div><h3>Push Bildirimleri</h3><p>Siparişin hazır ve yolda olduğunu müşterilere bildir.</p></div>
+      <div class="feature-card"><div class="feature-icon">🏷️</div><h3>Kampanya & Kupon</h3><p>Üstü çizili kampanya fiyatları, kişiye özel kuponlar.</p></div>
+      <div class="feature-card"><div class="feature-icon">⭐</div><h3>VIP & Puan</h3><p>Bronz, Gümüş, Altın. Sadık müşteriler puan kazanır.</p></div>
+      <div class="feature-card"><div class="feature-icon">🛵</div><h3>Kurye Takibi</h3><p>Canlı harita, gecikme uyarıları, teslimat analizleri.</p></div>
+      <div class="feature-card"><div class="feature-icon">📍</div><h3>Konum Takibi</h3><p>Siparişle müşteri konumu alınır. Haritada tek tıkla git.</p></div>
+      <div class="feature-card"><div class="feature-icon">📈</div><h3>Raporlar</h3><p>Günlük ciro, en çok satanlar, yoğun saatler, iptal oranları.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pricing">
+  <div class="section-inner">
+    <div class="section-label">Fiyatlandırma</div>
+    <h2>Sade ve şeffaf</h2>
+    <p class="sub">Komisyon yok. Gizli ücret yok. Dilediğiniz zaman iptal.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">Başlangıç</div>
+        <div class="price-amount">₺499<span>/ay</span></div>
+        <div class="price-desc">Tek şubeye sahip küçük işletmeler için</div>
+        <ul class="price-features">
+          <li><span class="chk">✓</span>Online sipariş alma</li>
+          <li><span class="chk">✓</span>Menü yönetimi</li>
+          <li><span class="chk">✓</span>Canlı sipariş paneli</li>
+          <li><span class="chk">✓</span>Push bildirimleri</li>
+          <li><span class="chk">✓</span>Temel raporlar</li>
+          <li><span class="chk">✓</span>Müşteri konum takibi</li>
+          <li><span class="nochk">✗</span><span style="color:#555">Kampanya ve kupon</span></li>
+          <li><span class="nochk">✗</span><span style="color:#555">VIP ve puan sistemi</span></li>
+          <li><span class="nochk">✗</span><span style="color:#555">Kurye yönetimi</span></li>
+        </ul>
+        <button class="select-plan-btn outl" onclick="selectPlan('baslangic','Başlangıç','₺499/ay')">Bu Paketi Seç</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">POPÜLER</div>
+        <div class="price-name">Pro</div>
+        <div class="price-amount">₺799<span>/ay</span></div>
+        <div class="price-desc">Büyüyen işletmeler için tam paket</div>
+        <ul class="price-features">
+          <li><span class="chk">✓</span>Başlangıç'taki her şey</li>
+          <li><span class="chk">✓</span>Kampanya ve kupon sistemi</li>
+          <li><span class="chk">✓</span>VIP ve puan sistemi</li>
+          <li><span class="chk">✓</span>Kurye yönetimi ve harita</li>
+          <li><span class="chk">✓</span>Gelişmiş raporlar</li>
+          <li><span class="chk">✓</span>Otomatik fiş yazdırma</li>
+          <li><span class="chk">✓</span>Şikayet yönetimi</li>
+          <li><span class="chk">✓</span>Öncelikli destek</li>
+        </ul>
+        <button class="select-plan-btn prim" onclick="selectPlan('pro','Pro','₺799/ay')">Bu Paketi Seç</button>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Kurumsal</div>
+        <div class="price-amount">₺1.299<span>/ay</span></div>
+        <div class="price-desc">Zincir ve çok şubeli restoranlar için</div>
+        <ul class="price-features">
+          <li><span class="chk">✓</span>Pro'daki her şey</li>
+          <li><span class="chk">✓</span>Çok şube desteği</li>
+          <li><span class="chk">✓</span>Özel domain bağlama</li>
+          <li><span class="chk">✓</span>Özel entegrasyonlar</li>
+          <li><span class="chk">✓</span>Dedicated destek hattı</li>
+          <li><span class="chk">✓</span>Kurulum yardımı</li>
+          <li><span class="chk">✓</span>Eğitim seansı</li>
+        </ul>
+        <button class="select-plan-btn outl" onclick="selectPlan('kurumsal','Kurumsal','₺1.299/ay')">Bu Paketi Seç</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">Sipariş<span>Panel</span></div>
+  <p>© 2025 SiparişPanel. Tüm hakları saklıdır.</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="tab-row" id="auth-tabs">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Giriş Yap</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Kayıt Ol</button>
+    </div>
+
+    <!-- GİRİŞ -->
+    <div id="form-login">
+      <h2>Hoş geldiniz</h2>
+      <p class="sub">Panelinize erişmek için giriş yapın</p>
+      <div class="form-group"><label>E-Posta</label><input type="email" id="login-email" placeholder="restaurant@email.com"></div>
+      <div class="form-group"><label>Şifre</label><input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="auth-btn" id="login-btn" onclick="doLogin()">Giriş Yap</button>
+      <div class="auth-error" id="login-error"></div>
+    </div>
+
+    <!-- KAYIT ADIM 1 -->
+    <div id="form-register" style="display:none;">
+      <h2>Hesap Oluşturun</h2>
+      <p class="sub">Restoranınız için ücretsiz başlayın</p>
+      <div class="plan-badge" id="plan-badge" style="display:none;">📦 <span id="plan-badge-text"></span></div>
+      <div id="reg-step1">
+        <div class="form-group"><label>Restoran Adı</label><input type="text" id="reg-restaurant" placeholder="Dönerci İsmail"></div>
+        <div class="form-group"><label>Telefon</label><input type="tel" id="reg-phone" placeholder="05XX XXX XX XX"></div>
+        <div class="form-group"><label>E-Posta</label><input type="email" id="reg-email" placeholder="restaurant@email.com"></div>
+        <div class="form-group"><label>Şifre</label><input type="password" id="reg-password" placeholder="En az 6 karakter"></div>
+        <div class="form-group"><label>Paket</label>
+          <select id="reg-plan">
+            <option value="baslangic">Başlangıç — ₺499/ay</option>
+            <option value="pro" selected>Pro — ₺799/ay</option>
+            <option value="kurumsal">Kurumsal — ₺1.299/ay</option>
+          </select>
+        </div>
+        <button class="auth-btn" id="reg-next-btn" onclick="goToStep2()">Devam Et →</button>
+        <div class="auth-error" id="reg-error1"></div>
+      </div>
+      <div id="reg-step2" style="display:none;">
+        <div class="payment-box">
+          <h4>💳 Havale / EFT ile Ödeme</h4>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;">Aşağıdaki hesaba seçtiğiniz paketin ücretini gönderin. Açıklamaya <strong style="color:var(--text)">restoran adınızı</strong> yazın.</p>
+          <div class="payment-iban"><span id="iban-text">TR00 0000 0000 0000 0000 0000 00</span><button class="copy-btn" onclick="copyIban()">Kopyala</button></div>
+          <div style="font-size:12px;color:var(--muted);">
+            Ad Soyad: <strong style="color:var(--text)">SiparişPanel</strong><br>
+            Tutar: <strong id="pay-amount" style="color:var(--primary)"></strong>
+          </div>
+        </div>
+        <div class="form-group"><label>Açıklama / Dekont (opsiyonel)</label><textarea id="reg-note" rows="2" placeholder="Ödeme yaptım, tarih: ..."></textarea></div>
+        <button class="auth-btn" id="reg-submit-btn" onclick="doRegister()">Hesabı Oluştur ve Onay Bekle</button>
+        <div class="auth-error" id="reg-error2"></div>
+        <p style="font-size:12px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.6;">Ödemeniz kontrol edildikten sonra sisteminiz aktif edilir.<br>Genellikle <strong style="color:var(--text)">1 iş günü</strong> içinde.</p>
+      </div>
+    </div>
+
+    <!-- BAŞARI -->
+    <div class="success-screen" id="success-screen">
+      <div class="success-check">✓</div>
+      <h3 id="success-title">Başvurunuz alındı!</h3>
+      <p id="success-msg">Ödemeniz onaylandıktan sonra sisteminiz aktif edilecektir.</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const fbCfg={apiKey:"AIzaSyCSlgWfHtx7xtUeYsApV-hgZWbhDRvb8Us",authDomain:"donerci-ismail-app.firebaseapp.com",projectId:"donerci-ismail-app",storageBucket:"donerci-ismail-app.firebasestorage.app",messagingSenderId:"651418488200",appId:"1:651418488200:web:6e992df018078ff6ea3e3d"};
+const app=initializeApp(fbCfg); const auth=getAuth(app); const db=getFirestore(app);
+
+const IBAN="TR00 0000 0000 0000 0000 0000 00"; // Kendi IBAN'ını buraya yaz
+const ADMIN_EMAIL="admin@siparispanel.com"; // Admin emailini buraya yaz
+const PLAN_PRICES={baslangic:"₺499/ay",pro:"₺799/ay",kurumsal:"₺1.299/ay"};
+const PLAN_NAMES={baslangic:"Başlangıç",pro:"Pro",kurumsal:"Kurumsal"};
+
+document.getElementById('iban-text').textContent=IBAN;
+
+let _regData=null;
+
+onAuthStateChanged(auth, async user=>{
+  if(!user) return;
+  if(user.email===ADMIN_EMAIL){ window.location.href='admin.html'; return; }
+  const snap=await getDoc(doc(db,'users',user.uid));
+  if(!snap.exists()) return;
+  const d=snap.data();
+  if(d.status==='active'){ window.location.href='panel_kurye_eki-13-2.html'; return; }
+  if(d.status==='pending'){
+    showSuccess('Başvurunuz inceleniyor ⏳','Ödemeniz onaylandıktan sonra sisteminiz aktif edilecektir. Teşekkür ederiz!');
+  }
+  if(d.status==='suspended'){ alert('Hesabınız askıya alınmıştır.'); auth.signOut(); }
+});
+
+function toSlug(s){return s.toLowerCase().replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',6000);}
+function setBtn(id,loading,txt){const b=document.getElementById(id);b.disabled=loading;b.textContent=loading?'Lütfen bekleyin...':txt;}
+function showSuccess(title,msg){['form-login','form-register','auth-tabs'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});document.getElementById('success-screen').style.display='block';document.getElementById('success-title').textContent=title;document.getElementById('success-msg').textContent=msg;}
+
+window.openAuth=(tab)=>{document.getElementById('authModal').classList.add('open');switchTab(tab);};
+window.closeModal=()=>document.getElementById('authModal').classList.remove('open');
+window.switchTab=(tab)=>{
+  document.getElementById('form-login').style.display=tab==='login'?'':'none';
+  document.getElementById('form-register').style.display=tab==='register'?'':'none';
+  document.getElementById('success-screen').style.display='none';
+  document.getElementById('tab-login').className='tab-btn'+(tab==='login'?' active':'');
+  document.getElementById('tab-register').className='tab-btn'+(tab==='register'?' active':'');
+};
+window.selectPlan=(plan,name,price)=>{
+  document.getElementById('reg-plan').value=plan;
+  document.getElementById('plan-badge').style.display='inline-flex';
+  document.getElementById('plan-badge-text').textContent=name+' — '+price;
+  openAuth('register');
+};
+window.copyIban=()=>{navigator.clipboard.writeText(IBAN.replace(/\s/g,'')).then(()=>{const b=document.querySelector('.copy-btn');b.textContent='Kopyalandı!';setTimeout(()=>b.textContent='Kopyala',2000);}).catch(()=>{});};
+
+window.doLogin=async()=>{
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-password').value;
+  if(!email||!pass){showErr('login-error','E-posta ve şifre gerekli.');return;}
+  setBtn('login-btn',true,'Giriş Yap');
+  try{ await signInWithEmailAndPassword(auth,email,pass); }
+  catch(e){ setBtn('login-btn',false,'Giriş Yap'); const m={'auth/user-not-found':'Bu e-posta kayıtlı değil.','auth/wrong-password':'Şifre hatalı.','auth/invalid-credential':'E-posta veya şifre hatalı.','auth/too-many-requests':'Çok fazla deneme.'}; showErr('login-error',m[e.code]||'Giriş başarısız.'); }
+};
+
+window.goToStep2=()=>{
+  const restaurant=document.getElementById('reg-restaurant').value.trim();
+  const phone=document.getElementById('reg-phone').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const password=document.getElementById('reg-password').value;
+  const plan=document.getElementById('reg-plan').value;
+  if(!restaurant){showErr('reg-error1','Restoran adı gerekli.');return;}
+  if(!phone){showErr('reg-error1','Telefon gerekli.');return;}
+  if(!email){showErr('reg-error1','E-posta gerekli.');return;}
+  if(password.length<6){showErr('reg-error1','Şifre en az 6 karakter.');return;}
+  _regData={restaurant,phone,email,password,plan};
+  document.getElementById('pay-amount').textContent=PLAN_PRICES[plan];
+  document.getElementById('reg-step1').style.display='none';
+  document.getElementById('reg-step2').style.display='';
+};
+
+window.doRegister=async()=>{
+  if(!_regData) return;
+  const note=document.getElementById('reg-note').value.trim();
+  setBtn('reg-submit-btn',true,'Hesabı Oluştur ve Onay Bekle');
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,_regData.email,_regData.password);
+    const uid=cred.user.uid;
+    const restaurantId=toSlug(_regData.restaurant)+'-'+uid.slice(0,6);
+    await setDoc(doc(db,'users',uid),{email:_regData.email,phone:_regData.phone,restaurantId,role:'owner',plan:_regData.plan,planLabel:PLAN_NAMES[_regData.plan],planPrice:PLAN_PRICES[_regData.plan],status:'pending',paymentNote:note||'',appliedAt:new Date().toISOString(),activatedAt:null,suspendedAt:null});
+    await setDoc(doc(db,'restaurants',restaurantId,'profile','info'),{name:_regData.restaurant,phone:_regData.phone,slug:toSlug(_regData.restaurant),email:_regData.email,isOpen:false,status:'pending',createdAt:new Date().toISOString()});
+    await setDoc(doc(db,'restaurants',restaurantId,'settings','general'),{minOrder:0,deliveryFee:0,workingHours:{pazartesi:{open:'09:00',close:'22:00',active:true},sali:{open:'09:00',close:'22:00',active:true},carsamba:{open:'09:00',close:'22:00',active:true},persembe:{open:'09:00',close:'22:00',active:true},cuma:{open:'09:00',close:'22:00',active:true},cumartesi:{open:'09:00',close:'22:00',active:true},pazar:{open:'09:00',close:'22:00',active:true}}});
+    await setDoc(doc(db,'restaurants',restaurantId,'settings','contact'),{phone:_regData.phone,whatsapp:'',address:'',facebook:'',instagram:'',twitter:'',mapUrl:'',seoTitle:'',seoDesc:'',seoKeywords:''});
+    showSuccess('🎉 Başvurunuz alındı!','Ödemeniz onaylandıktan sonra "'+_regData.restaurant+'" için sisteminiz aktif edilecektir.\n\nBilgilendirme '+_regData.email+' adresine gönderilecektir.');
+  }catch(e){
+    setBtn('reg-submit-btn',false,'Hesabı Oluştur ve Onay Bekle');
+    const m={'auth/email-already-in-use':'Bu e-posta zaten kayıtlı.','auth/weak-password':'Şifre çok zayıf.'};
+    showErr('reg-error2',m[e.code]||'Kayıt başarısız: '+e.message);
+  }
+};
+
+document.getElementById('authModal').addEventListener('click',e=>{if(e.target===document.getElementById('authModal'))closeModal();});
+</script>
+</body>
+</html>
