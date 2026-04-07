@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiparişPanel — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--primary:#d35400;--dark:#1a1a2e;--mid:#16213e;--card:#0f3460;--success:#27ae60;--danger:#c0392b;--warn:#f39c12;--light:#ecf0f1;--muted:#95a5a6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Roboto',sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh;display:flex;overflow-x:hidden;}
+#login-overlay{position:fixed;inset:0;background:#0d1117;z-index:9999;display:flex;align-items:center;justify-content:center;}
+.login-box{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:40px;width:340px;text-align:center;}
+.login-box h2{color:var(--primary);margin-bottom:6px;font-size:22px;}
+.login-box p{color:var(--muted);font-size:13px;margin-bottom:24px;}
+.login-input{width:100%;padding:12px 14px;background:#21262d;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:14px;font-family:inherit;outline:none;margin-bottom:12px;}
+.login-input:focus{border-color:var(--primary);}
+.login-btn{width:100%;padding:12px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.login-err{color:var(--danger);font-size:13px;margin-top:8px;display:none;}
+aside{width:240px;background:#161b22;border-right:1px solid #30363d;display:flex;flex-direction:column;padding:20px 0;flex-shrink:0;height:100vh;position:fixed;top:0;left:0;}
+.brand{padding:0 20px 20px;border-bottom:1px solid #30363d;margin-bottom:12px;}
+.brand h2{font-size:18px;font-weight:800;color:#e6edf3;}.brand h2 span{color:var(--primary);}
+.brand p{font-size:11px;color:var(--muted);margin-top:3px;}
+.mi{padding:10px 20px;cursor:pointer;color:#8b949e;display:flex;align-items:center;gap:10px;font-size:13px;border-left:3px solid transparent;transition:all .2s;}
+.mi:hover,.mi.active{background:rgba(255,255,255,.04);color:#e6edf3;border-left-color:var(--primary);}
+.badge-red{background:var(--danger);color:white;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;margin-left:auto;}
+main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+header{background:#161b22;border-bottom:1px solid #30363d;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;}
+.page-title{font-size:18px;font-weight:600;color:#e6edf3;}
+.admin-badge{background:rgba(211,84,0,.15);border:1px solid rgba(211,84,0,.3);color:var(--primary);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+.tab{display:none;padding:24px;}
+.tab.active{display:block;}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:28px;}
+.stat-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px;border-top:3px solid var(--primary);}
+.stat-val{font-size:30px;font-weight:800;color:#e6edf3;margin:6px 0 4px;}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+
+/* TABLE */
+.dtbl{width:100%;border-collapse:collapse;background:#161b22;border-radius:10px;overflow:hidden;border:1px solid #30363d;}
+.dtbl th{background:#21262d;color:#8b949e;padding:12px 14px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.dtbl td{padding:13px 14px;border-bottom:1px solid #21262d;font-size:13px;vertical-align:middle;}
+.dtbl tr:last-child td{border-bottom:none;}
+.dtbl tr:hover td{background:rgba(255,255,255,.02);}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;}
+.status-badge.pending{background:rgba(243,156,18,.15);color:var(--warn);border:1px solid rgba(243,156,18,.3);}
+.status-badge.active{background:rgba(39,174,96,.15);color:var(--success);border:1px solid rgba(39,174,96,.3);}
+.status-badge.suspended{background:rgba(192,57,43,.15);color:var(--danger);border:1px solid rgba(192,57,43,.3);}
+.action-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.abtn{padding:5px 12px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.abtn.activate{background:rgba(39,174,96,.2);color:var(--success);border:1px solid rgba(39,174,96,.3);}
+.abtn.activate:hover{background:rgba(39,174,96,.35);}
+.abtn.suspend{background:rgba(192,57,43,.2);color:var(--danger);border:1px solid rgba(192,57,43,.3);}
+.abtn.suspend:hover{background:rgba(192,57,43,.35);}
+.abtn.delete{background:rgba(255,255,255,.05);color:#8b949e;border:1px solid #30363d;}
+.abtn.delete:hover{background:rgba(192,57,43,.2);color:var(--danger);}
+.abtn.view{background:rgba(52,152,219,.2);color:#58a6ff;border:1px solid rgba(52,152,219,.3);}
+.plan-tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+.plan-tag.baslangic{background:rgba(255,255,255,.06);color:#8b949e;}
+.plan-tag.pro{background:rgba(211,84,0,.15);color:var(--primary);}
+.plan-tag.kurumsal{background:rgba(155,89,182,.15);color:#c39bd3;}
+
+/* DETAIL MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:4000;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#161b22;border:1px solid #30363d;border-radius:16px;width:100%;max-width:540px;padding:28px;position:relative;max-height:88vh;overflow-y:auto;}
+.modal-box h3{font-size:18px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;color:#8b949e;font-size:22px;cursor:pointer;}
+.modal-close:hover{color:#e6edf3;}
+.detail-row{display:flex;gap:10px;margin-bottom:12px;font-size:13px;}
+.detail-lbl{color:#8b949e;min-width:130px;font-weight:500;}
+.detail-val{color:#e6edf3;flex:1;word-break:break-all;}
+.note-box{background:#21262d;border:1px solid #30363d;border-radius:8px;padding:12px;font-size:13px;color:#8b949e;margin-top:8px;line-height:1.6;}
+
+/* TOAST */
+#toast-c{position:fixed;top:18px;right:18px;z-index:5000;}
+.toast{background:#161b22;border:1px solid #30363d;padding:12px 18px;border-radius:8px;box-shadow:0 5px 20px rgba(0,0,0,.4);margin-bottom:8px;border-left:4px solid var(--success);font-size:13px;color:#e6edf3;animation:si .3s;}
+.toast.err{border-left-color:var(--danger);}
+@keyframes si{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* SEARCH */
+.search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.search-input{padding:10px 14px;background:#21262d;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:13px;font-family:inherit;outline:none;flex:1;min-width:200px;}
+.search-input:focus{border-color:var(--primary);}
+.filter-btn{padding:9px 16px;border:1px solid #30363d;border-radius:8px;background:transparent;color:#8b949e;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.filter-btn:hover,.filter-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(211,84,0,.08);}
+</style>
+</head>
+<body>
+
+<div id="toast-c"></div>
+
+<div id="login-overlay">
+  <div class="login-box">
+    <h2>🔐 Admin Paneli</h2>
+    <p>SiparişPanel Yönetim Sistemi</p>
+    <input type="email" id="adm-email" class="login-input" placeholder="admin@siparispanel.com" onkeydown="if(event.key==='Enter')document.getElementById('adm-pass').focus()">
+    <input type="password" id="adm-pass" class="login-input" placeholder="Şifre" onkeydown="if(event.key==='Enter')doAdminLogin()">
+    <button class="login-btn" onclick="doAdminLogin()">Giriş Yap</button>
+    <div class="login-err" id="adm-err"></div>
+  </div>
+</div>
+
+<aside>
+  <div class="brand"><h2>Sipariş<span>Panel</span></h2><p>Admin Konsolu</p></div>
+  <div class="mi active" onclick="showTab('dashboard',this)"><i class="fas fa-th-large"></i> Dashboard</div>
+  <div class="mi" onclick="showTab('restaurants',this)"><i class="fas fa-store"></i> Restoranlar <span id="pending-badge" class="badge-red" style="display:none">0</span></div>
+  <div class="mi" onclick="showTab('pending',this)"><i class="fas fa-clock"></i> Onay Bekleyenler</div>
+  <div class="mi" onclick="showTab('revenue',this)"><i class="fas fa-chart-bar"></i> Gelir Takibi</div>
+  <div style="flex:1"></div>
+  <div class="mi" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Çıkış</div>
+</aside>
+
+<main>
+  <header>
+    <div class="page-title" id="page-title">Dashboard</div>
+    <div class="admin-badge">⚡ Super Admin</div>
+  </header>
+
+  <!-- DASHBOARD -->
+  <div class="tab active" id="tab-dashboard">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-lbl">Toplam Restoran</div><div class="stat-val" id="st-total">—</div></div>
+      <div class="stat-card" style="border-color:var(--success);"><div class="stat-lbl">Aktif</div><div class="stat-val" id="st-active" style="color:var(--success);">—</div></div>
+      <div class="stat-card" style="border-color:var(--warn);"><div class="stat-lbl">Onay Bekleyen</div><div class="stat-val" id="st-pending" style="color:var(--warn);">—</div></div>
+      <div class="stat-card" style="border-color:var(--danger);"><div class="stat-lbl">Askıda</div><div class="stat-val" id="st-suspended" style="color:var(--danger);">—</div></div>
+      <div class="stat-card" style="border-color:#9b59b6;"><div class="stat-lbl">Bu Ay Gelir (tahmini)</div><div class="stat-val" id="st-revenue" style="color:#c39bd3;">—</div></div>
+    </div>
+    <h4 style="color:#8b949e;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Son Başvurular</h4>
+    <table class="dtbl">
+      <thead><tr><th>Restoran</th><th>Paket</th><th>Başvuru</th><th>Durum</th><th>İşlem</th></tr></thead>
+      <tbody id="recent-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- TÜM RESTORANLAR -->
+  <div class="tab" id="tab-restaurants">
+    <div class="search-bar">
+      <input class="search-input" id="rest-search" placeholder="🔍 Restoran adı veya email ara..." oninput="renderRestaurants()">
+      <button class="filter-btn active" id="flt-all" onclick="setFilter('all',this)">Tümü</button>
+      <button class="filter-btn" id="flt-active" onclick="setFilter('active',this)">Aktif</button>
+      <button class="filter-btn" id="flt-pending" onclick="setFilter('pending',this)">Bekleyen</button>
+      <button class="filter-btn" id="flt-suspended" onclick="setFilter('suspended',this)">Askıda</button>
+    </div>
+    <table class="dtbl">
+      <thead><tr><th>Restoran</th><th>İletişim</th><th>Paket</th><th>Başvuru</th><th>Durum</th><th>İşlemler</th></tr></thead>
+      <tbody id="rest-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- ONAY BEKLEYENLEr -->
+  <div class="tab" id="tab-pending">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Ödeme bildirimi yapan ve onay bekleyen restoranlar.</p>
+    <table class="dtbl">
+      <thead><tr><th>Restoran</th><th>Paket / Tutar</th><th>Telefon</th><th>Ödeme Notu</th><th>Başvuru Tarihi</th><th>İşlem</th></tr></thead>
+      <tbody id="pending-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- GELİR TAKİBİ -->
+  <div class="tab" id="tab-revenue">
+    <div class="stat-grid">
+      <div class="stat-card" style="border-color:var(--success);"><div class="stat-lbl">Aylık Gelir (aktif)</div><div class="stat-val" id="rev-monthly" style="color:var(--success);">—</div></div>
+      <div class="stat-card"><div class="stat-lbl">Başlangıç Paketi</div><div class="stat-val" id="rev-baslangic">—</div></div>
+      <div class="stat-card" style="border-color:var(--primary);"><div class="stat-lbl">Pro Paketi</div><div class="stat-val" id="rev-pro" style="color:var(--primary);">—</div></div>
+      <div class="stat-card" style="border-color:#9b59b6;"><div class="stat-lbl">Kurumsal Paket</div><div class="stat-val" id="rev-kurumsal" style="color:#c39bd3;">—</div></div>
+    </div>
+    <h4 style="color:#8b949e;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Aktif Abonelikler</h4>
+    <table class="dtbl">
+      <thead><tr><th>Restoran</th><th>Paket</th><th>Tutar</th><th>Aktif Olma</th><th>Durum</th></tr></thead>
+      <tbody id="rev-tbody"></tbody>
+    </table>
+  </div>
+</main>
+
+<!-- DETAY MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box">
+    <h3 id="detail-title">Restoran Detayı <button class="modal-close" onclick="closeDetail()">×</button></h3>
+    <div id="detail-content"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;" id="detail-actions"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const fbCfg={apiKey:"AIzaSyCSlgWfHtx7xtUeYsApV-hgZWbhDRvb8Us",authDomain:"donerci-ismail-app.firebaseapp.com",projectId:"donerci-ismail-app",storageBucket:"donerci-ismail-app.firebasestorage.app",messagingSenderId:"651418488200",appId:"1:651418488200:web:6e992df018078ff6ea3e3d"};
+const app=initializeApp(fbCfg); const auth=getAuth(app); const db=getFirestore(app);
+
+const ADMIN_EMAIL="admin@siparispanel.com"; // Kendi admin emailin
+const PLAN_PRICES={baslangic:499,pro:799,kurumsal:1299};
+
+let allUsers=[], currentFilter='all';
+
+function toast(msg,err=false){const t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=msg;document.getElementById('toast-c').appendChild(t);setTimeout(()=>t.remove(),4000);}
+
+onAuthStateChanged(auth,user=>{
+  if(user && user.email===ADMIN_EMAIL){
+    document.getElementById('login-overlay').style.display='none';
+    loadAll();
+  } else if(user){
+    toast('Yetkisiz erişim.',true);
+    signOut(auth);
+  }
+});
+
+window.doAdminLogin=async()=>{
+  const email=document.getElementById('adm-email').value.trim();
+  const pass=document.getElementById('adm-pass').value;
+  const err=document.getElementById('adm-err');
+  try{ await signInWithEmailAndPassword(auth,email,pass); }
+  catch(e){ err.textContent='Hatalı giriş.'; err.style.display='block'; }
+};
+window.doLogout=async()=>{ await signOut(auth); window.location.href='landing.html'; };
+
+window.showTab=(id,el)=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.mi').forEach(m=>m.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent={dashboard:'Dashboard',restaurants:'Restoranlar',pending:'Onay Bekleyenler',revenue:'Gelir Takibi'}[id]||id;
+  if(id==='restaurants') renderRestaurants();
+  if(id==='pending') renderPending();
+  if(id==='revenue') renderRevenue();
+};
+
+async function loadAll(){
+  const snap=await getDocs(collection(db,'users'));
+  allUsers=snap.docs.map(d=>({uid:d.id,...d.data()})).filter(u=>u.role==='owner');
+  renderDashboard();
+  renderRestaurants();
+  renderPending();
+  renderRevenue();
+  // Pending badge
+  const pendingCount=allUsers.filter(u=>u.status==='pending').length;
+  const pb=document.getElementById('pending-badge');
+  pb.textContent=pendingCount;pb.style.display=pendingCount>0?'inline-block':'none';
+}
+
+function renderDashboard(){
+  const total=allUsers.length;
+  const active=allUsers.filter(u=>u.status==='active').length;
+  const pending=allUsers.filter(u=>u.status==='pending').length;
+  const suspended=allUsers.filter(u=>u.status==='suspended').length;
+  const revenue=allUsers.filter(u=>u.status==='active').reduce((s,u)=>s+(PLAN_PRICES[u.plan]||0),0);
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-active').textContent=active;
+  document.getElementById('st-pending').textContent=pending;
+  document.getElementById('st-suspended').textContent=suspended;
+  document.getElementById('st-revenue').textContent='₺'+revenue.toLocaleString('tr-TR');
+  // Son 5 başvuru
+  const sorted=[...allUsers].sort((a,b)=>new Date(b.appliedAt||0)-new Date(a.appliedAt||0)).slice(0,5);
+  document.getElementById('recent-tbody').innerHTML=sorted.map(u=>`
+    <tr>
+      <td><div style="font-weight:600;">${u.restaurantName||u.email.split('@')[0]}</div><div style="font-size:11px;color:var(--muted);">${u.email}</div></td>
+      <td><span class="plan-tag ${u.plan||'baslangic'}">${u.planLabel||u.plan||'—'}</span></td>
+      <td style="font-size:12px;color:var(--muted);">${u.appliedAt?new Date(u.appliedAt).toLocaleDateString('tr-TR'):'—'}</td>
+      <td>${statusBadge(u.status)}</td>
+      <td><button class="abtn view" onclick="openDetail('${u.uid}')">Detay</button></td>
+    </tr>`).join('');
+}
+
+function statusBadge(s){ const labels={pending:'Bekliyor',active:'Aktif',suspended:'Askıda'}; return `<span class="status-badge ${s||'pending'}">${labels[s]||s||'—'}</span>`; }
+
+window.setFilter=(f,el)=>{
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderRestaurants();
+};
+
+window.renderRestaurants=()=>{
+  const q=(document.getElementById('rest-search').value||'').toLowerCase();
+  let list=allUsers;
+  if(currentFilter!=='all') list=list.filter(u=>u.status===currentFilter);
+  if(q) list=list.filter(u=>(u.email||'').includes(q)||(u.restaurantName||'').toLowerCase().includes(q)||(u.phone||'').includes(q));
+  document.getElementById('rest-tbody').innerHTML=list.length===0
+    ?'<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted);">Restoran bulunamadı.</td></tr>'
+    :list.map(u=>`
+    <tr>
+      <td><div style="font-weight:600;">${u.restaurantName||'—'}</div><div style="font-size:11px;color:var(--muted);">${u.restaurantId||'—'}</div></td>
+      <td><div>${u.email}</div><div style="font-size:11px;color:var(--muted);">${u.phone||'—'}</div></td>
+      <td><span class="plan-tag ${u.plan||'baslangic'}">${u.planLabel||'—'}</span> <span style="font-size:11px;color:var(--muted);">${u.planPrice||'—'}</span></td>
+      <td style="font-size:12px;color:var(--muted);">${u.appliedAt?new Date(u.appliedAt).toLocaleDateString('tr-TR'):'—'}</td>
+      <td>${statusBadge(u.status)}</td>
+      <td><div class="action-btns">
+        ${u.status!=='active'?`<button class="abtn activate" onclick="activateUser('${u.uid}')">✓ Aktif Et</button>`:''}
+        ${u.status!=='suspended'?`<button class="abtn suspend" onclick="suspendUser('${u.uid}')">⊘ Askıya Al</button>`:`<button class="abtn activate" onclick="activateUser('${u.uid}')">↺ Reaktif Et</button>`}
+        <button class="abtn view" onclick="openDetail('${u.uid}')"><i class="fas fa-eye"></i></button>
+        <button class="abtn delete" onclick="deleteUser('${u.uid}')"><i class="fas fa-trash"></i></button>
+      </div></td>
+    </tr>`).join('');
+};
+
+function renderPending(){
+  const list=allUsers.filter(u=>u.status==='pending').sort((a,b)=>new Date(a.appliedAt||0)-new Date(b.appliedAt||0));
+  document.getElementById('pending-tbody').innerHTML=list.length===0
+    ?'<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted);">Onay bekleyen başvuru yok. 🎉</td></tr>'
+    :list.map(u=>`
+    <tr style="background:rgba(243,156,18,.04);">
+      <td><div style="font-weight:700;">${u.restaurantName||'—'}</div><div style="font-size:11px;color:var(--muted);">${u.email}</div></td>
+      <td><span class="plan-tag ${u.plan}">${u.planLabel||u.plan}</span><br><span style="font-size:12px;color:var(--primary);font-weight:700;">${u.planPrice||'—'}</span></td>
+      <td>${u.phone||'—'}</td>
+      <td><div style="font-size:12px;color:var(--muted);max-width:200px;">${u.paymentNote||'<em>Not yok</em>'}</div></td>
+      <td style="font-size:12px;color:var(--muted);">${u.appliedAt?new Date(u.appliedAt).toLocaleDateString('tr-TR',{day:'2-digit',month:'short',year:'numeric'}):'—'}</td>
+      <td><div class="action-btns">
+        <button class="abtn activate" onclick="activateUser('${u.uid}')">✓ Onayla ve Aktif Et</button>
+        <button class="abtn delete" onclick="deleteUser('${u.uid}')">✗ Reddet</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function renderRevenue(){
+  const active=allUsers.filter(u=>u.status==='active');
+  const byPlan={baslangic:active.filter(u=>u.plan==='baslangic'),pro:active.filter(u=>u.plan==='pro'),kurumsal:active.filter(u=>u.plan==='kurumsal')};
+  const monthly=active.reduce((s,u)=>s+(PLAN_PRICES[u.plan]||0),0);
+  document.getElementById('rev-monthly').textContent='₺'+monthly.toLocaleString('tr-TR');
+  document.getElementById('rev-baslangic').textContent=byPlan.baslangic.length+' restoran';
+  document.getElementById('rev-pro').textContent=byPlan.pro.length+' restoran';
+  document.getElementById('rev-kurumsal').textContent=byPlan.kurumsal.length+' restoran';
+  document.getElementById('rev-tbody').innerHTML=active.length===0
+    ?'<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted);">Aktif abonelik yok.</td></tr>'
+    :active.map(u=>`
+    <tr>
+      <td><div style="font-weight:600;">${u.restaurantName||'—'}</div><div style="font-size:11px;color:var(--muted);">${u.email}</div></td>
+      <td><span class="plan-tag ${u.plan}">${u.planLabel||u.plan}</span></td>
+      <td style="font-weight:700;color:var(--success);">${u.planPrice||'—'}</td>
+      <td style="font-size:12px;color:var(--muted);">${u.activatedAt?new Date(u.activatedAt).toLocaleDateString('tr-TR'):'—'}</td>
+      <td>${statusBadge(u.status)}</td>
+    </tr>`).join('');
+}
+
+window.openDetail=async(uid)=>{
+  const u=allUsers.find(x=>x.uid===uid); if(!u) return;
+  document.getElementById('detail-title').innerHTML=`${u.restaurantName||'Restoran'} <button class="modal-close" onclick="closeDetail()">×</button>`;
+  document.getElementById('detail-content').innerHTML=`
+    <div class="detail-row"><span class="detail-lbl">Restoran Adı</span><span class="detail-val">${u.restaurantName||'—'}</span></div>
+    <div class="detail-row"><span class="detail-lbl">E-Posta</span><span class="detail-val">${u.email||'—'}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Telefon</span><span class="detail-val">${u.phone||'—'}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Restoran ID</span><span class="detail-val" style="font-family:monospace;font-size:12px;">${u.restaurantId||'—'}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Paket</span><span class="detail-val"><span class="plan-tag ${u.plan}">${u.planLabel||u.plan||'—'}</span> ${u.planPrice||''}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Durum</span><span class="detail-val">${statusBadge(u.status)}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Başvuru Tarihi</span><span class="detail-val">${u.appliedAt?new Date(u.appliedAt).toLocaleString('tr-TR'):'—'}</span></div>
+    <div class="detail-row"><span class="detail-lbl">Aktif Olma</span><span class="detail-val">${u.activatedAt?new Date(u.activatedAt).toLocaleString('tr-TR'):'—'}</span></div>
+    ${u.paymentNote?`<div class="detail-row"><span class="detail-lbl">Ödeme Notu</span></div><div class="note-box">${u.paymentNote}</div>`:''}
+    <div class="detail-row" style="margin-top:12px;"><span class="detail-lbl">Sipariş Linki</span>
+      <span class="detail-val" style="font-size:12px;font-family:monospace;">siparis.html?r=${u.restaurantId||'—'}</span>
+    </div>
+  `;
+  document.getElementById('detail-actions').innerHTML=`
+    ${u.status!=='active'?`<button class="abtn activate" style="padding:9px 18px;" onclick="activateUser('${uid}');closeDetail();">✓ Aktif Et</button>`:''}
+    ${u.status==='active'?`<button class="abtn suspend" style="padding:9px 18px;" onclick="suspendUser('${uid}');closeDetail();">⊘ Askıya Al</button>`:''}
+    ${u.status==='suspended'?`<button class="abtn activate" style="padding:9px 18px;" onclick="activateUser('${uid}');closeDetail();">↺ Reaktif Et</button>`:''}
+    <button class="abtn delete" style="padding:9px 18px;" onclick="deleteUser('${uid}');closeDetail();">🗑 Sil</button>
+  `;
+  document.getElementById('detailModal').classList.add('open');
+};
+window.closeDetail=()=>document.getElementById('detailModal').classList.remove('open');
+
+window.activateUser=async(uid)=>{
+  const u=allUsers.find(x=>x.uid===uid); if(!u) return;
+  try{
+    await updateDoc(doc(db,'users',uid),{status:'active',activatedAt:new Date().toISOString()});
+    if(u.restaurantId) await updateDoc(doc(db,'restaurants',u.restaurantId,'profile','info'),{status:'active'});
+    u.status='active'; u.activatedAt=new Date().toISOString();
+    toast('✅ '+( u.restaurantName||u.email)+' aktif edildi.');
+    renderDashboard(); renderRestaurants(); renderPending(); renderRevenue();
+    const pb=document.getElementById('pending-badge');
+    const pc=allUsers.filter(x=>x.status==='pending').length;
+    pb.textContent=pc; pb.style.display=pc>0?'inline-block':'none';
+  }catch(e){ toast('Hata: '+e.message,true); }
+};
+
+window.suspendUser=async(uid)=>{
+  const u=allUsers.find(x=>x.uid===uid); if(!u) return;
+  if(!confirm((u.restaurantName||u.email)+' hesabını askıya almak istediğinizden emin misiniz?')) return;
+  try{
+    await updateDoc(doc(db,'users',uid),{status:'suspended',suspendedAt:new Date().toISOString()});
+    if(u.restaurantId) await updateDoc(doc(db,'restaurants',u.restaurantId,'profile','info'),{status:'suspended',isOpen:false});
+    u.status='suspended';
+    toast('⊘ '+( u.restaurantName||u.email)+' askıya alındı.');
+    renderDashboard(); renderRestaurants(); renderRevenue();
+  }catch(e){ toast('Hata: '+e.message,true); }
+};
+
+window.deleteUser=async(uid)=>{
+  const u=allUsers.find(x=>x.uid===uid); if(!u) return;
+  if(!confirm((u.restaurantName||u.email)+' hesabını kalıcı olarak silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) return;
+  try{
+    await deleteDoc(doc(db,'users',uid));
+    allUsers=allUsers.filter(x=>x.uid!==uid);
+    toast('🗑 Hesap silindi.');
+    renderDashboard(); renderRestaurants(); renderPending(); renderRevenue();
+  }catch(e){ toast('Hata: '+e.message,true); }
+};
+
+document.getElementById('detailModal').addEventListener('click',e=>{if(e.target===document.getElementById('detailModal'))closeDetail();});
+</script>
+</body>
+</html>
+
