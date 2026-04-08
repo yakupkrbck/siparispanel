@@ -246,9 +246,9 @@ footer p{font-size:12px;color:var(--muted);}
         <div class="payment-box">
           <h4>💳 Havale / EFT ile Ödeme</h4>
           <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;">Aşağıdaki hesaba seçtiğiniz paketin ücretini gönderin. Açıklamaya <strong style="color:var(--text)">restoran adınızı</strong> yazın.</p>
-          <div class="payment-iban"><span id="iban-text">TR00 0000 0000 0000 0000 0000 00</span><button class="copy-btn" onclick="copyIban()">Kopyala</button></div>
+          <div class="payment-iban"><span id="iban-text">TR33 0004 6004 3188 8000 1933 36</span><button class="copy-btn" onclick="copyIban()">Kopyala</button></div>
           <div style="font-size:12px;color:var(--muted);">
-            Ad Soyad: <strong style="color:var(--text)">SiparişPanel</strong><br>
+            Ad Soyad: <strong style="color:var(--text)">Yakup Karaböcek</strong><br>
             Tutar: <strong id="pay-amount" style="color:var(--primary)"></strong>
           </div>
         </div>
@@ -276,7 +276,7 @@ import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/fireb
 const fbCfg={apiKey:"AIzaSyCSlgWfHtx7xtUeYsApV-hgZWbhDRvb8Us",authDomain:"donerci-ismail-app.firebaseapp.com",projectId:"donerci-ismail-app",storageBucket:"donerci-ismail-app.firebasestorage.app",messagingSenderId:"651418488200",appId:"1:651418488200:web:6e992df018078ff6ea3e3d"};
 const app=initializeApp(fbCfg); const auth=getAuth(app); const db=getFirestore(app);
 
-const IBAN="TR00 0000 0000 0000 0000 0000 00"; // Kendi IBAN'ını buraya yaz
+const IBAN="TR33 0004 6004 3188 8000 1933 36";
 const ADMIN_EMAIL="admin@siparispanel.com"; // Admin emailini buraya yaz
 const PLAN_PRICES={baslangic:"₺499/ay",pro:"₺799/ay",kurumsal:"₺1.299/ay"};
 const PLAN_NAMES={baslangic:"Başlangıç",pro:"Pro",kurumsal:"Kurumsal"};
@@ -287,15 +287,30 @@ let _regData=null;
 
 onAuthStateChanged(auth, async user=>{
   if(!user) return;
-  if(user.email===ADMIN_EMAIL){ window.location.href='admin.html'; return; }
-  const snap=await getDoc(doc(db,'users',user.uid));
-  if(!snap.exists()) return;
-  const d=snap.data();
-  if(d.status==='active'){ window.location.href='panel_kurye_eki-13-2.html'; return; }
-  if(d.status==='pending'){
-    showSuccess('Başvurunuz inceleniyor ⏳','Ödemeniz onaylandıktan sonra sisteminiz aktif edilecektir. Teşekkür ederiz!');
+  // Admin email kontrolü — her zaman önce yap, Firestore bekleme
+  if(user.email && user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
+    window.location.href='admin.html';
+    return;
   }
-  if(d.status==='suspended'){ alert('Hesabınız askıya alınmıştır.'); auth.signOut(); }
+  try {
+    const snap=await getDoc(doc(db,'users',user.uid));
+    if(!snap.exists()){
+      // users kaydı yok — kayıt henüz tamamlanmamış, bekle
+      return;
+    }
+    const d=snap.data();
+    // Ekstra güvenlik: bu kayıtta da admin email kontrolü
+    if(d.email && d.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
+      window.location.href='admin.html'; return;
+    }
+    if(d.status==='active'){ window.location.href='panel_kurye_eki-13-2.html'; return; }
+    if(d.status==='pending'){
+      showSuccess('Başvurunuz inceleniyor ⏳','Ödemeniz onaylandıktan sonra sisteminiz aktif edilecektir. Teşekkür ederiz!');
+    }
+    if(d.status==='suspended'){ alert('Hesabınız askıya alınmıştır. Destek için iletişime geçin.'); await auth.signOut(); }
+  } catch(e) {
+    console.warn('Auth kontrol hatası:', e.message);
+  }
 });
 
 function toSlug(s){return s.toLowerCase().replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
@@ -325,7 +340,15 @@ window.doLogin=async()=>{
   const pass=document.getElementById('login-password').value;
   if(!email||!pass){showErr('login-error','E-posta ve şifre gerekli.');return;}
   setBtn('login-btn',true,'Giriş Yap');
-  try{ await signInWithEmailAndPassword(auth,email,pass); }
+  try{
+    const cred = await signInWithEmailAndPassword(auth,email,pass);
+    // Admin emaili → direkt yönlendir, onAuthStateChanged'i bekleme
+    if(cred.user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
+      window.location.href='admin.html';
+      return;
+    }
+    // Diğer kullanıcılar onAuthStateChanged halleder
+  }
   catch(e){ setBtn('login-btn',false,'Giriş Yap'); const m={'auth/user-not-found':'Bu e-posta kayıtlı değil.','auth/wrong-password':'Şifre hatalı.','auth/invalid-credential':'E-posta veya şifre hatalı.','auth/too-many-requests':'Çok fazla deneme.'}; showErr('login-error',m[e.code]||'Giriş başarısız.'); }
 };
 
@@ -347,13 +370,18 @@ window.goToStep2=()=>{
 
 window.doRegister=async()=>{
   if(!_regData) return;
+  // Admin email ile kayıt engelle
+  if(_regData.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
+    showErr('reg-error2','Bu e-posta adresi kullanılamaz.');
+    return;
+  }
   const note=document.getElementById('reg-note').value.trim();
   setBtn('reg-submit-btn',true,'Hesabı Oluştur ve Onay Bekle');
   try{
     const cred=await createUserWithEmailAndPassword(auth,_regData.email,_regData.password);
     const uid=cred.user.uid;
     const restaurantId=toSlug(_regData.restaurant)+'-'+uid.slice(0,6);
-    await setDoc(doc(db,'users',uid),{email:_regData.email,phone:_regData.phone,restaurantId,role:'owner',plan:_regData.plan,planLabel:PLAN_NAMES[_regData.plan],planPrice:PLAN_PRICES[_regData.plan],status:'pending',paymentNote:note||'',appliedAt:new Date().toISOString(),activatedAt:null,suspendedAt:null});
+    await setDoc(doc(db,'users',uid),{email:_regData.email,phone:_regData.phone,restaurantId,restaurantName:_regData.restaurant,role:'owner',plan:_regData.plan,planLabel:PLAN_NAMES[_regData.plan],planPrice:PLAN_PRICES[_regData.plan],status:'pending',paymentNote:note||'',appliedAt:new Date().toISOString(),activatedAt:null,suspendedAt:null});
     await setDoc(doc(db,'restaurants',restaurantId,'profile','info'),{name:_regData.restaurant,phone:_regData.phone,slug:toSlug(_regData.restaurant),email:_regData.email,isOpen:false,status:'pending',createdAt:new Date().toISOString()});
     await setDoc(doc(db,'restaurants',restaurantId,'settings','general'),{minOrder:0,deliveryFee:0,workingHours:{pazartesi:{open:'09:00',close:'22:00',active:true},sali:{open:'09:00',close:'22:00',active:true},carsamba:{open:'09:00',close:'22:00',active:true},persembe:{open:'09:00',close:'22:00',active:true},cuma:{open:'09:00',close:'22:00',active:true},cumartesi:{open:'09:00',close:'22:00',active:true},pazar:{open:'09:00',close:'22:00',active:true}}});
     await setDoc(doc(db,'restaurants',restaurantId,'settings','contact'),{phone:_regData.phone,whatsapp:'',address:'',facebook:'',instagram:'',twitter:'',mapUrl:'',seoTitle:'',seoDesc:'',seoKeywords:''});
