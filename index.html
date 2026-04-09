@@ -246,9 +246,9 @@ footer p{font-size:12px;color:var(--muted);}
         <div class="payment-box">
           <h4>💳 Havale / EFT ile Ödeme</h4>
           <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;">Aşağıdaki hesaba seçtiğiniz paketin ücretini gönderin. Açıklamaya <strong style="color:var(--text)">restoran adınızı</strong> yazın.</p>
-          <div class="payment-iban"><span id="iban-text">TR33 0004 6004 3188 8000 1933 36</span><button class="copy-btn" onclick="copyIban()">Kopyala</button></div>
+          <div class="payment-iban"><span id="iban-text">TR00 0000 0000 0000 0000 0000 00</span><button class="copy-btn" onclick="copyIban()">Kopyala</button></div>
           <div style="font-size:12px;color:var(--muted);">
-            Ad Soyad: <strong style="color:var(--text)">Yakup Karaböcek</strong><br>
+            Ad Soyad: <strong style="color:var(--text)">SiparişPanel</strong><br>
             Tutar: <strong id="pay-amount" style="color:var(--primary)"></strong>
           </div>
         </div>
@@ -282,35 +282,27 @@ const PLAN_PRICES={baslangic:"₺499/ay",pro:"₺799/ay",kurumsal:"₺1.299/ay"}
 const PLAN_NAMES={baslangic:"Başlangıç",pro:"Pro",kurumsal:"Kurumsal"};
 
 document.getElementById('iban-text').textContent=IBAN;
+document.querySelectorAll('.iban-owner').forEach(el=>el.textContent='Yakup Karabocek');
 
 let _regData=null;
 
 onAuthStateChanged(auth, async user=>{
   if(!user) return;
-  // Admin email kontrolü — her zaman önce yap, Firestore bekleme
+  // Admin kontrolü — toLowerCase ile güvenli karşılaştırma
   if(user.email && user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
-    window.location.href='index.html';
+    window.location.href='admin.html';
     return;
   }
   try {
     const snap=await getDoc(doc(db,'users',user.uid));
-    if(!snap.exists()){
-      // users kaydı yok — kayıt henüz tamamlanmamış, bekle
-      return;
-    }
+    if(!snap.exists()) return; // kayıt henüz yazılıyor olabilir
     const d=snap.data();
-    // Ekstra güvenlik: bu kayıtta da admin email kontrolü
-    if(d.email && d.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
-      window.location.href='index.html'; return;
-    }
     if(d.status==='active'){ window.location.href='panel_kurye_eki-13-2.html'; return; }
     if(d.status==='pending'){
-      showSuccess('Başvurunuz inceleniyor ⏳','Ödemeniz onaylandıktan sonra sisteminiz aktif edilecektir. Teşekkür ederiz!');
+      showSuccess('Başvurunuz inceleniyor','Odemeniz onaylandiktan sonra sisteminiz aktif edilecektir.');
     }
-    if(d.status==='suspended'){ alert('Hesabınız askıya alınmıştır. Destek için iletişime geçin.'); await auth.signOut(); }
-  } catch(e) {
-    console.warn('Auth kontrol hatası:', e.message);
-  }
+    if(d.status==='suspended'){ alert('Hesabiniz askiya alinmistir.'); auth.signOut(); }
+  } catch(e) { console.warn('Auth state error:', e.message); }
 });
 
 function toSlug(s){return s.toLowerCase().replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
@@ -338,18 +330,25 @@ window.copyIban=()=>{navigator.clipboard.writeText(IBAN.replace(/\s/g,'')).then(
 window.doLogin=async()=>{
   const email=document.getElementById('login-email').value.trim();
   const pass=document.getElementById('login-password').value;
-  if(!email||!pass){showErr('login-error','E-posta ve şifre gerekli.');return;}
-  setBtn('login-btn',true,'Giriş Yap');
+  if(!email||!pass){showErr('login-error','E-posta ve sifre gerekli.');return;}
+  setBtn('login-btn',true,'Giris Yap');
   try{
-    const cred = await signInWithEmailAndPassword(auth,email,pass);
-    // Admin emaili → direkt yönlendir, onAuthStateChanged'i bekleme
+    const cred=await signInWithEmailAndPassword(auth,email,pass);
+    // Admin ise direkt yonlendir — onAuthStateChanged'i bekleme
     if(cred.user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
-      window.location.href='index.html';
-      return;
+      window.location.href='admin.html';
     }
-    // Diğer kullanıcılar onAuthStateChanged halleder
   }
-  catch(e){ setBtn('login-btn',false,'Giriş Yap'); const m={'auth/user-not-found':'Bu e-posta kayıtlı değil.','auth/wrong-password':'Şifre hatalı.','auth/invalid-credential':'E-posta veya şifre hatalı.','auth/too-many-requests':'Çok fazla deneme.'}; showErr('login-error',m[e.code]||'Giriş başarısız.'); }
+  catch(e){
+    setBtn('login-btn',false,'Giris Yap');
+    const m={
+      'auth/user-not-found':'Bu e-posta kayitli degil.',
+      'auth/wrong-password':'Sifre hatali.',
+      'auth/invalid-credential':'E-posta veya sifre hatali.',
+      'auth/too-many-requests':'Cok fazla deneme.'
+    };
+    showErr('login-error',m[e.code]||'Giris basarisiz.');
+  }
 };
 
 window.goToStep2=()=>{
@@ -370,9 +369,8 @@ window.goToStep2=()=>{
 
 window.doRegister=async()=>{
   if(!_regData) return;
-  // Admin email ile kayıt engelle
   if(_regData.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
-    showErr('reg-error2','Bu e-posta adresi kullanılamaz.');
+    showErr('reg-error2','Bu e-posta kullaниlamaz.');
     return;
   }
   const note=document.getElementById('reg-note').value.trim();
