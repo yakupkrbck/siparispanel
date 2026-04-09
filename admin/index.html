@@ -285,9 +285,15 @@ window.showTab = function(id, el) {
 
 async function loadAll() {
   try {
+    console.log("loadAll basladi, kullanici:", auth.currentUser && auth.currentUser.email);
     var snap = await getDocs(collection(db, "users"));
-    allUsers = snap.docs.map(function(d) { return Object.assign({ uid: d.id }, d.data()); })
-                        .filter(function(u) { return u.role === "owner"; });
+    console.log("users snap:", snap.docs.length, "dokuman");
+    allUsers = snap.docs.map(function(d) {
+      var data = d.data();
+      console.log("  ->", d.id, data.email, data.role, data.status, data.restaurantName);
+      return Object.assign({ uid: d.id }, data);
+    }).filter(function(u) { return u.role === "owner"; });
+    console.log("Owner sayisi:", allUsers.length);
     renderDashboard();
     renderRestaurants();
     renderPending();
