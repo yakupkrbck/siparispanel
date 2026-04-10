@@ -286,16 +286,23 @@ document.querySelectorAll('.iban-owner').forEach(el=>el.textContent='Yakup Karab
 
 let _regData=null;
 
+// Sayfa yüklenince otomatik yönlendirme YAPMA
+// Sadece kullanıcı aktif olarak giriş/kayıt yaptığında yönlendir
+// Bu flag doLogin/doRegister'dan set edilir
+let _userInitiatedAuth = false;
+
 onAuthStateChanged(auth, async user=>{
   if(!user) return;
-  // Admin kontrolü — toLowerCase ile güvenli karşılaştırma
+  // Sadece kullanıcı aktif işlem yaptıysa yönlendir
+  if(!_userInitiatedAuth) return;
+  
   if(user.email && user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
     window.location.href='admin.html';
     return;
   }
   try {
     const snap=await getDoc(doc(db,'users',user.uid));
-    if(!snap.exists()) return; // kayıt henüz yazılıyor olabilir
+    if(!snap.exists()) return;
     const d=snap.data();
     if(d.status==='active'){ window.location.href='panel_kurye_eki-13-2.html'; return; }
     if(d.status==='pending'){
@@ -332,12 +339,15 @@ window.doLogin=async()=>{
   const pass=document.getElementById('login-password').value;
   if(!email||!pass){showErr('login-error','E-posta ve sifre gerekli.');return;}
   setBtn('login-btn',true,'Giris Yap');
+  _userInitiatedAuth = true;
   try{
     const cred=await signInWithEmailAndPassword(auth,email,pass);
-    // Admin ise direkt yonlendir — onAuthStateChanged'i bekleme
+    // Admin ise direkt yonlendir
     if(cred.user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
       window.location.href='admin.html';
+      return;
     }
+    // Normal kullanıcı — onAuthStateChanged halleder
   }
   catch(e){
     setBtn('login-btn',false,'Giris Yap');
@@ -369,6 +379,7 @@ window.goToStep2=()=>{
 
 window.doRegister=async()=>{
   if(!_regData) return;
+  _userInitiatedAuth = true;
   if(_regData.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
     showErr('reg-error2','Bu e-posta kullaниlamaz.');
     return;
