@@ -117,21 +117,6 @@
 
   .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .6s linear infinite; }
   @keyframes spin { to{transform:rotate(360deg)} }
-
-  /* Kurulum ekranı */
-  #setupWrap { display:none; min-height:100vh; align-items:center; justify-content:center; padding:2rem;
-    background: radial-gradient(ellipse 80% 60% at 50% -10%,#1a3a1a 0%,transparent 70%), var(--bg); }
-  .setup-card { width:100%; max-width:560px; background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:3rem 2.5rem; }
-  .setup-step { display:flex; gap:1rem; align-items:flex-start; padding:.9rem 0; border-bottom:1px solid var(--border); }
-  .setup-step:last-child { border-bottom:none; }
-  .step-icon { font-size:1.3rem; flex-shrink:0; margin-top:.1rem; }
-  .step-text p { font-size:.9rem; font-weight:600; }
-  .step-text span { font-size:.8rem; color:var(--muted); }
-  .step-status { margin-left:auto; font-size:.8rem; font-weight:600; }
-  .ss-wait { color:var(--muted); }
-  .ss-ok   { color:var(--success); }
-  .ss-err  { color:var(--danger); }
-  .ss-run  { color:var(--warn); }
 </style>
 </head>
 <body>
@@ -146,33 +131,6 @@
     <div class="fg"><label>E-Posta</label><input type="email" id="aEmail" placeholder="admin@cirolog.com"></div>
     <div class="fg"><label>Şifre</label><input type="password" id="aPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="btn btn-p" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
-    <div style="margin-top:1.25rem;padding:1rem;background:rgba(200,245,90,.07);border:1px solid rgba(200,245,90,.2);border-radius:12px">
-      <p style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">⚡ İlk kurulum için:</p>
-      <button onclick="showSetup()" style="background:rgba(200,245,90,.15);border:1px solid rgba(200,245,90,.3);color:var(--accent);border-radius:8px;padding:.45rem 1rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Firestore Koleksiyonları Kur →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── KURULUM ── -->
-<div id="setupWrap" style="display:none;min-height:100vh;align-items:center;justify-content:center;padding:2rem;background:radial-gradient(ellipse 80% 60% at 50% -10%,#1a3a1a 0%,transparent 70%),var(--bg)">
-  <div class="setup-card">
-    <div class="logo" style="margin-bottom:.25rem">CiroLog <span style="font-size:1rem;font-family:'DM Sans',sans-serif;color:var(--muted)">Kurulum</span></div>
-    <div class="sub">Firestore koleksiyonları ve admin hesabı oluşturulacak</div>
-
-    <div class="fg"><label>Admin E-Posta</label><input type="email" id="setupEmail" placeholder="admin@cirolog.com" value="admin@cirolog.com"></div>
-    <div class="fg"><label>Admin Şifre</label><input type="password" id="setupPass" placeholder="En az 6 karakter"></div>
-    <div class="fg"><label>Admin Ad Soyad</label><input type="text" id="setupName" placeholder="Admin" value="Admin"></div>
-
-    <div id="setupSteps" style="margin:1.5rem 0">
-      <div class="setup-step"><div class="step-icon">👤</div><div class="step-text"><p>Admin hesabı</p><span>Firebase Auth'da kullanıcı oluştur</span></div><div class="step-status ss-wait" id="s1">Bekliyor</div></div>
-      <div class="setup-step"><div class="step-icon">📁</div><div class="step-text"><p>cirolog_users koleksiyonu</p><span>Kullanıcı profilleri</span></div><div class="step-status ss-wait" id="s2">Bekliyor</div></div>
-      <div class="setup-step"><div class="step-icon">📋</div><div class="step-text"><p>cirolog_pending koleksiyonu</p><span>Başvuru havuzu (örnek kayıt)</span></div><div class="step-status ss-wait" id="s3">Bekliyor</div></div>
-      <div class="setup-step"><div class="step-icon">📊</div><div class="step-text"><p>cirolog_records koleksiyonu</p><span>Örnek ciro kaydı</span></div><div class="step-status ss-wait" id="s4">Bekliyor</div></div>
-      <div class="setup-step"><div class="step-icon">⚙️</div><div class="step-text"><p>cirolog_settings koleksiyonu</p><span>Platform ayarları</span></div><div class="step-status ss-wait" id="s5">Bekliyor</div></div>
-    </div>
-
-    <button class="btn btn-p" id="setupBtn" onclick="runSetup()">🚀 Kurulumu Başlat</button>
-    <button onclick="document.getElementById('setupWrap').style.display='none';document.getElementById('authWrap').style.display='flex'" style="width:100%;margin-top:.75rem;padding:.7rem;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.875rem">← Geri Dön</button>
   </div>
 </div>
 
@@ -285,11 +243,11 @@
 
 <script type="module">
 import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+import { getAuth, signInWithEmailAndPassword,
          signOut, onAuthStateChanged }
                                 from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc, collection,
-         query, where, orderBy, getDocs, serverTimestamp, limit, Timestamp }
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection,
+         query, where, orderBy, getDocs, serverTimestamp, limit }
                                 from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const cfg = {
@@ -360,96 +318,6 @@ window.doLogin = async function() {
 window.doLogout = async function() {
   await signOut(auth);
   allPending = []; allUsers = [];
-};
-
-// ── KURULUM ──
-window.showSetup = function() {
-  document.getElementById('authWrap').style.display = 'none';
-  document.getElementById('setupWrap').style.display = 'flex';
-};
-
-window.runSetup = async function() {
-  const email = document.getElementById('setupEmail').value.trim();
-  const pass  = document.getElementById('setupPass').value;
-  const name  = document.getElementById('setupName').value.trim();
-  if (!email||!pass||!name) { toast('Tüm alanları doldurun','w'); return; }
-  if (pass.length < 6) { toast('Şifre en az 6 karakter','w'); return; }
-
-  const btn = document.getElementById('setupBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Kuruluyor...';
-
-  const setStep = (id, status, cls) => {
-    const el = document.getElementById(id);
-    el.textContent = status; el.className = 'step-status ' + cls;
-  };
-
-  try {
-    // ADIM 1 — Admin kullanıcı oluştur
-    setStep('s1','Çalışıyor...','ss-run');
-    let uid;
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      uid = cred.user.uid;
-    } catch(e) {
-      if (e.code === 'auth/email-already-in-use') {
-        // Zaten varsa giriş yap
-        const cred = await signInWithEmailAndPassword(auth, email, pass);
-        uid = cred.user.uid;
-      } else throw e;
-    }
-    setStep('s1','✓ Tamam','ss-ok');
-
-    // ADIM 2 — cirolog_users
-    setStep('s2','Çalışıyor...','ss-run');
-    await setDoc(doc(db, C.users, uid), {
-      name, email, role: 'admin', approved: true,
-      businessName: 'CiroLog Admin', phone: '',
-      createdAt: serverTimestamp()
-    }, { merge: true });
-    setStep('s2','✓ Tamam','ss-ok');
-
-    // ADIM 3 — cirolog_pending (örnek)
-    setStep('s3','Çalışıyor...','ss-run');
-    const exSnap = await getDocs(query(collection(db, C.pending), limit(1)));
-    if (exSnap.empty) {
-      await addDoc(collection(db, C.pending), {
-        name: 'Örnek Başvuru', email: 'ornek@test.com',
-        businessName: 'Örnek İşletme', phone: '0500 000 00 00',
-        status: 'pending', uid: 'example_uid',
-        createdAt: serverTimestamp()
-      });
-    }
-    setStep('s3','✓ Tamam','ss-ok');
-
-    // ADIM 4 — cirolog_records (örnek)
-    setStep('s4','Çalışıyor...','ss-run');
-    const today = new Date().toISOString().split('T')[0];
-    await setDoc(doc(db, C.records(uid), today), {
-      date: today, amount: 0, note: 'Kurulum günü',
-      createdAt: serverTimestamp()
-    }, { merge: true });
-    setStep('s4','✓ Tamam','ss-ok');
-
-    // ADIM 5 — cirolog_settings
-    setStep('s5','Çalışıyor...','ss-run');
-    await setDoc(doc(db, C.settings, 'platform'), {
-      appName: 'CiroLog', version: '1.0',
-      setupDate: serverTimestamp(), adminEmail: email
-    }, { merge: true });
-    setStep('s5','✓ Tamam','ss-ok');
-
-    btn.style.background = 'var(--success)';
-    btn.textContent = '✓ Kurulum Tamamlandı — Admin Paneli Açılıyor...';
-    toast('Tüm koleksiyonlar oluşturuldu!','s');
-    setTimeout(() => show('adminWrap'), 1500);
-
-  } catch(err) {
-    toast('Hata: ' + err.message, 'e');
-    btn.disabled = false; btn.textContent = '🚀 Kurulumu Başlat';
-    ['s1','s2','s3','s4','s5'].forEach(id => {
-      if (document.getElementById(id).textContent === 'Çalışıyor...') setStep(id,'Hata','ss-err');
-    });
-  }
 };
 
 // ── NAV ──
