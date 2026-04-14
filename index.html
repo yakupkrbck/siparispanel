@@ -3,289 +3,629 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CiroLog — Kurulum & Admin Panel</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>CiroLog — Günlük Satış Takip Platformu</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c27; --border:#2a2a3a;
-    --accent:#c8f55a; --accent2:#7b6ff0; --text:#f0f0f5; --muted:#6b6b85;
-    --danger:#ff5e5e; --success:#4edb8f; --warn:#f5c842;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+:root {
+  --bg: #08090d;
+  --surface: #0f1018;
+  --surface2: #181921;
+  --border: #232435;
+  --accent: #d4f74e;
+  --accent2: #8b7ff5;
+  --text: #eeeef5;
+  --muted: #636380;
+  --success: #4edb8f;
+  --warn: #f5c842;
+  --danger: #ff5e5e;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
 
-  /* ── AUTH ── */
-  #authWrap {
-    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem;
-    background: radial-gradient(ellipse 80% 60% at 50% -10%,#2a2065 0%,transparent 70%), var(--bg);
-  }
-  .auth-card { width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:3rem 2.5rem; animation:fadeUp .5s ease; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-  .logo { font-family:'DM Serif Display',serif; font-size:2rem; letter-spacing:-1px; margin-bottom:.25rem; }
-  .logo span { color:var(--accent); }
-  .sub { color:var(--muted); font-size:.875rem; margin-bottom:2rem; }
-  .fg { margin-bottom:1.1rem; }
-  .fg label { display:block; font-size:.75rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.4rem; }
-  .fg input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:.8rem 1rem; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.95rem; outline:none; transition:border-color .2s; }
-  .fg input:focus { border-color:var(--accent2); }
-  .btn { width:100%; padding:.85rem; border-radius:10px; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; transition:all .2s; }
-  .btn-p { background:var(--accent); color:#0a0a0f; }
-  .btn-p:hover { background:#d9ff6e; }
-  .btn-p:disabled { opacity:.5; cursor:not-allowed; }
+/* ── NOISE TEXTURE ── */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.4;
+}
 
-  /* ── ADMIN PANEL ── */
-  #adminWrap { display:none; min-height:100vh; }
-  .layout { display:flex; min-height:100vh; }
-  .sidebar { width:240px; background:var(--surface); border-right:1px solid var(--border); padding:1.5rem 1rem; display:flex; flex-direction:column; flex-shrink:0; }
-  .s-logo { font-family:'DM Serif Display',serif; font-size:1.4rem; padding:.5rem .75rem 1.5rem; letter-spacing:-1px; }
-  .s-logo span { color:var(--accent); }
-  .nav { display:flex; align-items:center; gap:.75rem; padding:.65rem .75rem; border-radius:10px; cursor:pointer; font-size:.875rem; color:var(--muted); transition:all .15s; margin-bottom:.2rem; border:none; background:transparent; width:100%; text-align:left; }
-  .nav:hover { background:var(--surface2); color:var(--text); }
-  .nav.active { background:rgba(200,245,90,.1); color:var(--accent); }
-  .spacer { flex:1; }
-  .user-pill { display:flex; align-items:center; gap:.75rem; padding:.75rem; border-radius:10px; background:var(--surface2); }
-  .avatar { width:32px; height:32px; border-radius:50%; background:var(--danger); display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0; }
-  .u-info p { font-size:.85rem; font-weight:600; }
-  .u-info span { font-size:.75rem; color:var(--muted); }
-  .logout-btn { display:flex; align-items:center; gap:.75rem; padding:.65rem .75rem; border-radius:10px; cursor:pointer; font-size:.875rem; color:var(--muted); transition:all .15s; margin-top:.5rem; border:none; background:transparent; width:100%; text-align:left; }
-  .logout-btn:hover { color:var(--danger); }
+/* ── NAVBAR ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  padding:1rem 2rem;
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(8,9,13,.85); backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.nav-logo { font-family:'Fraunces',serif; font-size:1.5rem; letter-spacing:-1px; }
+.nav-logo span { color:var(--accent); }
+.nav-links { display:flex; gap:2rem; align-items:center; }
+.nav-links a { font-size:.875rem; color:var(--muted); text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:var(--text); }
+.nav-cta {
+  background:var(--accent); color:#08090d; border:none;
+  padding:.6rem 1.4rem; border-radius:99px; font-weight:700; font-size:.875rem;
+  cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s;
+  text-decoration:none;
+}
+.nav-cta:hover { background:#e5ff70; transform:scale(1.03); }
+.hamburger { display:none; background:none; border:none; color:var(--text); font-size:1.4rem; cursor:pointer; }
 
-  .main { flex:1; overflow-y:auto; padding:2rem; }
-  .page { display:none; }
-  .page.active { display:block; }
-  .ph { margin-bottom:2rem; }
-  .ph h1 { font-family:'DM Serif Display',serif; font-size:1.8rem; letter-spacing:-.5px; }
-  .ph p { color:var(--muted); font-size:.875rem; margin-top:.25rem; }
+/* ── HERO ── */
+.hero {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:8rem 2rem 4rem; text-align:center; position:relative;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -5%, rgba(139,127,245,.2) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(212,247,78,.08) 0%, transparent 60%);
+}
+.hero-tag {
+  display:inline-flex; align-items:center; gap:.5rem;
+  background:rgba(212,247,78,.1); border:1px solid rgba(212,247,78,.25);
+  color:var(--accent); padding:.35rem 1rem; border-radius:99px;
+  font-size:.8rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+  margin-bottom:2rem;
+}
+.hero-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.5)} }
 
-  .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.5rem; }
-  .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin-bottom:1.5rem; }
-  .sc { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.2rem; }
-  .sl { font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.4rem; }
-  .sv { font-family:'DM Serif Display',serif; font-size:1.8rem; }
+.hero h1 {
+  font-family:'Fraunces',serif; font-size:clamp(2.8rem,8vw,6rem);
+  line-height:1.05; letter-spacing:-2px; margin-bottom:1.5rem;
+  font-weight:900;
+}
+.hero h1 em { font-style:italic; color:var(--accent); }
+.hero h1 .line2 { color:var(--muted); font-weight:300; display:block; }
 
-  table { width:100%; border-collapse:collapse; }
-  th { text-align:left; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; padding:.75rem 1rem; border-bottom:1px solid var(--border); }
-  td { padding:.85rem 1rem; border-bottom:1px solid var(--border); font-size:.875rem; vertical-align:middle; }
-  tr:last-child td { border-bottom:none; }
-  tr:hover td { background:rgba(255,255,255,.02); }
+.hero-sub {
+  font-size:clamp(1rem,2vw,1.2rem); color:var(--muted); max-width:560px;
+  margin:0 auto 2.5rem; line-height:1.7;
+}
+.hero-actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+.btn-hero {
+  padding:.9rem 2rem; border-radius:99px; font-weight:700; font-size:1rem;
+  cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; text-decoration:none;
+  display:inline-flex; align-items:center; gap:.5rem;
+}
+.btn-hero-p { background:var(--accent); color:#08090d; border:none; }
+.btn-hero-p:hover { background:#e5ff70; transform:translateY(-2px); box-shadow:0 12px 40px rgba(212,247,78,.3); }
+.btn-hero-g { background:transparent; color:var(--text); border:1px solid var(--border); }
+.btn-hero-g:hover { border-color:var(--muted); }
 
-  .badge { display:inline-flex; align-items:center; gap:.3rem; padding:.2rem .65rem; border-radius:99px; font-size:.72rem; font-weight:700; }
-  .b-warn    { background:rgba(245,200,66,.15); color:var(--warn); }
-  .b-success { background:rgba(78,219,143,.15); color:var(--success); }
-  .b-muted   { background:var(--surface2); color:var(--muted); }
-  .b-danger  { background:rgba(255,94,94,.12); color:var(--danger); }
+.hero-stats {
+  display:flex; gap:3rem; justify-content:center; margin-top:4rem;
+  flex-wrap:wrap;
+}
+.hero-stat { text-align:center; }
+.hero-stat-num { font-family:'Fraunces',serif; font-size:2rem; font-weight:700; }
+.hero-stat-label { font-size:.8rem; color:var(--muted); margin-top:.25rem; }
 
-  .ab { border-radius:8px; padding:.35rem .9rem; font-size:.8rem; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; border:1px solid; transition:all .15s; }
-  .ab-ok  { background:rgba(78,219,143,.12); color:var(--success); border-color:rgba(78,219,143,.3); }
-  .ab-ok:hover  { background:rgba(78,219,143,.25); }
-  .ab-no  { background:rgba(255,94,94,.1); color:var(--danger); border-color:rgba(255,94,94,.2); }
-  .ab-no:hover  { background:rgba(255,94,94,.2); }
-  .ab-del { background:transparent; color:var(--muted); border-color:var(--border); }
-  .ab-del:hover { color:var(--danger); border-color:var(--danger); }
+/* ── MOCKUP ── */
+.mockup-section {
+  padding:4rem 2rem;
+  display:flex; justify-content:center;
+  position:relative;
+}
+.mockup {
+  width:100%; max-width:800px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+}
+.mockup-bar {
+  padding:.75rem 1rem;
+  background:var(--surface2);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:.5rem;
+}
+.dot { width:10px; height:10px; border-radius:50%; }
+.mockup-content { padding:1.5rem; }
+.mock-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.75rem; margin-bottom:1rem; }
+.mock-card { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:1rem; }
+.mock-label { font-size:.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.35rem; }
+.mock-val { font-family:'Fraunces',serif; font-size:1.3rem; }
+.mock-bar-wrap { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:1rem; }
+.mock-bars { display:flex; align-items:flex-end; gap:6px; height:80px; }
+.mb { flex:1; border-radius:4px 4px 0 0; }
 
-  .search-bar { display:flex; gap:.75rem; margin-bottom:1.25rem; flex-wrap:wrap; }
-  .search-bar input, .search-bar select {
-    background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    padding:.6rem 1rem; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.875rem; outline:none;
-  }
-  .search-bar input { flex:1; min-width:200px; }
-  .search-bar input:focus { border-color:var(--accent2); }
+/* ── ÖZELLİKLER ── */
+.features { padding:6rem 2rem; max-width:1100px; margin:0 auto; }
+.section-tag { font-size:.75rem; color:var(--accent); text-transform:uppercase; letter-spacing:.12em; font-weight:700; margin-bottom:1rem; }
+.section-title { font-family:'Fraunces',serif; font-size:clamp(1.8rem,4vw,3rem); letter-spacing:-1px; margin-bottom:1rem; font-weight:700; }
+.section-sub { color:var(--muted); font-size:1rem; line-height:1.7; max-width:520px; margin-bottom:4rem; }
+.feat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+.feat-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:1.75rem;
+  transition:border-color .2s, transform .2s;
+}
+.feat-card:hover { border-color:var(--accent2); transform:translateY(-3px); }
+.feat-icon { font-size:1.8rem; margin-bottom:1rem; }
+.feat-title { font-size:1rem; font-weight:700; margin-bottom:.5rem; }
+.feat-desc { font-size:.875rem; color:var(--muted); line-height:1.6; }
 
-  .empty { color:var(--muted); text-align:center; padding:3rem; font-size:.9rem; }
+/* ── FİYATLANDIRMA ── */
+.pricing { padding:6rem 2rem; background:radial-gradient(ellipse 60% 40% at 50% 0%, rgba(139,127,245,.1) 0%, transparent 70%); }
+.pricing-inner { max-width:1000px; margin:0 auto; }
+.pricing-header { text-align:center; margin-bottom:3.5rem; }
+.pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+.plan {
+  background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2rem;
+  position:relative; transition:transform .2s;
+}
+.plan:hover { transform:translateY(-4px); }
+.plan.popular {
+  border-color:var(--accent);
+  background:linear-gradient(135deg,rgba(212,247,78,.06),var(--surface));
+}
+.popular-badge {
+  position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+  background:var(--accent); color:#08090d; font-size:.7rem; font-weight:700;
+  padding:.25rem .9rem; border-radius:99px; text-transform:uppercase; letter-spacing:.08em;
+  white-space:nowrap;
+}
+.plan-name { font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; font-weight:700; margin-bottom:.75rem; }
+.plan-price { font-family:'Fraunces',serif; font-size:3rem; letter-spacing:-2px; line-height:1; }
+.plan-price sup { font-size:1.2rem; vertical-align:top; margin-top:.5rem; }
+.plan-price sub { font-size:.9rem; color:var(--muted); font-family:'DM Sans',sans-serif; font-weight:400; }
+.plan-desc { font-size:.875rem; color:var(--muted); margin:.75rem 0 1.5rem; line-height:1.5; }
+.plan-features { list-style:none; margin-bottom:2rem; }
+.plan-features li { font-size:.875rem; padding:.4rem 0; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.6rem; }
+.plan-features li:last-child { border-bottom:none; }
+.plan-features li::before { content:'✓'; color:var(--success); font-weight:700; flex-shrink:0; }
+.plan-features li.no::before { content:'✕'; color:var(--muted); }
+.plan-features li.no { color:var(--muted); }
+.plan-btn {
+  width:100%; padding:.85rem; border-radius:10px; font-weight:700; font-size:.95rem;
+  cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; border:none;
+}
+.plan-btn-primary { background:var(--accent); color:#08090d; }
+.plan-btn-primary:hover { background:#e5ff70; }
+.plan-btn-ghost { background:transparent; color:var(--text); border:1px solid var(--border); }
+.plan-btn-ghost:hover { border-color:var(--muted); }
 
-  .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:100; align-items:center; justify-content:center; }
-  .modal-bg.show { display:flex; }
-  .modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2rem; max-width:480px; width:90%; animation:fadeUp .3s ease; }
-  .modal h2 { font-family:'DM Serif Display',serif; font-size:1.3rem; margin-bottom:1rem; }
-  .modal .close { float:right; cursor:pointer; color:var(--muted); font-size:1.2rem; background:none; border:none; }
+/* ── SSS ── */
+.faq { padding:6rem 2rem; max-width:720px; margin:0 auto; }
+.faq-item { border-bottom:1px solid var(--border); }
+.faq-q {
+  width:100%; text-align:left; padding:1.25rem 0;
+  background:none; border:none; color:var(--text); font-family:'DM Sans',sans-serif;
+  font-size:.95rem; font-weight:600; cursor:pointer;
+  display:flex; justify-content:space-between; align-items:center; gap:1rem;
+}
+.faq-q .arrow { color:var(--muted); transition:transform .2s; flex-shrink:0; }
+.faq-item.open .faq-q .arrow { transform:rotate(180deg); }
+.faq-a { display:none; padding-bottom:1.25rem; font-size:.9rem; color:var(--muted); line-height:1.7; }
+.faq-item.open .faq-a { display:block; }
 
-  .detail-row { display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid var(--border); font-size:.875rem; }
-  .detail-row:last-child { border-bottom:none; }
-  .detail-row span:first-child { color:var(--muted); }
-  .detail-row span:last-child { font-weight:500; text-align:right; }
+/* ── BAŞVURU FORMU ── */
+.apply-section {
+  padding:6rem 2rem;
+  background:radial-gradient(ellipse 60% 50% at 50% 100%, rgba(212,247,78,.08) 0%, transparent 70%);
+}
+.apply-inner { max-width:600px; margin:0 auto; }
+.apply-header { text-align:center; margin-bottom:3rem; }
+.apply-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:2.5rem;
+  box-shadow:0 40px 80px rgba(0,0,0,.4);
+}
+.apply-tabs { display:flex; gap:.4rem; background:var(--surface2); border-radius:10px; padding:4px; margin-bottom:2rem; }
+.apply-tab { flex:1; padding:.55rem; border-radius:7px; cursor:pointer; font-size:.85rem; font-weight:600; color:var(--muted); transition:all .15s; border:none; background:transparent; font-family:'DM Sans',sans-serif; }
+.apply-tab.active { background:var(--surface); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.3); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
 
-  .tab-bar { display:flex; gap:.4rem; background:var(--surface2); border-radius:10px; padding:4px; width:fit-content; margin-bottom:1.5rem; }
-  .tab { padding:.45rem .9rem; border-radius:7px; cursor:pointer; font-size:.85rem; font-weight:500; color:var(--muted); transition:all .15s; border:none; background:transparent; font-family:'DM Sans',sans-serif; }
-  .tab.active { background:var(--surface); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.3); }
+.fg { margin-bottom:1.1rem; }
+.fg label { display:block; font-size:.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.45rem; }
+.fg input, .fg select, .fg textarea {
+  width:100%; background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:.8rem 1rem; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:.95rem; outline:none; transition:border-color .2s;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--accent2); }
+.fg textarea { resize:vertical; min-height:80px; }
+.fg select option { background:var(--surface2); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
 
-  .toast-c { position:fixed; bottom:1.5rem; right:1.5rem; display:flex; flex-direction:column; gap:.5rem; z-index:999; }
-  .toast { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:.85rem 1.2rem; font-size:.875rem; display:flex; align-items:center; gap:.75rem; animation:slideIn .3s ease; box-shadow:0 8px 32px rgba(0,0,0,.4); }
-  .toast.s { border-left:3px solid var(--success); }
-  .toast.w { border-left:3px solid var(--warn); }
-  .toast.e { border-left:3px solid var(--danger); }
-  @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+.plan-select-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-bottom:1.5rem; }
+.plan-opt {
+  border:1px solid var(--border); border-radius:12px; padding:1rem;
+  cursor:pointer; transition:all .15s; text-align:center;
+}
+.plan-opt:hover { border-color:var(--muted); }
+.plan-opt.selected { border-color:var(--accent); background:rgba(212,247,78,.08); }
+.plan-opt-name { font-size:.8rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.25rem; }
+.plan-opt-price { font-family:'Fraunces',serif; font-size:1.4rem; }
+.plan-opt-period { font-size:.75rem; color:var(--muted); }
 
-  .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .6s linear infinite; }
-  @keyframes spin { to{transform:rotate(360deg)} }
+.google-btn {
+  width:100%; padding:.85rem; border-radius:10px; border:1px solid var(--border);
+  background:var(--surface2); color:var(--text); font-family:'DM Sans',sans-serif;
+  font-weight:600; font-size:.95rem; cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; justify-content:center; gap:.75rem; margin-bottom:1rem;
+}
+.google-btn:hover { border-color:var(--muted); background:var(--surface); }
+.divider { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+.divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.divider span { font-size:.75rem; color:var(--muted); }
 
-  /* Kurulum ekranı */
-  #setupWrap { display:none; min-height:100vh; align-items:center; justify-content:center; padding:2rem;
-    background: radial-gradient(ellipse 80% 60% at 50% -10%,#1a3a1a 0%,transparent 70%), var(--bg); }
-  .setup-card { width:100%; max-width:560px; background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:3rem 2.5rem; }
-  .setup-step { display:flex; gap:1rem; align-items:flex-start; padding:.9rem 0; border-bottom:1px solid var(--border); }
-  .setup-step:last-child { border-bottom:none; }
-  .step-icon { font-size:1.3rem; flex-shrink:0; margin-top:.1rem; }
-  .step-text p { font-size:.9rem; font-weight:600; }
-  .step-text span { font-size:.8rem; color:var(--muted); }
-  .step-status { margin-left:auto; font-size:.8rem; font-weight:600; }
-  .ss-wait { color:var(--muted); }
-  .ss-ok   { color:var(--success); }
-  .ss-err  { color:var(--danger); }
-  .ss-run  { color:var(--warn); }
+.submit-btn {
+  width:100%; padding:.9rem; border-radius:10px; background:var(--accent); color:#08090d;
+  border:none; font-family:'DM Sans',sans-serif; font-weight:700; font-size:1rem;
+  cursor:pointer; transition:all .2s; margin-top:.5rem;
+}
+.submit-btn:hover { background:#e5ff70; transform:translateY(-1px); box-shadow:0 8px 24px rgba(212,247,78,.3); }
+.submit-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+.form-note { font-size:.78rem; color:var(--muted); text-align:center; margin-top:1rem; line-height:1.5; }
+
+/* ── FOOTER ── */
+footer {
+  border-top:1px solid var(--border); padding:3rem 2rem;
+  text-align:center; color:var(--muted); font-size:.875rem;
+}
+footer .f-logo { font-family:'Fraunces',serif; font-size:1.4rem; margin-bottom:.75rem; }
+footer .f-logo span { color:var(--accent); }
+
+/* ── SUCCESS STATE ── */
+.success-state { text-align:center; padding:2rem; }
+.success-state .s-icon { font-size:3.5rem; margin-bottom:1rem; }
+.success-state h2 { font-family:'Fraunces',serif; font-size:1.6rem; margin-bottom:.75rem; }
+.success-state p { color:var(--muted); font-size:.9rem; line-height:1.6; }
+
+/* ── TOAST ── */
+.toast-c { position:fixed; bottom:1.5rem; right:1.5rem; z-index:999; display:flex; flex-direction:column; gap:.5rem; }
+.toast { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:.85rem 1.2rem; font-size:.875rem; display:flex; align-items:center; gap:.75rem; box-shadow:0 8px 32px rgba(0,0,0,.4); animation:slideIn .3s ease; }
+.toast.s { border-left:3px solid var(--success); }
+.toast.w { border-left:3px solid var(--warn); }
+.toast.e { border-left:3px solid var(--danger); }
+@keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+
+/* ── MOBİL ── */
+@media(max-width:768px) {
+  .nav-links { display:none; }
+  .nav-links.open { display:flex; flex-direction:column; position:fixed; top:60px; left:0; right:0; background:var(--surface); border-bottom:1px solid var(--border); padding:1.5rem 2rem; gap:1rem; z-index:99; }
+  .hamburger { display:block; }
+  .mock-grid { grid-template-columns:1fr 1fr; }
+  .form-row { grid-template-columns:1fr; }
+  .plan-select-grid { grid-template-columns:1fr 1fr; }
+  .apply-card { padding:1.75rem; }
+}
 </style>
 </head>
 <body>
 
 <div class="toast-c" id="toastC"></div>
 
-<!-- ── GİRİŞ ── -->
-<div id="authWrap">
-  <div class="auth-card">
-    <div class="logo">CiroLog <span style="font-size:1rem;font-family:'DM Sans',sans-serif;color:var(--muted)">Admin</span></div>
-    <div class="sub">Yönetici paneline giriş yapın</div>
-    <div class="fg"><label>E-Posta</label><input type="email" id="aEmail" placeholder="admin@cirolog.com"></div>
-    <div class="fg"><label>Şifre</label><input type="password" id="aPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="btn btn-p" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
-    <div style="margin-top:1.25rem;padding:1rem;background:rgba(200,245,90,.07);border:1px solid rgba(200,245,90,.2);border-radius:12px">
-      <p style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">⚡ İlk kurulum için:</p>
-      <button onclick="showSetup()" style="background:rgba(200,245,90,.15);border:1px solid rgba(200,245,90,.3);color:var(--accent);border-radius:8px;padding:.45rem 1rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Firestore Koleksiyonları Kur →</button>
+<!-- ── NAVBAR ── -->
+<nav>
+  <div class="nav-logo">Ciro<span>Log</span></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#features">Özellikler</a>
+    <a href="#pricing">Fiyatlar</a>
+    <a href="#faq">SSS</a>
+    <a href="#apply">Başvur</a>
+    <a href="app.html" style="color:var(--accent2)">Giriş Yap →</a>
+  </div>
+  <a href="#apply" class="nav-cta">Ücretsiz Dene</a>
+  <button class="hamburger" onclick="toggleMenu()">☰</button>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div>
+    <div class="hero-tag">✦ İşletmenizin finansal nabzı</div>
+    <h1>
+      Günlük cironuzu<br>
+      <em>saniyeler içinde</em>
+      <span class="line2">kaydedin, analiz edin.</span>
+    </h1>
+    <p class="hero-sub">
+      Telefonu elinize alın, rakamı girin, bırakın. CiroLog geçmişinizi saklar, trendlerinizi gösterir, hedeflerinizi takip eder.
+    </p>
+    <div class="hero-actions">
+      <a href="#apply" class="btn-hero btn-hero-p">🚀 Hemen Başvur</a>
+      <a href="#features" class="btn-hero btn-hero-g">Nasıl çalışır?</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" style="color:var(--accent)">30sn</div>
+        <div class="hero-stat-label">Günlük giriş süresi</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" style="color:var(--accent2)">365 gün</div>
+        <div class="hero-stat-label">Geçmiş veri</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" style="color:var(--success)">%100</div>
+        <div class="hero-stat-label">Güvenli & şifreli</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MOCKUP ── -->
+<div class="mockup-section">
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="dot" style="background:#ff5e5e"></div>
+      <div class="dot" style="background:#f5c842"></div>
+      <div class="dot" style="background:#4edb8f"></div>
+      <span style="font-size:.75rem;color:var(--muted);margin-left:.5rem">cirolog.app</span>
+    </div>
+    <div class="mockup-content">
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:.75rem">Hoş geldin, Ahmet 👋 — Pazartesi, 14 Nisan</div>
+      <!-- Hızlı giriş -->
+      <div style="background:linear-gradient(135deg,rgba(139,127,245,.15),rgba(212,247,78,.08));border:1px solid rgba(212,247,78,.25);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+        <span style="font-size:.7rem;color:var(--muted)">Bugünün Cirosu</span>
+        <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(212,247,78,.3);border-radius:8px;padding:.5rem 1rem;font-size:1.1rem;font-weight:700;color:var(--text)">₺ _</div>
+        <div style="background:var(--accent);color:#08090d;border-radius:8px;padding:.5rem 1rem;font-size:.8rem;font-weight:700">Kaydet ↵</div>
+      </div>
+      <div class="mock-grid">
+        <div class="mock-card"><div class="mock-label">Bugün</div><div class="mock-val" style="color:var(--accent)">₺8.240</div></div>
+        <div class="mock-card"><div class="mock-label">Bu Hafta</div><div class="mock-val">₺47.8K</div></div>
+        <div class="mock-card"><div class="mock-label">Bu Ay</div><div class="mock-val">₺184K</div></div>
+        <div class="mock-card"><div class="mock-label">Hedef</div><div class="mock-val" style="color:var(--success)">%73</div></div>
+      </div>
+      <div class="mock-bar-wrap">
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em">Son 7 Gün</div>
+        <div class="mock-bars">
+          <div class="mb" style="height:40%;background:var(--accent2)"></div>
+          <div class="mb" style="height:55%;background:var(--accent2)"></div>
+          <div class="mb" style="height:90%;background:var(--accent)"></div>
+          <div class="mb" style="height:60%;background:var(--accent2)"></div>
+          <div class="mb" style="height:72%;background:var(--accent2)"></div>
+          <div class="mb" style="height:100%;background:var(--accent)"></div>
+          <div class="mb" style="height:80%;background:var(--accent2)"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ── KURULUM ── -->
-<div id="setupWrap" style="display:none;min-height:100vh;align-items:center;justify-content:center;padding:2rem;background:radial-gradient(ellipse 80% 60% at 50% -10%,#1a3a1a 0%,transparent 70%),var(--bg)">
-  <div class="setup-card">
-    <div class="logo" style="margin-bottom:.25rem">CiroLog <span style="font-size:1rem;font-family:'DM Sans',sans-serif;color:var(--muted)">Kurulum</span></div>
-    <div class="sub">Firestore koleksiyonları ve admin hesabı oluşturulacak</div>
-
-    <div class="fg"><label>Admin E-Posta</label><input type="email" id="setupEmail" placeholder="admin@cirolog.com" value="admin@cirolog.com"></div>
-    <div class="fg"><label>Admin Şifre</label><input type="password" id="setupPass" placeholder="En az 6 karakter"></div>
-    <div class="fg"><label>Admin Ad Soyad</label><input type="text" id="setupName" placeholder="Admin" value="Admin"></div>
-
-    <div id="setupSteps" style="margin:1.5rem 0">
-      <div class="setup-step"><div class="step-icon">👤</div><div class="step-text"><p>Admin hesabı</p><span>Firebase Auth'da kullanıcı oluştur</span></div><div class="step-status ss-wait" id="s1">Bekliyor</div></div>
-      <div class="setup-step"><div class="step-icon">📁</div><div class="step-text"><p>cirolog_users koleksiyonu</p><span>Kullanıcı profilleri</span></div><div class="step-status ss-wait" id="s2">Bekliyor</div></div>
-      <div class="setup-step"><div class="step-icon">📋</div><div class="step-text"><p>cirolog_pending koleksiyonu</p><span>Başvuru havuzu (örnek kayıt)</span></div><div class="step-status ss-wait" id="s3">Bekliyor</div></div>
-      <div class="setup-step"><div class="step-icon">📊</div><div class="step-text"><p>cirolog_records koleksiyonu</p><span>Örnek ciro kaydı</span></div><div class="step-status ss-wait" id="s4">Bekliyor</div></div>
-      <div class="setup-step"><div class="step-icon">⚙️</div><div class="step-text"><p>cirolog_settings koleksiyonu</p><span>Platform ayarları</span></div><div class="step-status ss-wait" id="s5">Bekliyor</div></div>
+<!-- ── ÖZELLİKLER ── -->
+<section class="features" id="features">
+  <div class="section-tag">✦ Özellikler</div>
+  <h2 class="section-title">İşletmenizin ihtiyacı olan<br>her şey, tek yerde.</h2>
+  <p class="section-sub">Karmaşık muhasebe programlarına gerek yok. Sadece günlük rakamınızı girin, gerisini biz halledelim.</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">30 Saniyede Kayıt</div>
+      <div class="feat-desc">Ana ekrandaki hızlı giriş alanıyla bugünün cirosu tek dokunuşla kaydedilir. Formlar, menüler yok.</div>
     </div>
-
-    <button class="btn btn-p" id="setupBtn" onclick="runSetup()">🚀 Kurulumu Başlat</button>
-    <button onclick="document.getElementById('setupWrap').style.display='none';document.getElementById('authWrap').style.display='flex'" style="width:100%;margin-top:.75rem;padding:.7rem;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.875rem">← Geri Dön</button>
-  </div>
-</div>
-
-<!-- ── ADMIN PANELİ ── -->
-<div id="adminWrap">
-  <div class="layout">
-    <nav class="sidebar">
-      <div class="s-logo">Ciro<span>Log</span></div>
-      <button class="nav active" onclick="go('bekleyen',this)">⏳ Bekleyen Başvurular <span id="pendingBadge" style="background:var(--warn);color:#0a0a0f;font-size:.65rem;padding:1px 6px;border-radius:99px;margin-left:auto"></span></button>
-      <button class="nav" onclick="go('uyeler',this)">👥 Kullanıcılar</button>
-      <button class="nav" onclick="go('kayitlar',this)">📊 Ciro Kayıtları</button>
-      <button class="nav" onclick="go('ozet',this)">🏠 Platform Özeti</button>
-      <div class="spacer"></div>
-      <div class="user-pill">
-        <div class="avatar">AD</div>
-        <div class="u-info"><p id="adminName">Admin</p><span>Yönetici</span></div>
-      </div>
-      <button class="logout-btn" onclick="doLogout()">🚪 Çıkış Yap</button>
-    </nav>
-
-    <div class="main">
-
-      <!-- BEKLEYEN BAŞVURULAR -->
-      <div class="page active" id="p-bekleyen">
-        <div class="ph"><h1>Bekleyen Başvurular</h1><p>Onay bekleyen yeni üyelik talepleri</p></div>
-        <div class="card">
-          <div class="search-bar">
-            <input type="text" id="pendingSearch" placeholder="İsim, işletme veya e-posta ara..." oninput="filterPending()">
-          </div>
-          <table>
-            <thead><tr><th>Ad Soyad</th><th>İşletme</th><th>E-Posta</th><th>Telefon</th><th>Başvuru Tarihi</th><th>İşlem</th></tr></thead>
-            <tbody id="pendingBody"><tr><td colspan="6" class="empty">Yükleniyor...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- KULLANICILAR -->
-      <div class="page" id="p-uyeler">
-        <div class="ph"><h1>Kullanıcılar</h1><p>Sistemdeki tüm üyeler</p></div>
-        <div class="tab-bar">
-          <button class="tab active" onclick="filterUsers('all',this)">Tümü</button>
-          <button class="tab" onclick="filterUsers('approved',this)">Aktif</button>
-          <button class="tab" onclick="filterUsers('pending',this)">Onay Bekleyen</button>
-          <button class="tab" onclick="filterUsers('rejected',this)">Reddedilen</button>
-        </div>
-        <div class="card">
-          <div class="search-bar">
-            <input type="text" id="userSearch" placeholder="Kullanıcı ara..." oninput="filterUsers(currentUserTab)">
-          </div>
-          <table>
-            <thead><tr><th>Ad Soyad</th><th>İşletme</th><th>E-Posta</th><th>Telefon</th><th>Kayıt Tarihi</th><th>Durum</th><th>İşlem</th></tr></thead>
-            <tbody id="usersBody"><tr><td colspan="7" class="empty">Yükleniyor...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- CİRO KAYITLARI -->
-      <div class="page" id="p-kayitlar">
-        <div class="ph"><h1>Ciro Kayıtları</h1><p>Tüm kullanıcıların kayıtları</p></div>
-        <div class="card">
-          <div class="search-bar">
-            <select id="recordUserFilter" onchange="loadAllRecords()"><option value="">— Tüm Kullanıcılar —</option></select>
-            <input type="date" id="recordFrom">
-            <input type="date" id="recordTo">
-            <button onclick="loadAllRecords()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.6rem 1rem;font-size:.875rem;cursor:pointer;font-family:'DM Sans',sans-serif">Filtrele</button>
-          </div>
-          <table>
-            <thead><tr><th>Kullanıcı</th><th>İşletme</th><th>Tarih</th><th>Ciro</th><th>Not</th></tr></thead>
-            <tbody id="recordsBody"><tr><td colspan="5" class="empty">Yukarıdan kullanıcı veya tarih seçin</td></tr></tbody>
-          </table>
-          <div id="recordsTotal" style="padding:.75rem 1rem 0;font-size:.875rem;color:var(--muted);text-align:right"></div>
-        </div>
-      </div>
-
-      <!-- ÖZET -->
-      <div class="page" id="p-ozet">
-        <div class="ph"><h1>Platform Özeti</h1><p>Genel istatistikler</p></div>
-        <div class="stat-grid">
-          <div class="sc"><div class="sl">Toplam Üye</div><div class="sv" id="oToplam">—</div></div>
-          <div class="sc"><div class="sl">Aktif Üye</div><div class="sv" id="oAktif">—</div></div>
-          <div class="sc"><div class="sl">Bekleyen</div><div class="sv" style="color:var(--warn)" id="oBekleyen">—</div></div>
-          <div class="sc"><div class="sl">Bu Ay Kayıt</div><div class="sv" id="oKayit">—</div></div>
-        </div>
-        <div class="card">
-          <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:1rem">Son Başvurular</div>
-          <table>
-            <thead><tr><th>Ad</th><th>İşletme</th><th>Tarih</th><th>Durum</th></tr></thead>
-            <tbody id="recentBody"></tbody>
-          </table>
-        </div>
-      </div>
-
+    <div class="feat-card">
+      <div class="feat-icon">📈</div>
+      <div class="feat-title">Otomatik Grafikler</div>
+      <div class="feat-desc">Günlük, haftalık, aylık ve yıllık satış grafikleriniz veri girdiğiniz anda otomatik oluşur.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🎯</div>
+      <div class="feat-title">Hedef Takibi</div>
+      <div class="feat-desc">Aylık ciro hedefi belirleyin. Kaç gün kaldı, günlük ne kadar kazanmanız gerekiyor — anlık hesaplanır.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">⚖️</div>
+      <div class="feat-title">Geçen Yıl Kıyası</div>
+      <div class="feat-desc">"Geçen yıl bugün ne kadar satmıştım?" sorusunu anında yanıtlayın. Mevsimsel trendleri görün.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🌤️</div>
+      <div class="feat-title">Hava Durumu Korelasyonu</div>
+      <div class="feat-desc">Yağmurlu günlerde cironuz düşüyor mu? Uygulama hava verisini kayıtlarla eşleştirerek bunu ortaya çıkarır.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔔</div>
+      <div class="feat-title">Akıllı Hatırlatıcılar</div>
+      <div class="feat-desc">Kapanış saatinde "Bugünün cirosunu girdiniz mi?" bildirimi. Her Pazartesi haftalık özet raporu.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🏪</div>
+      <div class="feat-title">Çoklu Şube</div>
+      <div class="feat-desc">Birden fazla şubeniz varsa hepsini tek hesapla yönetin. Şubeler arası karşılaştırma yapın.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📥</div>
+      <div class="feat-title">Excel / PDF Çıktısı</div>
+      <div class="feat-desc">Muhasebeciye göndermek için tek tuşla Excel veya PDF rapor alın. Tüm veri sizin.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">Güvenli & Özel</div>
+      <div class="feat-desc">Verileriniz yalnızca size aittir. Firebase altyapısı, şifreli bağlantı, kimse göremez.</div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- DETAY MODALİ -->
-<div class="modal-bg" id="detailModal">
-  <div class="modal">
-    <button class="close" onclick="closeModal()">✕</button>
-    <h2 id="modalTitle">Kullanıcı Detayı</h2>
-    <div id="modalContent"></div>
-    <div style="display:flex;gap:.75rem;margin-top:1.5rem" id="modalActions"></div>
+<!-- ── FİYATLANDIRMA ── -->
+<section class="pricing" id="pricing">
+  <div class="pricing-inner">
+    <div class="pricing-header">
+      <div class="section-tag" style="justify-content:center;display:flex">✦ Fiyatlandırma</div>
+      <h2 class="section-title" style="text-align:center">Sürpriz fatura yok.</h2>
+      <p style="color:var(--muted);text-align:center;max-width:440px;margin:0 auto">İşletmenizin büyüklüğüne göre plan seçin. İlk 14 gün ücretsiz, istediğiniz zaman iptal.</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- BAŞLANGIÇ -->
+      <div class="plan">
+        <div class="plan-name">Başlangıç</div>
+        <div class="plan-price"><sup>₺</sup>299<sub>/ay</sub></div>
+        <div class="plan-desc">Tek şube, küçük işletmeler için ideal.</div>
+        <ul class="plan-features">
+          <li>1 şube</li>
+          <li>Sınırsız ciro kaydı</li>
+          <li>Haftalık / aylık / yıllık raporlar</li>
+          <li>Hedef takibi</li>
+          <li>Push bildirimleri</li>
+          <li class="no">Çoklu şube</li>
+          <li class="no">Hava durumu korelasyonu</li>
+          <li class="no">Geçen yıl karşılaştırması</li>
+        </ul>
+        <button class="plan-btn plan-btn-ghost" onclick="selectPlan('baslangic');document.getElementById('apply').scrollIntoView({behavior:'smooth'})">Başvur</button>
+      </div>
+      <!-- PRO -->
+      <div class="plan popular">
+        <div class="popular-badge">⭐ En Popüler</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price"><sup>₺</sup>599<sub>/ay</sub></div>
+        <div class="plan-desc">Büyüyen işletmeler ve çoklu şube sahipleri için.</div>
+        <ul class="plan-features">
+          <li>3 şubeye kadar</li>
+          <li>Sınırsız ciro kaydı</li>
+          <li>Tüm raporlar + karşılaştırma</li>
+          <li>Hedef takibi</li>
+          <li>Push bildirimleri</li>
+          <li>Hava durumu korelasyonu</li>
+          <li>Geçen yıl karşılaştırması</li>
+          <li>Excel / PDF çıktısı</li>
+        </ul>
+        <button class="plan-btn plan-btn-primary" onclick="selectPlan('pro');document.getElementById('apply').scrollIntoView({behavior:'smooth'})">Hemen Başvur</button>
+      </div>
+      <!-- KURUMSAL -->
+      <div class="plan">
+        <div class="plan-name">Kurumsal</div>
+        <div class="plan-price"><sup>₺</sup>999<sub>/ay</sub></div>
+        <div class="plan-desc">Zincir mağazalar ve franchise işletmeler için.</div>
+        <ul class="plan-features">
+          <li>Sınırsız şube</li>
+          <li>Sınırsız ciro kaydı</li>
+          <li>Tüm Pro özellikleri</li>
+          <li>Personel / kısıtlı kullanıcı modu</li>
+          <li>Öncelikli destek</li>
+          <li>Özel entegrasyonlar</li>
+          <li>API erişimi</li>
+          <li>Özel raporlama</li>
+        </ul>
+        <button class="plan-btn plan-btn-ghost" onclick="selectPlan('kurumsal');document.getElementById('apply').scrollIntoView({behavior:'smooth'})">İletişime Geç</button>
+      </div>
+    </div>
   </div>
-</div>
+</section>
+
+<!-- ── SSS ── -->
+<section class="faq" id="faq">
+  <div class="section-tag">✦ Sık Sorulan Sorular</div>
+  <h2 class="section-title" style="margin-bottom:2.5rem">Aklınızdaki sorular</h2>
+  <div id="faqList"></div>
+</section>
+
+<!-- ── BAŞVURU FORMU ── -->
+<section class="apply-section" id="apply">
+  <div class="apply-inner">
+    <div class="apply-header">
+      <div class="section-tag" style="justify-content:center;display:flex">✦ Başvuru</div>
+      <h2 class="section-title" style="text-align:center">Hemen başlayın</h2>
+      <p style="color:var(--muted);text-align:center">14 gün ücretsiz deneyin. Onay sonrası hesabınız aktive edilir.</p>
+    </div>
+    <div class="apply-card" id="applyCard">
+      <!-- Plan seç -->
+      <div style="margin-bottom:1.5rem">
+        <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Plan Seçin</div>
+        <div class="plan-select-grid">
+          <div class="plan-opt" id="opt-baslangic" onclick="selectPlan('baslangic')">
+            <div class="plan-opt-name">Başlangıç</div>
+            <div class="plan-opt-price">₺299</div>
+            <div class="plan-opt-period">/ay</div>
+          </div>
+          <div class="plan-opt selected" id="opt-pro" onclick="selectPlan('pro')">
+            <div class="plan-opt-name">Pro ⭐</div>
+            <div class="plan-opt-price">₺599</div>
+            <div class="plan-opt-period">/ay</div>
+          </div>
+          <div class="plan-opt" id="opt-kurumsal" onclick="selectPlan('kurumsal')">
+            <div class="plan-opt-name">Kurumsal</div>
+            <div class="plan-opt-price">₺999</div>
+            <div class="plan-opt-period">/ay</div>
+          </div>
+          <div class="plan-opt" id="opt-14gun" onclick="selectPlan('14gun')">
+            <div class="plan-opt-name">14 Gün Ücretsiz</div>
+            <div class="plan-opt-price" style="font-size:1rem;color:var(--success)">Dene</div>
+            <div class="plan-opt-period">Kredi kartı yok</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Giriş yöntemi tabları -->
+      <div class="apply-tabs">
+        <button class="apply-tab active" onclick="switchApplyTab('email',this)">E-Posta ile Kayıt</button>
+        <button class="apply-tab" onclick="switchApplyTab('google',this)">Google ile Kayıt</button>
+      </div>
+
+      <!-- E-POSTA FORMU -->
+      <div class="tab-content active" id="tab-email">
+        <div class="form-row">
+          <div class="fg"><label>Ad Soyad</label><input type="text" id="rName" placeholder="Ahmet Yılmaz"></div>
+          <div class="fg"><label>İşletme Adı</label><input type="text" id="rBusiness" placeholder="Ahmet'in Dükkanı"></div>
+        </div>
+        <div class="fg"><label>Telefon</label><input type="tel" id="rPhone" placeholder="0532 000 00 00"></div>
+        <div class="fg"><label>E-Posta</label><input type="email" id="rEmail" placeholder="ahmet@mail.com"></div>
+        <div class="fg"><label>Şifre</label><input type="password" id="rPass" placeholder="En az 6 karakter"></div>
+        <div class="fg">
+          <label>Şehir / İlçe</label>
+          <input type="text" id="rCity" placeholder="İstanbul, Kadıköy">
+        </div>
+        <div class="fg">
+          <label>İşletme Türü</label>
+          <select id="rType">
+            <option value="">Seçin...</option>
+            <option>Restoran / Kafe</option>
+            <option>Market / Bakkal</option>
+            <option>Butik / Giyim</option>
+            <option>Oto Servis / Yedek Parça</option>
+            <option>Kuaför / Güzellik</option>
+            <option>Eczane</option>
+            <option>Diğer</option>
+          </select>
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="submitApplication()">🚀 Başvuruyu Gönder</button>
+        <p class="form-note">Başvurunuz incelendikten sonra e-posta ile bilgilendirileceksiniz. Genellikle <strong style="color:var(--text)">24 saat</strong> içinde sonuçlanır.</p>
+      </div>
+
+      <!-- GOOGLE FORMU -->
+      <div class="tab-content" id="tab-google">
+        <div class="form-row">
+          <div class="fg"><label>Ad Soyad</label><input type="text" id="gName" placeholder="Ahmet Yılmaz"></div>
+          <div class="fg"><label>İşletme Adı</label><input type="text" id="gBusiness" placeholder="Ahmet'in Dükkanı"></div>
+        </div>
+        <div class="fg"><label>Telefon</label><input type="tel" id="gPhone" placeholder="0532 000 00 00"></div>
+        <div class="fg">
+          <label>İşletme Türü</label>
+          <select id="gType">
+            <option value="">Seçin...</option>
+            <option>Restoran / Kafe</option>
+            <option>Market / Bakkal</option>
+            <option>Butik / Giyim</option>
+            <option>Oto Servis / Yedek Parça</option>
+            <option>Kuaför / Güzellik</option>
+            <option>Eczane</option>
+            <option>Diğer</option>
+          </select>
+        </div>
+        <button class="google-btn" id="googleBtn" onclick="submitGoogleApplication()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.31z"/></svg>
+          Google Hesabıyla Devam Et
+        </button>
+        <p class="form-note">Google hesabınızla bilgilerinizi doldurun, admin onayı sonrası uygulamaya erişim sağlanır.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="f-logo">Ciro<span>Log</span></div>
+  <p>Küçük işletmelerin büyük verisi.</p>
+  <p style="margin-top:.5rem;font-size:.8rem">© 2025 CiroLog · Tüm hakları saklıdır</p>
+</footer>
 
 <script type="module">
 import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-         signOut, onAuthStateChanged }
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider,
+         signInWithPopup, signOut }
                                 from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc, collection,
-         query, where, orderBy, getDocs, serverTimestamp, limit, Timestamp }
+import { getFirestore, doc, setDoc, addDoc, collection, serverTimestamp }
                                 from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const cfg = {
@@ -296,452 +636,185 @@ const cfg = {
   messagingSenderId:'584080774237',
   appId:'1:584080774237:web:17c6f845d44ea6fa9fe9b4'
 };
-const app  = initializeApp(cfg, 'cirolog-admin');
-const auth = getAuth(app);
-const db   = getFirestore(app);
+const app      = initializeApp(cfg, 'cirolog-landing');
+const auth     = getAuth(app);
+const db       = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
-// koleksiyon isimleri
-const C = {
-  users:    'cirolog_users',
-  pending:  'cirolog_pending',
-  records:  (uid) => `cirolog_records/${uid}/entries`,
-  settings: 'cirolog_settings'
+let selectedPlan = 'pro';
+
+// ── PLAN SEÇİMİ ──
+window.selectPlan = function(plan) {
+  selectedPlan = plan;
+  ['baslangic','pro','kurumsal','14gun'].forEach(p => {
+    document.getElementById('opt-'+p)?.classList.remove('selected');
+  });
+  document.getElementById('opt-'+plan)?.classList.add('selected');
 };
 
-// ── STATE ──
-let allPending = [];
-let allUsers   = [];
-window.currentUserTab = 'all';
-let currentAdminProfile = null;
+// ── TAB ──
+window.switchApplyTab = function(tab, el) {
+  document.querySelectorAll('.apply-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+};
 
-// ── AUTH STATE ──
-onAuthStateChanged(auth, async (user) => {
-  if (!user) { show('authWrap'); return; }
-  const snap = await getDoc(doc(db, C.users, user.uid));
-  if (!snap.exists() || snap.data().role !== 'admin') {
-    toast('Bu hesabın yönetici yetkisi yok', 'e');
-    await signOut(auth); show('authWrap'); return;
+// ── E-POSTA BAŞVURU ──
+window.submitApplication = async function() {
+  const name     = document.getElementById('rName').value.trim();
+  const business = document.getElementById('rBusiness').value.trim();
+  const phone    = document.getElementById('rPhone').value.trim();
+  const email    = document.getElementById('rEmail').value.trim();
+  const pass     = document.getElementById('rPass').value;
+  const city     = document.getElementById('rCity').value.trim();
+  const type     = document.getElementById('rType').value;
+
+  if (!name||!business||!email||!pass) { toast('Ad, işletme adı, e-posta ve şifre zorunlu','w'); return; }
+  if (pass.length < 6) { toast('Şifre en az 6 karakter olmalı','w'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.3);border-top-color:#08090d;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:.5rem"></span> Gönderiliyor...';
+
+  try {
+    // Firebase Auth'da kullanıcı oluştur
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    const uid  = cred.user.uid;
+
+    // cirolog_users — onaysız
+    await setDoc(doc(db, 'cirolog_users', uid), {
+      name, businessName: business, phone, email,
+      city: city||'', businessType: type||'',
+      plan: selectedPlan, role: 'user',
+      approved: false, rejected: false,
+      createdAt: serverTimestamp()
+    });
+
+    // cirolog_pending — admin paneline düşsün
+    await addDoc(collection(db, 'cirolog_pending'), {
+      uid, name, businessName: business, phone, email,
+      city: city||'', businessType: type||'',
+      plan: selectedPlan, loginMethod: 'email',
+      status: 'pending', createdAt: serverTimestamp()
+    });
+
+    await signOut(auth); // onay gelene kadar oturum kapatılsın
+    showSuccess();
+    toast('Başvurunuz alındı! ✓','s');
+  } catch(e) {
+    toast(errTR(e.code),'e');
+    btn.disabled = false;
+    btn.textContent = '🚀 Başvuruyu Gönder';
   }
-  currentAdminProfile = snap.data();
-  document.getElementById('adminName').textContent = currentAdminProfile.name || 'Admin';
-  show('adminWrap');
-  await Promise.all([loadPending(), loadUsers()]);
-  loadStats();
-});
+};
 
-function show(id) {
-  ['authWrap','setupWrap','adminWrap'].forEach(x => {
-    const el = document.getElementById(x);
-    if (el) el.style.display = 'none';
-  });
-  const target = document.getElementById(id);
-  if (target) target.style.display = id === 'adminWrap' ? 'block' : 'flex';
+// ── GOOGLE BAŞVURU ──
+window.submitGoogleApplication = async function() {
+  const name     = document.getElementById('gName').value.trim();
+  const business = document.getElementById('gBusiness').value.trim();
+  const phone    = document.getElementById('gPhone').value.trim();
+  const type     = document.getElementById('gType').value;
+
+  if (!name||!business) { toast('Ad ve işletme adı zorunlu','w'); return; }
+
+  const btn = document.getElementById('googleBtn');
+  btn.disabled = true; btn.textContent = '⏳ Google ile bağlanıyor...';
+
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user   = result.user;
+
+    await setDoc(doc(db, 'cirolog_users', user.uid), {
+      name: name || user.displayName,
+      businessName: business, phone,
+      email: user.email, businessType: type||'',
+      plan: selectedPlan, role: 'user',
+      approved: false, rejected: false,
+      loginMethod: 'google',
+      createdAt: serverTimestamp()
+    }, { merge: true });
+
+    await addDoc(collection(db, 'cirolog_pending'), {
+      uid: user.uid,
+      name: name || user.displayName,
+      businessName: business, phone,
+      email: user.email, businessType: type||'',
+      plan: selectedPlan, loginMethod: 'google',
+      status: 'pending', createdAt: serverTimestamp()
+    });
+
+    await signOut(auth);
+    showSuccess();
+    toast('Başvurunuz alındı! ✓','s');
+  } catch(e) {
+    toast(errTR(e.code),'e');
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18">...</svg> Google Hesabıyla Devam Et';
+  }
+};
+
+function showSuccess() {
+  document.getElementById('applyCard').innerHTML = `
+    <div class="success-state">
+      <div class="s-icon">🎉</div>
+      <h2>Başvurunuz Alındı!</h2>
+      <p>Hesabınız yönetici onayı bekliyor.<br>
+      Onaylandığında <strong style="color:var(--text)">e-posta ile bilgilendirileceksiniz.</strong><br>
+      Genellikle <strong style="color:var(--accent)">24 saat</strong> içinde sonuçlanır.</p>
+      <div style="margin-top:1.5rem;padding:1rem;background:rgba(212,247,78,.07);border:1px solid rgba(212,247,78,.2);border-radius:12px;font-size:.875rem;color:var(--muted)">
+        Onay geldiğinde <a href="app.html" style="color:var(--accent);text-decoration:none;font-weight:600">app.html</a> adresinden giriş yapabilirsiniz.
+      </div>
+    </div>`;
 }
 
-// ── GİRİŞ ──
-window.doLogin = async function() {
-  const e = document.getElementById('aEmail').value.trim();
-  const p = document.getElementById('aPass').value;
-  if (!e||!p) { toast('E-posta ve şifre gerekli','w'); return; }
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Giriş yapılıyor...';
-  try {
-    await signInWithEmailAndPassword(auth, e, p);
-  } catch(err) {
-    toast(errTR(err.code), 'e');
-    btn.disabled = false; btn.textContent = 'Giriş Yap';
-  }
-};
+// ── SSS ──
+const faqs = [
+  { q:'Onay süreci ne kadar sürer?', a:'Başvurunuz genellikle 24 saat içinde incelenir. Onay verildiğinde kayıt ettiğiniz e-posta adresine bildirim gönderilir.' },
+  { q:'İptal etmek istesem ne olur?', a:'İstediğiniz zaman iptal edebilirsiniz. Mevcut dönemin sona ermesine kadar erişiminiz devam eder, ücret iadesi yapılmaz.' },
+  { q:'14 günlük deneme sonunda ne olur?', a:'Deneme süresi dolduğunda hesabınız otomatik olarak dondurulur. Devam etmek için bir plan seçmeniz yeterli.' },
+  { q:'Verilerim güvende mi?', a:'Tüm veriler Firebase altyapısında şifreli olarak saklanır. Verilerinize yalnızca siz erişebilirsiniz.' },
+  { q:'Birden fazla şube nasıl çalışır?', a:'Pro ve Kurumsal planlarda birden fazla şubeyi aynı hesapla yönetebilirsiniz. Her şube için ayrı ciro takibi yapılır.' },
+  { q:'Ödeme nasıl yapılıyor?', a:'Şu an manuel ödeme sistemi kullanılmaktadır. Onay sonrasında size ödeme bilgileri iletilecektir.' },
+];
+const faqList = document.getElementById('faqList');
+faqList.innerHTML = faqs.map((f,i) => `
+  <div class="faq-item" id="faq${i}">
+    <button class="faq-q" onclick="toggleFaq(${i})">
+      ${f.q} <span class="arrow">▾</span>
+    </button>
+    <div class="faq-a">${f.a}</div>
+  </div>`).join('');
 
-window.doLogout = async function() {
-  await signOut(auth);
-  allPending = []; allUsers = [];
-};
-
-// ── KURULUM ──
-window.showSetup = function() {
-  document.getElementById('authWrap').style.display = 'none';
-  document.getElementById('setupWrap').style.display = 'flex';
-};
-
-window.runSetup = async function() {
-  const email = document.getElementById('setupEmail').value.trim();
-  const pass  = document.getElementById('setupPass').value;
-  const name  = document.getElementById('setupName').value.trim();
-  if (!email||!pass||!name) { toast('Tüm alanları doldurun','w'); return; }
-  if (pass.length < 6) { toast('Şifre en az 6 karakter','w'); return; }
-
-  const btn = document.getElementById('setupBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Kuruluyor...';
-
-  const setStep = (id, status, cls) => {
-    const el = document.getElementById(id);
-    el.textContent = status; el.className = 'step-status ' + cls;
-  };
-
-  try {
-    // ADIM 1 — Admin kullanıcı oluştur
-    setStep('s1','Çalışıyor...','ss-run');
-    let uid;
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      uid = cred.user.uid;
-    } catch(e) {
-      if (e.code === 'auth/email-already-in-use') {
-        // Zaten varsa giriş yap
-        const cred = await signInWithEmailAndPassword(auth, email, pass);
-        uid = cred.user.uid;
-      } else throw e;
-    }
-    setStep('s1','✓ Tamam','ss-ok');
-
-    // ADIM 2 — cirolog_users
-    setStep('s2','Çalışıyor...','ss-run');
-    await setDoc(doc(db, C.users, uid), {
-      name, email, role: 'admin', approved: true,
-      businessName: 'CiroLog Admin', phone: '',
-      createdAt: serverTimestamp()
-    }, { merge: true });
-    setStep('s2','✓ Tamam','ss-ok');
-
-    // ADIM 3 — cirolog_pending (örnek)
-    setStep('s3','Çalışıyor...','ss-run');
-    const exSnap = await getDocs(query(collection(db, C.pending), limit(1)));
-    if (exSnap.empty) {
-      await addDoc(collection(db, C.pending), {
-        name: 'Örnek Başvuru', email: 'ornek@test.com',
-        businessName: 'Örnek İşletme', phone: '0500 000 00 00',
-        status: 'pending', uid: 'example_uid',
-        createdAt: serverTimestamp()
-      });
-    }
-    setStep('s3','✓ Tamam','ss-ok');
-
-    // ADIM 4 — cirolog_records (örnek)
-    setStep('s4','Çalışıyor...','ss-run');
-    const today = new Date().toISOString().split('T')[0];
-    await setDoc(doc(db, C.records(uid), today), {
-      date: today, amount: 0, note: 'Kurulum günü',
-      createdAt: serverTimestamp()
-    }, { merge: true });
-    setStep('s4','✓ Tamam','ss-ok');
-
-    // ADIM 5 — cirolog_settings
-    setStep('s5','Çalışıyor...','ss-run');
-    await setDoc(doc(db, C.settings, 'platform'), {
-      appName: 'CiroLog', version: '1.0',
-      setupDate: serverTimestamp(), adminEmail: email
-    }, { merge: true });
-    setStep('s5','✓ Tamam','ss-ok');
-
-    btn.style.background = 'var(--success)';
-    btn.textContent = '✓ Kurulum Tamamlandı — Admin Paneli Açılıyor...';
-    toast('Tüm koleksiyonlar oluşturuldu!','s');
-    setTimeout(() => show('adminWrap'), 1500);
-
-  } catch(err) {
-    toast('Hata: ' + err.message, 'e');
-    btn.disabled = false; btn.textContent = '🚀 Kurulumu Başlat';
-    ['s1','s2','s3','s4','s5'].forEach(id => {
-      if (document.getElementById(id).textContent === 'Çalışıyor...') setStep(id,'Hata','ss-err');
-    });
-  }
+window.toggleFaq = function(i) {
+  const el = document.getElementById('faq'+i);
+  el.classList.toggle('open');
 };
 
 // ── NAV ──
-window.go = function(page, el) {
-  document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
-  if(el) el.classList.add('active');
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('p-'+page).classList.add('active');
-  if(page==='kayitlar') initRecordFilters();
-  if(page==='ozet') loadStats();
+window.toggleMenu = function() {
+  document.getElementById('navLinks').classList.toggle('open');
 };
 
-// ── BEKLEYEN BAŞVURULAR ──
-async function loadPending() {
-  const q = query(collection(db, C.pending), where('status','==','pending'), orderBy('createdAt','desc'));
-  const snap = await getDocs(q);
-  allPending = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
-  renderPending(allPending);
-  const cnt = allPending.length;
-  document.getElementById('pendingBadge').textContent = cnt > 0 ? cnt : '';
-  document.getElementById('oBekleyen').textContent = cnt;
-}
-
-function renderPending(list) {
-  const tbody = document.getElementById('pendingBody');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Bekleyen başvuru yok 🎉</td></tr>'; return; }
-  tbody.innerHTML = list.map(p => {
-    const dt = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    return `<tr>
-      <td><strong>${p.name}</strong></td>
-      <td>${p.businessName}</td>
-      <td><a href="mailto:${p.email}" style="color:var(--accent2)">${p.email}</a></td>
-      <td>${p.phone||'—'}</td>
-      <td>${dt}</td>
-      <td style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="ab ab-ok"  onclick="openDetail('${p.docId}','pending')">👁 Detay</button>
-        <button class="ab ab-ok"  onclick="approveUser('${p.docId}','${p.uid}',this)">✓ Onayla</button>
-        <button class="ab ab-no"  onclick="rejectUser('${p.docId}','${p.uid}',this)">✕ Reddet</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-window.filterPending = function() {
-  const q = document.getElementById('pendingSearch').value.toLowerCase();
-  renderPending(q ? allPending.filter(p =>
-    (p.name+p.businessName+p.email).toLowerCase().includes(q)
-  ) : allPending);
-};
-
-window.approveUser = async function(pendingId, uid, btn) {
-  if (!uid || uid === 'example_uid') { toast('Bu örnek kayıt onaylanamaz','w'); return; }
-  try {
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
-    await updateDoc(doc(db, C.users, uid), { approved: true });
-    await updateDoc(doc(db, C.pending, pendingId), { status: 'approved', approvedAt: serverTimestamp() });
-    toast('Kullanıcı onaylandı ✓','s');
-    await loadPending(); await loadUsers(); loadStats();
-    closeModal();
-  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; btn.textContent='✓ Onayla'; }
-};
-
-window.rejectUser = async function(pendingId, uid, btn) {
-  if (!confirm('Bu başvuruyu reddetmek istediğinizden emin misiniz?')) return;
-  try {
-    if(btn){ btn.disabled=true; btn.innerHTML='<span class="spinner"></span>'; }
-    await updateDoc(doc(db, C.pending, pendingId), { status: 'rejected', rejectedAt: serverTimestamp() });
-    if (uid && uid !== 'example_uid') {
-      await updateDoc(doc(db, C.users, uid), { approved: false, rejected: true });
-    }
-    toast('Başvuru reddedildi','w');
-    await loadPending(); await loadUsers(); loadStats();
-    closeModal();
-  } catch(e) { toast('Hata: '+e.message,'e'); }
-};
-
-// ── KULLANICILAR ──
-async function loadUsers() {
-  const snap = await getDocs(collection(db, C.users));
-  allUsers = snap.docs.map(d => ({ uid: d.id, ...d.data() })).filter(u => u.role !== 'admin');
-  renderUsers(allUsers);
-  document.getElementById('oToplam').textContent = allUsers.length;
-  document.getElementById('oAktif').textContent  = allUsers.filter(u => u.approved && !u.rejected).length;
-}
-
-function renderUsers(list) {
-  const tbody = document.getElementById('usersBody');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">Kullanıcı bulunamadı</td></tr>'; return; }
-  tbody.innerHTML = list.map(u => {
-    const dt  = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    const badge = u.rejected
-      ? '<span class="badge b-danger">✕ Reddedildi</span>'
-      : u.approved
-        ? '<span class="badge b-success">✓ Aktif</span>'
-        : '<span class="badge b-warn">⏳ Bekliyor</span>';
-    const actions = u.approved && !u.rejected
-      ? `<button class="ab ab-no" onclick="suspendUser('${u.uid}',this)" style="font-size:.75rem">⏸ Askıya Al</button>`
-      : `<button class="ab ab-ok" onclick="reactivateUser('${u.uid}',this)" style="font-size:.75rem">▶ Aktif Et</button>`;
-    return `<tr>
-      <td><strong>${u.name||'—'}</strong></td>
-      <td>${u.businessName||'—'}</td>
-      <td><a href="mailto:${u.email}" style="color:var(--accent2)">${u.email||'—'}</a></td>
-      <td>${u.phone||'—'}</td>
-      <td>${dt}</td>
-      <td>${badge}</td>
-      <td style="display:flex;gap:.4rem;flex-wrap:wrap">
-        <button class="ab ab-ok" onclick="openDetail('${u.uid}','user')" style="font-size:.75rem">👁 Detay</button>
-        ${actions}
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-window.filterUsers = function(tab, el) {
-  window.currentUserTab = tab;
-  if(el) { document.querySelectorAll('.tab-bar .tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-  const q = document.getElementById('userSearch').value.toLowerCase();
-  let filtered = allUsers;
-  if (tab==='approved')  filtered = filtered.filter(u => u.approved && !u.rejected);
-  if (tab==='pending')   filtered = filtered.filter(u => !u.approved && !u.rejected);
-  if (tab==='rejected')  filtered = filtered.filter(u => u.rejected);
-  if (q) filtered = filtered.filter(u => (u.name+u.businessName+u.email).toLowerCase().includes(q));
-  renderUsers(filtered);
-};
-
-window.suspendUser = async function(uid, btn) {
-  if (!confirm('Kullanıcıyı askıya almak istediğinizden emin misiniz?')) return;
-  try {
-    btn.disabled=true;
-    await updateDoc(doc(db, C.users, uid), { approved: false, suspended: true });
-    toast('Kullanıcı askıya alındı','w');
-    await loadUsers();
-  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; }
-};
-
-window.reactivateUser = async function(uid, btn) {
-  try {
-    btn.disabled=true;
-    await updateDoc(doc(db, C.users, uid), { approved: true, rejected: false, suspended: false });
-    toast('Kullanıcı aktif edildi ✓','s');
-    await loadUsers();
-  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; }
-};
-
-// ── CİRO KAYITLARI ──
-async function initRecordFilters() {
-  const sel = document.getElementById('recordUserFilter');
-  sel.innerHTML = '<option value="">— Tüm Kullanıcılar —</option>';
-  allUsers.filter(u => u.approved).forEach(u => {
-    const opt = document.createElement('option');
-    opt.value = u.uid; opt.textContent = `${u.name} — ${u.businessName}`;
-    sel.appendChild(opt);
-  });
-}
-
-window.loadAllRecords = async function() {
-  const uid  = document.getElementById('recordUserFilter').value;
-  const from = document.getElementById('recordFrom').value;
-  const to   = document.getElementById('recordTo').value;
-  const tbody = document.getElementById('recordsBody');
-  tbody.innerHTML = '<tr><td colspan="5" class="empty"><span class="spinner"></span> Yükleniyor...</td></tr>';
-
-  try {
-    let results = [];
-    const targetUsers = uid ? [allUsers.find(u=>u.uid===uid)] : allUsers.filter(u=>u.approved);
-
-    for (const u of targetUsers) {
-      if (!u) continue;
-      let q = query(collection(db, C.records(u.uid)), orderBy('date','desc'), limit(200));
-      const snap = await getDocs(q);
-      snap.docs.forEach(d => {
-        const r = d.data();
-        if (from && r.date < from) return;
-        if (to   && r.date > to)   return;
-        results.push({ ...r, userName: u.name, businessName: u.businessName });
-      });
-    }
-    results.sort((a,b) => b.date.localeCompare(a.date));
-
-    if (!results.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty">Kayıt bulunamadı</td></tr>';
-      document.getElementById('recordsTotal').textContent = '';
-      return;
-    }
-
-    const total = results.reduce((s,r) => s + Number(r.amount||0), 0);
-    tbody.innerHTML = results.map(r => `<tr>
-      <td><strong>${r.userName}</strong></td>
-      <td>${r.businessName}</td>
-      <td>${new Date(r.date+'T00:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',weekday:'short'})}</td>
-      <td style="color:var(--accent);font-weight:700">₺${Number(r.amount).toLocaleString('tr-TR')}</td>
-      <td style="color:var(--muted)">${r.note||'—'}</td>
-    </tr>`).join('');
-    document.getElementById('recordsTotal').textContent =
-      `${results.length} kayıt — Toplam: ₺${total.toLocaleString('tr-TR')}`;
-  } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty" style="color:var(--danger)">Hata: ${e.message}</td></tr>`;
-  }
-};
-
-// ── ÖZET ──
-async function loadStats() {
-  const snap = await getDocs(query(collection(db, C.pending), orderBy('createdAt','desc'), limit(5)));
-  const recent = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
-  const tbody = document.getElementById('recentBody');
-  if (!recent.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Henüz başvuru yok</td></tr>'; return; }
-  tbody.innerHTML = recent.map(r => {
-    const dt = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    const badge = r.status==='approved' ? '<span class="badge b-success">✓ Onaylı</span>'
-                : r.status==='rejected' ? '<span class="badge b-danger">✕ Reddedildi</span>'
-                : '<span class="badge b-warn">⏳ Bekliyor</span>';
-    return `<tr><td>${r.name}</td><td>${r.businessName}</td><td>${dt}</td><td>${badge}</td></tr>`;
-  }).join('');
-
-  // bu ay kayıt sayısı
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  let monthCount = 0;
-  for (const u of allUsers.filter(u=>u.approved)) {
-    const q = query(collection(db, C.records(u.uid)), where('date','>=',monthStart));
-    const s = await getDocs(q);
-    monthCount += s.size;
-  }
-  document.getElementById('oKayit').textContent = monthCount;
-}
-
-// ── DETAY MODALİ ──
-window.openDetail = async function(id, type) {
-  const modal = document.getElementById('detailModal');
-  const title = document.getElementById('modalTitle');
-  const content = document.getElementById('modalContent');
-  const actions = document.getElementById('modalActions');
-  content.innerHTML = '<div style="color:var(--muted);padding:1rem;text-align:center"><span class="spinner"></span> Yükleniyor...</div>';
-  actions.innerHTML = '';
-  modal.classList.add('show');
-
-  if (type === 'user') {
-    const snap = await getDoc(doc(db, C.users, id));
-    const u = snap.data();
-    title.textContent = u.name || 'Kullanıcı Detayı';
-    const dt = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    content.innerHTML = `
-      <div class="detail-row"><span>Ad Soyad</span><span>${u.name||'—'}</span></div>
-      <div class="detail-row"><span>İşletme</span><span>${u.businessName||'—'}</span></div>
-      <div class="detail-row"><span>E-Posta</span><span>${u.email||'—'}</span></div>
-      <div class="detail-row"><span>Telefon</span><span>${u.phone||'—'}</span></div>
-      <div class="detail-row"><span>Kayıt Tarihi</span><span>${dt}</span></div>
-      <div class="detail-row"><span>Durum</span><span>${u.approved?'✓ Aktif':'⏳ Bekliyor'}</span></div>
-    `;
-  } else if (type === 'pending') {
-    const p = allPending.find(x => x.docId === id);
-    if (!p) { content.innerHTML = '<p>Bulunamadı</p>'; return; }
-    title.textContent = p.name;
-    const dt = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    content.innerHTML = `
-      <div class="detail-row"><span>Ad Soyad</span><span>${p.name}</span></div>
-      <div class="detail-row"><span>İşletme</span><span>${p.businessName}</span></div>
-      <div class="detail-row"><span>E-Posta</span><span>${p.email}</span></div>
-      <div class="detail-row"><span>Telefon</span><span>${p.phone||'—'}</span></div>
-      <div class="detail-row"><span>Başvuru Tarihi</span><span>${dt}</span></div>
-    `;
-    if (p.uid && p.uid !== 'example_uid') {
-      actions.innerHTML = `
-        <button class="ab ab-ok" style="flex:1;padding:.65rem" onclick="approveUser('${p.docId}','${p.uid}',this)">✓ Onayla</button>
-        <button class="ab ab-no" style="flex:1;padding:.65rem" onclick="rejectUser('${p.docId}','${p.uid}',this)">✕ Reddet</button>
-      `;
-    }
-  }
-};
-
-window.closeModal = function() {
-  document.getElementById('detailModal').classList.remove('show');
-};
-document.getElementById('detailModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('detailModal')) closeModal();
-});
-
-// ── YARDIMCILAR ──
+// ── TOAST ──
 window.toast = function(msg, type='s') {
   const c = document.getElementById('toastC');
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  const icon = type==='s'?'✓':type==='w'?'⚠️':'✕';
-  t.innerHTML = `${icon} ${msg}`;
+  t.innerHTML = (type==='s'?'✓':type==='w'?'⚠️':'✕') + ' ' + msg;
   c.appendChild(t);
   setTimeout(() => t.remove(), 4000);
 };
 
 function errTR(code) {
   const m = {
-    'auth/invalid-credential':'E-posta veya şifre hatalı',
-    'auth/user-not-found':'Kullanıcı bulunamadı',
-    'auth/wrong-password':'Hatalı şifre',
-    'auth/too-many-requests':'Çok fazla deneme, bekleyin',
+    'auth/email-already-in-use':'Bu e-posta zaten kayıtlı. Giriş yapmayı deneyin.',
+    'auth/invalid-email':'Geçersiz e-posta adresi',
+    'auth/weak-password':'Şifre çok zayıf (en az 6 karakter)',
+    'auth/popup-closed-by-user':'Google girişi iptal edildi',
+    'auth/too-many-requests':'Çok fazla deneme, lütfen bekleyin',
   };
-  return m[code] || 'Hata: '+code;
+  return m[code] || 'Hata: ' + code;
 }
 </script>
 </body>
