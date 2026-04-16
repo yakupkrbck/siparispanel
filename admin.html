@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CiroLog — Kurulum & Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c27; --border:#2a2a3a;
+    --accent:#c8f55a; --accent2:#7b6ff0; --text:#f0f0f5; --muted:#6b6b85;
+    --danger:#ff5e5e; --success:#4edb8f; --warn:#f5c842;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+
+  /* ── AUTH ── */
+  #authWrap {
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%,#2a2065 0%,transparent 70%), var(--bg);
+  }
+  .auth-card { width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:3rem 2.5rem; animation:fadeUp .5s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .logo { font-family:'DM Serif Display',serif; font-size:2rem; letter-spacing:-1px; margin-bottom:.25rem; }
+  .logo span { color:var(--accent); }
+  .sub { color:var(--muted); font-size:.875rem; margin-bottom:2rem; }
+  .fg { margin-bottom:1.1rem; }
+  .fg label { display:block; font-size:.75rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.4rem; }
+  .fg input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:.8rem 1rem; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.95rem; outline:none; transition:border-color .2s; }
+  .fg input:focus { border-color:var(--accent2); }
+  .btn { width:100%; padding:.85rem; border-radius:10px; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; transition:all .2s; }
+  .btn-p { background:var(--accent); color:#0a0a0f; }
+  .btn-p:hover { background:#d9ff6e; }
+  .btn-p:disabled { opacity:.5; cursor:not-allowed; }
+
+  /* ── ADMIN PANEL ── */
+  #adminWrap { display:none; min-height:100vh; }
+  .layout { display:flex; min-height:100vh; }
+  .sidebar { width:240px; background:var(--surface); border-right:1px solid var(--border); padding:1.5rem 1rem; display:flex; flex-direction:column; flex-shrink:0; }
+  .s-logo { font-family:'DM Serif Display',serif; font-size:1.4rem; padding:.5rem .75rem 1.5rem; letter-spacing:-1px; }
+  .s-logo span { color:var(--accent); }
+  .nav { display:flex; align-items:center; gap:.75rem; padding:.65rem .75rem; border-radius:10px; cursor:pointer; font-size:.875rem; color:var(--muted); transition:all .15s; margin-bottom:.2rem; border:none; background:transparent; width:100%; text-align:left; }
+  .nav:hover { background:var(--surface2); color:var(--text); }
+  .nav.active { background:rgba(200,245,90,.1); color:var(--accent); }
+  .spacer { flex:1; }
+  .user-pill { display:flex; align-items:center; gap:.75rem; padding:.75rem; border-radius:10px; background:var(--surface2); }
+  .avatar { width:32px; height:32px; border-radius:50%; background:var(--danger); display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0; }
+  .u-info p { font-size:.85rem; font-weight:600; }
+  .u-info span { font-size:.75rem; color:var(--muted); }
+  .logout-btn { display:flex; align-items:center; gap:.75rem; padding:.65rem .75rem; border-radius:10px; cursor:pointer; font-size:.875rem; color:var(--muted); transition:all .15s; margin-top:.5rem; border:none; background:transparent; width:100%; text-align:left; }
+  .logout-btn:hover { color:var(--danger); }
+
+  .main { flex:1; overflow-y:auto; padding:2rem; }
+  .page { display:none; }
+  .page.active { display:block; }
+  .ph { margin-bottom:2rem; }
+  .ph h1 { font-family:'DM Serif Display',serif; font-size:1.8rem; letter-spacing:-.5px; }
+  .ph p { color:var(--muted); font-size:.875rem; margin-top:.25rem; }
+
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.5rem; }
+  .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+  .sc { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.2rem; }
+  .sl { font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.4rem; }
+  .sv { font-family:'DM Serif Display',serif; font-size:1.8rem; }
+
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; padding:.75rem 1rem; border-bottom:1px solid var(--border); }
+  td { padding:.85rem 1rem; border-bottom:1px solid var(--border); font-size:.875rem; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(255,255,255,.02); }
+
+  .badge { display:inline-flex; align-items:center; gap:.3rem; padding:.2rem .65rem; border-radius:99px; font-size:.72rem; font-weight:700; }
+  .b-warn    { background:rgba(245,200,66,.15); color:var(--warn); }
+  .b-success { background:rgba(78,219,143,.15); color:var(--success); }
+  .b-muted   { background:var(--surface2); color:var(--muted); }
+  .b-danger  { background:rgba(255,94,94,.12); color:var(--danger); }
+
+  .ab { border-radius:8px; padding:.35rem .9rem; font-size:.8rem; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; border:1px solid; transition:all .15s; }
+  .ab-ok  { background:rgba(78,219,143,.12); color:var(--success); border-color:rgba(78,219,143,.3); }
+  .ab-ok:hover  { background:rgba(78,219,143,.25); }
+  .ab-no  { background:rgba(255,94,94,.1); color:var(--danger); border-color:rgba(255,94,94,.2); }
+  .ab-no:hover  { background:rgba(255,94,94,.2); }
+  .ab-del { background:transparent; color:var(--muted); border-color:var(--border); }
+  .ab-del:hover { color:var(--danger); border-color:var(--danger); }
+
+  .search-bar { display:flex; gap:.75rem; margin-bottom:1.25rem; flex-wrap:wrap; }
+  .search-bar input, .search-bar select {
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:.6rem 1rem; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.875rem; outline:none;
+  }
+  .search-bar input { flex:1; min-width:200px; }
+  .search-bar input:focus { border-color:var(--accent2); }
+
+  .empty { color:var(--muted); text-align:center; padding:3rem; font-size:.9rem; }
+
+  .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:100; align-items:center; justify-content:center; }
+  .modal-bg.show { display:flex; }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2rem; max-width:480px; width:90%; animation:fadeUp .3s ease; }
+  .modal h2 { font-family:'DM Serif Display',serif; font-size:1.3rem; margin-bottom:1rem; }
+  .modal .close { float:right; cursor:pointer; color:var(--muted); font-size:1.2rem; background:none; border:none; }
+
+  .detail-row { display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid var(--border); font-size:.875rem; }
+  .detail-row:last-child { border-bottom:none; }
+  .detail-row span:first-child { color:var(--muted); }
+  .detail-row span:last-child { font-weight:500; text-align:right; }
+
+  .tab-bar { display:flex; gap:.4rem; background:var(--surface2); border-radius:10px; padding:4px; width:fit-content; margin-bottom:1.5rem; }
+  .tab { padding:.45rem .9rem; border-radius:7px; cursor:pointer; font-size:.85rem; font-weight:500; color:var(--muted); transition:all .15s; border:none; background:transparent; font-family:'DM Sans',sans-serif; }
+  .tab.active { background:var(--surface); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.3); }
+
+  .toast-c { position:fixed; bottom:1.5rem; right:1.5rem; display:flex; flex-direction:column; gap:.5rem; z-index:999; }
+  .toast { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:.85rem 1.2rem; font-size:.875rem; display:flex; align-items:center; gap:.75rem; animation:slideIn .3s ease; box-shadow:0 8px 32px rgba(0,0,0,.4); }
+  .toast.s { border-left:3px solid var(--success); }
+  .toast.w { border-left:3px solid var(--warn); }
+  .toast.e { border-left:3px solid var(--danger); }
+  @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+
+  .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .6s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+</style>
+</head>
+<body>
+
+<div class="toast-c" id="toastC"></div>
+
+<!-- ── GİRİŞ ── -->
+<div id="authWrap">
+  <div class="auth-card">
+    <div class="logo">CiroLog <span style="font-size:1rem;font-family:'DM Sans',sans-serif;color:var(--muted)">Admin</span></div>
+    <div class="sub">Yönetici paneline giriş yapın</div>
+    <div class="fg"><label>E-Posta</label><input type="email" id="aEmail" placeholder="admin@cirolog.com"></div>
+    <div class="fg"><label>Şifre</label><input type="password" id="aPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-p" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
+  </div>
+</div>
+
+<!-- ── ADMIN PANELİ ── -->
+<div id="adminWrap">
+  <div class="layout">
+    <nav class="sidebar">
+      <div class="s-logo">Ciro<span>Log</span> <span style="font-size:.7rem;color:var(--muted);font-family:'DM Sans',sans-serif">Admin</span></div>
+      <button class="nav active" onclick="go('bekleyen',this)">⏳ Bekleyen <span id="pendingBadge" style="background:var(--warn);color:#0a0a0f;font-size:.65rem;padding:1px 6px;border-radius:99px;margin-left:auto"></span></button>
+      <button class="nav" onclick="go('uyeler',this)">👥 Kullanıcılar</button>
+      <button class="nav" onclick="go('kayitlar',this)">📊 Ciro Kayıtları</button>
+      <button class="nav" onclick="go('ozet',this)">🏠 Platform Özeti</button>
+      <div style="margin:1rem .75rem 0;padding-top:1rem;border-top:1px solid var(--border)">
+        <a href="./index.html" style="font-size:.8rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.5rem;padding:.5rem 0">🌐 Landing Page</a>
+        <a href="./app.html"   style="font-size:.8rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.5rem;padding:.5rem 0">📱 Müşteri App</a>
+      </div>
+      <div class="spacer"></div>
+      <div class="user-pill">
+        <div class="avatar">AD</div>
+        <div class="u-info"><p id="adminName">Admin</p><span>Yönetici</span></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Çıkış Yap</button>
+    </nav>
+
+    <div class="main">
+
+      <!-- BEKLEYEN BAŞVURULAR -->
+      <div class="page active" id="p-bekleyen">
+        <div class="ph"><h1>Bekleyen Başvurular</h1><p>Onay bekleyen yeni üyelik talepleri</p></div>
+        <div class="card">
+          <div class="search-bar">
+            <input type="text" id="pendingSearch" placeholder="İsim, işletme veya e-posta ara..." oninput="filterPending()">
+          </div>
+          <table>
+            <thead><tr><th>Ad Soyad</th><th>İşletme</th><th>E-Posta</th><th>Telefon</th><th>Başvuru Tarihi</th><th>İşlem</th></tr></thead>
+            <tbody id="pendingBody"><tr><td colspan="6" class="empty">Yükleniyor...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KULLANICILAR -->
+      <div class="page" id="p-uyeler">
+        <div class="ph"><h1>Kullanıcılar</h1><p>Sistemdeki tüm üyeler</p></div>
+        <div class="tab-bar">
+          <button class="tab active" onclick="filterUsers('all',this)">Tümü</button>
+          <button class="tab" onclick="filterUsers('approved',this)">Aktif</button>
+          <button class="tab" onclick="filterUsers('pending',this)">Onay Bekleyen</button>
+          <button class="tab" onclick="filterUsers('rejected',this)">Reddedilen</button>
+        </div>
+        <div class="card">
+          <div class="search-bar">
+            <input type="text" id="userSearch" placeholder="Kullanıcı ara..." oninput="filterUsers(currentUserTab)">
+          </div>
+          <table>
+            <thead><tr><th>Ad Soyad</th><th>İşletme</th><th>E-Posta</th><th>Telefon</th><th>Kayıt Tarihi</th><th>Durum</th><th>İşlem</th></tr></thead>
+            <tbody id="usersBody"><tr><td colspan="7" class="empty">Yükleniyor...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CİRO KAYITLARI -->
+      <div class="page" id="p-kayitlar">
+        <div class="ph"><h1>Ciro Kayıtları</h1><p>Tüm kullanıcıların kayıtları</p></div>
+        <div class="card">
+          <div class="search-bar">
+            <select id="recordUserFilter" onchange="loadAllRecords()"><option value="">— Tüm Kullanıcılar —</option></select>
+            <input type="date" id="recordFrom">
+            <input type="date" id="recordTo">
+            <button onclick="loadAllRecords()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.6rem 1rem;font-size:.875rem;cursor:pointer;font-family:'DM Sans',sans-serif">Filtrele</button>
+          </div>
+          <table>
+            <thead><tr><th>Kullanıcı</th><th>İşletme</th><th>Tarih</th><th>Ciro</th><th>Not</th></tr></thead>
+            <tbody id="recordsBody"><tr><td colspan="5" class="empty">Yukarıdan kullanıcı veya tarih seçin</td></tr></tbody>
+          </table>
+          <div id="recordsTotal" style="padding:.75rem 1rem 0;font-size:.875rem;color:var(--muted);text-align:right"></div>
+        </div>
+      </div>
+
+      <!-- ÖZET -->
+      <div class="page" id="p-ozet">
+        <div class="ph"><h1>Platform Özeti</h1><p>Genel istatistikler</p></div>
+        <div class="stat-grid">
+          <div class="sc"><div class="sl">Toplam Üye</div><div class="sv" id="oToplam">—</div></div>
+          <div class="sc"><div class="sl">Aktif Üye</div><div class="sv" id="oAktif">—</div></div>
+          <div class="sc"><div class="sl">Bekleyen</div><div class="sv" style="color:var(--warn)" id="oBekleyen">—</div></div>
+          <div class="sc"><div class="sl">Bu Ay Kayıt</div><div class="sv" id="oKayit">—</div></div>
+        </div>
+        <div class="card">
+          <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:1rem">Son Başvurular</div>
+          <table>
+            <thead><tr><th>Ad</th><th>İşletme</th><th>Tarih</th><th>Durum</th></tr></thead>
+            <tbody id="recentBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DETAY MODALİ -->
+<div class="modal-bg" id="detailModal">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">✕</button>
+    <h2 id="modalTitle">Kullanıcı Detayı</h2>
+    <div id="modalContent"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1.5rem" id="modalActions"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged }
+                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection,
+         query, where, orderBy, getDocs, serverTimestamp, limit }
+                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const cfg = {
+  apiKey:'AIzaSyD2CPjkui-HSM9WG0eh0olu6uidA0RrP10',
+  authDomain:'siparispanel-a4c6e.firebaseapp.com',
+  projectId:'siparispanel-a4c6e',
+  storageBucket:'siparispanel-a4c6e.firebasestorage.app',
+  messagingSenderId:'584080774237',
+  appId:'1:584080774237:web:17c6f845d44ea6fa9fe9b4'
+};
+const app  = initializeApp(cfg, 'cirolog-admin');
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// koleksiyon isimleri
+const C = {
+  users:    'cirolog_users',
+  pending:  'cirolog_pending',
+  records:  (uid) => `cirolog_records/${uid}/entries`,
+  settings: 'cirolog_settings'
+};
+
+// ── STATE ──
+let allPending = [];
+let allUsers   = [];
+window.currentUserTab = 'all';
+let currentAdminProfile = null;
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { show('authWrap'); return; }
+  const snap = await getDoc(doc(db, C.users, user.uid));
+  if (!snap.exists() || snap.data().role !== 'admin') {
+    toast('Bu hesabın yönetici yetkisi yok', 'e');
+    await signOut(auth); show('authWrap'); return;
+  }
+  currentAdminProfile = snap.data();
+  document.getElementById('adminName').textContent = currentAdminProfile.name || 'Admin';
+  show('adminWrap');
+  await Promise.all([loadPending(), loadUsers()]);
+  loadStats();
+});
+
+function show(id) {
+  ['authWrap','setupWrap','adminWrap'].forEach(x => {
+    const el = document.getElementById(x);
+    if (el) el.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) target.style.display = id === 'adminWrap' ? 'block' : 'flex';
+}
+
+// ── GİRİŞ ──
+window.doLogin = async function() {
+  const e = document.getElementById('aEmail').value.trim();
+  const p = document.getElementById('aPass').value;
+  if (!e||!p) { toast('E-posta ve şifre gerekli','w'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Giriş yapılıyor...';
+  try {
+    await signInWithEmailAndPassword(auth, e, p);
+  } catch(err) {
+    toast(errTR(err.code), 'e');
+    btn.disabled = false; btn.textContent = 'Giriş Yap';
+  }
+};
+
+window.doLogout = async function() {
+  await signOut(auth);
+  allPending = []; allUsers = [];
+};
+
+// ── NAV ──
+window.go = function(page, el) {
+  document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('p-'+page).classList.add('active');
+  if(page==='kayitlar') initRecordFilters();
+  if(page==='ozet') loadStats();
+};
+
+// ── BEKLEYEN BAŞVURULAR ──
+async function loadPending() {
+  const q = query(collection(db, C.pending), where('status','==','pending'), orderBy('createdAt','desc'));
+  const snap = await getDocs(q);
+  allPending = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+  renderPending(allPending);
+  const cnt = allPending.length;
+  document.getElementById('pendingBadge').textContent = cnt > 0 ? cnt : '';
+  document.getElementById('oBekleyen').textContent = cnt;
+}
+
+function renderPending(list) {
+  const tbody = document.getElementById('pendingBody');
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Bekleyen başvuru yok 🎉</td></tr>'; return; }
+  tbody.innerHTML = list.map(p => {
+    const dt = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
+    return `<tr>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.businessName}</td>
+      <td><a href="mailto:${p.email}" style="color:var(--accent2)">${p.email}</a></td>
+      <td>${p.phone||'—'}</td>
+      <td>${dt}</td>
+      <td style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="ab ab-ok"  onclick="openDetail('${p.docId}','pending')">👁 Detay</button>
+        <button class="ab ab-ok"  onclick="approveUser('${p.docId}','${p.uid}',this)">✓ Onayla</button>
+        <button class="ab ab-no"  onclick="rejectUser('${p.docId}','${p.uid}',this)">✕ Reddet</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.filterPending = function() {
+  const q = document.getElementById('pendingSearch').value.toLowerCase();
+  renderPending(q ? allPending.filter(p =>
+    (p.name+p.businessName+p.email).toLowerCase().includes(q)
+  ) : allPending);
+};
+
+window.approveUser = async function(pendingId, uid, btn) {
+  if (!uid || uid === 'example_uid') { toast('Bu örnek kayıt onaylanamaz','w'); return; }
+  try {
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+    await updateDoc(doc(db, C.users, uid), { approved: true });
+    await updateDoc(doc(db, C.pending, pendingId), { status: 'approved', approvedAt: serverTimestamp() });
+    toast('Kullanıcı onaylandı ✓','s');
+    await loadPending(); await loadUsers(); loadStats();
+    closeModal();
+  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; btn.textContent='✓ Onayla'; }
+};
+
+window.rejectUser = async function(pendingId, uid, btn) {
+  if (!confirm('Bu başvuruyu reddetmek istediğinizden emin misiniz?')) return;
+  try {
+    if(btn){ btn.disabled=true; btn.innerHTML='<span class="spinner"></span>'; }
+    await updateDoc(doc(db, C.pending, pendingId), { status: 'rejected', rejectedAt: serverTimestamp() });
+    if (uid && uid !== 'example_uid') {
+      await updateDoc(doc(db, C.users, uid), { approved: false, rejected: true });
+    }
+    toast('Başvuru reddedildi','w');
+    await loadPending(); await loadUsers(); loadStats();
+    closeModal();
+  } catch(e) { toast('Hata: '+e.message,'e'); }
+};
+
+// ── KULLANICILAR ──
+async function loadUsers() {
+  const snap = await getDocs(collection(db, C.users));
+  allUsers = snap.docs.map(d => ({ uid: d.id, ...d.data() })).filter(u => u.role !== 'admin');
+  renderUsers(allUsers);
+  document.getElementById('oToplam').textContent = allUsers.length;
+  document.getElementById('oAktif').textContent  = allUsers.filter(u => u.approved && !u.rejected).length;
+}
+
+function renderUsers(list) {
+  const tbody = document.getElementById('usersBody');
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">Kullanıcı bulunamadı</td></tr>'; return; }
+  tbody.innerHTML = list.map(u => {
+    const dt  = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
+    const badge = u.rejected
+      ? '<span class="badge b-danger">✕ Reddedildi</span>'
+      : u.approved
+        ? '<span class="badge b-success">✓ Aktif</span>'
+        : '<span class="badge b-warn">⏳ Bekliyor</span>';
+    const actions = u.approved && !u.rejected
+      ? `<button class="ab ab-no" onclick="suspendUser('${u.uid}',this)" style="font-size:.75rem">⏸ Askıya Al</button>`
+      : `<button class="ab ab-ok" onclick="reactivateUser('${u.uid}',this)" style="font-size:.75rem">▶ Aktif Et</button>`;
+    return `<tr>
+      <td><strong>${u.name||'—'}</strong></td>
+      <td>${u.businessName||'—'}</td>
+      <td><a href="mailto:${u.email}" style="color:var(--accent2)">${u.email||'—'}</a></td>
+      <td>${u.phone||'—'}</td>
+      <td>${dt}</td>
+      <td>${badge}</td>
+      <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button class="ab ab-ok" onclick="openDetail('${u.uid}','user')" style="font-size:.75rem">👁 Detay</button>
+        ${actions}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.filterUsers = function(tab, el) {
+  window.currentUserTab = tab;
+  if(el) { document.querySelectorAll('.tab-bar .tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+  const q = document.getElementById('userSearch').value.toLowerCase();
+  let filtered = allUsers;
+  if (tab==='approved')  filtered = filtered.filter(u => u.approved && !u.rejected);
+  if (tab==='pending')   filtered = filtered.filter(u => !u.approved && !u.rejected);
+  if (tab==='rejected')  filtered = filtered.filter(u => u.rejected);
+  if (q) filtered = filtered.filter(u => (u.name+u.businessName+u.email).toLowerCase().includes(q));
+  renderUsers(filtered);
+};
+
+window.suspendUser = async function(uid, btn) {
+  if (!confirm('Kullanıcıyı askıya almak istediğinizden emin misiniz?')) return;
+  try {
+    btn.disabled=true;
+    await updateDoc(doc(db, C.users, uid), { approved: false, suspended: true });
+    toast('Kullanıcı askıya alındı','w');
+    await loadUsers();
+  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; }
+};
+
+window.reactivateUser = async function(uid, btn) {
+  try {
+    btn.disabled=true;
+    await updateDoc(doc(db, C.users, uid), { approved: true, rejected: false, suspended: false });
+    toast('Kullanıcı aktif edildi ✓','s');
+    await loadUsers();
+  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; }
+};
+
+// ── CİRO KAYITLARI ──
+async function initRecordFilters() {
+  const sel = document.getElementById('recordUserFilter');
+  sel.innerHTML = '<option value="">— Tüm Kullanıcılar —</option>';
+  allUsers.filter(u => u.approved).forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.uid; opt.textContent = `${u.name} — ${u.businessName}`;
+    sel.appendChild(opt);
+  });
+}
+
+window.loadAllRecords = async function() {
+  const uid  = document.getElementById('recordUserFilter').value;
+  const from = document.getElementById('recordFrom').value;
+  const to   = document.getElementById('recordTo').value;
+  const tbody = document.getElementById('recordsBody');
+  tbody.innerHTML = '<tr><td colspan="5" class="empty"><span class="spinner"></span> Yükleniyor...</td></tr>';
+
+  try {
+    let results = [];
+    const targetUsers = uid ? [allUsers.find(u=>u.uid===uid)] : allUsers.filter(u=>u.approved);
+
+    for (const u of targetUsers) {
+      if (!u) continue;
+      let q = query(collection(db, C.records(u.uid)), orderBy('date','desc'), limit(200));
+      const snap = await getDocs(q);
+      snap.docs.forEach(d => {
+        const r = d.data();
+        if (from && r.date < from) return;
+        if (to   && r.date > to)   return;
+        results.push({ ...r, userName: u.name, businessName: u.businessName });
+      });
+    }
+    results.sort((a,b) => b.date.localeCompare(a.date));
+
+    if (!results.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty">Kayıt bulunamadı</td></tr>';
+      document.getElementById('recordsTotal').textContent = '';
+      return;
+    }
+
+    const total = results.reduce((s,r) => s + Number(r.amount||0), 0);
+    tbody.innerHTML = results.map(r => `<tr>
+      <td><strong>${r.userName}</strong></td>
+      <td>${r.businessName}</td>
+      <td>${new Date(r.date+'T00:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',weekday:'short'})}</td>
+      <td style="color:var(--accent);font-weight:700">₺${Number(r.amount).toLocaleString('tr-TR')}</td>
+      <td style="color:var(--muted)">${r.note||'—'}</td>
+    </tr>`).join('');
+    document.getElementById('recordsTotal').textContent =
+      `${results.length} kayıt — Toplam: ₺${total.toLocaleString('tr-TR')}`;
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty" style="color:var(--danger)">Hata: ${e.message}</td></tr>`;
+  }
+};
+
+// ── ÖZET ──
+async function loadStats() {
+  const snap = await getDocs(query(collection(db, C.pending), orderBy('createdAt','desc'), limit(5)));
+  const recent = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+  const tbody = document.getElementById('recentBody');
+  if (!recent.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Henüz başvuru yok</td></tr>'; return; }
+  tbody.innerHTML = recent.map(r => {
+    const dt = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
+    const badge = r.status==='approved' ? '<span class="badge b-success">✓ Onaylı</span>'
+                : r.status==='rejected' ? '<span class="badge b-danger">✕ Reddedildi</span>'
+                : '<span class="badge b-warn">⏳ Bekliyor</span>';
+    return `<tr><td>${r.name}</td><td>${r.businessName}</td><td>${dt}</td><td>${badge}</td></tr>`;
+  }).join('');
+
+  // bu ay kayıt sayısı
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  let monthCount = 0;
+  for (const u of allUsers.filter(u=>u.approved)) {
+    const q = query(collection(db, C.records(u.uid)), where('date','>=',monthStart));
+    const s = await getDocs(q);
+    monthCount += s.size;
+  }
+  document.getElementById('oKayit').textContent = monthCount;
+}
+
+// ── DETAY MODALİ ──
+window.openDetail = async function(id, type) {
+  const modal = document.getElementById('detailModal');
+  const title = document.getElementById('modalTitle');
+  const content = document.getElementById('modalContent');
+  const actions = document.getElementById('modalActions');
+  content.innerHTML = '<div style="color:var(--muted);padding:1rem;text-align:center"><span class="spinner"></span> Yükleniyor...</div>';
+  actions.innerHTML = '';
+  modal.classList.add('show');
+
+  if (type === 'user') {
+    const snap = await getDoc(doc(db, C.users, id));
+    const u = snap.data();
+    title.textContent = u.name || 'Kullanıcı Detayı';
+    const dt = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
+    content.innerHTML = `
+      <div class="detail-row"><span>Ad Soyad</span><span>${u.name||'—'}</span></div>
+      <div class="detail-row"><span>İşletme</span><span>${u.businessName||'—'}</span></div>
+      <div class="detail-row"><span>E-Posta</span><span>${u.email||'—'}</span></div>
+      <div class="detail-row"><span>Telefon</span><span>${u.phone||'—'}</span></div>
+      <div class="detail-row"><span>Kayıt Tarihi</span><span>${dt}</span></div>
+      <div class="detail-row"><span>Durum</span><span>${u.approved?'✓ Aktif':'⏳ Bekliyor'}</span></div>
+    `;
+  } else if (type === 'pending') {
+    const p = allPending.find(x => x.docId === id);
+    if (!p) { content.innerHTML = '<p>Bulunamadı</p>'; return; }
+    title.textContent = p.name;
+    const dt = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
+    content.innerHTML = `
+      <div class="detail-row"><span>Ad Soyad</span><span>${p.name}</span></div>
+      <div class="detail-row"><span>İşletme</span><span>${p.businessName}</span></div>
+      <div class="detail-row"><span>E-Posta</span><span>${p.email}</span></div>
+      <div class="detail-row"><span>Telefon</span><span>${p.phone||'—'}</span></div>
+      <div class="detail-row"><span>Başvuru Tarihi</span><span>${dt}</span></div>
+    `;
+    if (p.uid && p.uid !== 'example_uid') {
+      actions.innerHTML = `
+        <button class="ab ab-ok" style="flex:1;padding:.65rem" onclick="approveUser('${p.docId}','${p.uid}',this)">✓ Onayla</button>
+        <button class="ab ab-no" style="flex:1;padding:.65rem" onclick="rejectUser('${p.docId}','${p.uid}',this)">✕ Reddet</button>
+      `;
+    }
+  }
+};
+
+window.closeModal = function() {
+  document.getElementById('detailModal').classList.remove('show');
+};
+document.getElementById('detailModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('detailModal')) closeModal();
+});
+
+// ── YARDIMCILAR ──
+window.toast = function(msg, type='s') {
+  const c = document.getElementById('toastC');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icon = type==='s'?'✓':type==='w'?'⚠️':'✕';
+  t.innerHTML = `${icon} ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+};
+
+function errTR(code) {
+  const m = {
+    'auth/invalid-credential':'E-posta veya şifre hatalı',
+    'auth/user-not-found':'Kullanıcı bulunamadı',
+    'auth/wrong-password':'Hatalı şifre',
+    'auth/too-many-requests':'Çok fazla deneme, bekleyin',
+  };
+  return m[code] || 'Hata: '+code;
+}
+</script>
+</body>
+</html>
