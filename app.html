@@ -430,6 +430,50 @@ body{
 .compare-year{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;}
 .compare-amount{font-family:var(--font-display);font-size:2rem;}
 
+/* ══ TOPLU İÇE AKTAR ══ */
+.import-drop{
+  border:2px dashed var(--border);border-radius:var(--radius);
+  padding:2rem;text-align:center;cursor:pointer;
+  transition:all .2s;background:var(--surface2);
+  margin-bottom:1.25rem;
+}
+.import-drop:hover,.import-drop.drag-over{border-color:var(--accent);background:rgba(128,200,80,.05);}
+.import-drop-icon{font-size:2rem;margin-bottom:.5rem;}
+.import-drop-text{font-size:.9rem;color:var(--muted);}
+.import-drop-sub{font-size:.78rem;color:var(--muted);margin-top:.25rem;opacity:.7;}
+.import-textarea{
+  width:100%;min-height:180px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:1rem;color:var(--text);
+  font-family:'IBM Plex Mono',var(--font-body),monospace;font-size:.85rem;
+  line-height:1.6;outline:none;resize:vertical;transition:border-color .2s;
+}
+.import-textarea:focus{border-color:var(--accent2);}
+.import-preview-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+.import-preview-table th{
+  text-align:left;font-size:.7rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.08em;padding:.6rem .75rem;border-bottom:1px solid var(--border);
+}
+.import-preview-table td{padding:.6rem .75rem;border-bottom:1px solid var(--border);}
+.import-preview-table tr:last-child td{border-bottom:none;}
+.import-preview-table tr.err td{color:var(--danger);background:rgba(255,94,94,.05);}
+.import-preview-table tr.ok td{color:var(--text);}
+.import-preview-table tr.skip td{color:var(--warn);background:rgba(245,200,66,.05);}
+.row-badge{display:inline-block;padding:.1rem .5rem;border-radius:99px;font-size:.65rem;font-weight:700;}
+.rb-ok{background:rgba(78,219,143,.15);color:var(--success);}
+.rb-err{background:rgba(255,94,94,.15);color:var(--danger);}
+.rb-skip{background:rgba(245,200,66,.15);color:var(--warn);}
+.import-summary{display:flex;gap:1rem;padding:1rem;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:1rem;flex-wrap:wrap;}
+.is-item{text-align:center;flex:1;min-width:60px;}
+.is-num{font-family:var(--font-display);font-size:1.4rem;}
+.is-label{font-size:.7rem;color:var(--muted);margin-top:.1rem;}
+.format-hint{background:var(--surface2);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem;font-size:.82rem;line-height:1.8;}
+.format-hint code{
+  background:rgba(128,128,128,.15);padding:.1rem .35rem;
+  border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;
+}
+.progress-import{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:.5rem;}
+.progress-import-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .1s linear;}
+
 /* ══ MOBILE ══ */
 .hamburger{display:none;position:fixed;top:1rem;left:1rem;z-index:100;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem;cursor:pointer;font-size:1.2rem;}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:49;}
@@ -503,6 +547,7 @@ body{
     <div class="sidebar-logo">Ciro<span>Log</span></div>
     <button class="nav-item active" onclick="navTo('dashboard',this)"><span class="nav-icon">📊</span> Özet</button>
     <button class="nav-item" onclick="navTo('kayit',this)"><span class="nav-icon">✏️</span> Ciro Girişi</button>
+    <button class="nav-item" onclick="navTo('import',this)"><span class="nav-icon">📤</span> Toplu Yükle</button>
     <button class="nav-item" onclick="navTo('raporlar',this)"><span class="nav-icon">📈</span> Raporlar</button>
     <button class="nav-item" onclick="navTo('karsilastir',this)"><span class="nav-icon">⚖️</span> Karşılaştır</button>
     <button class="nav-item" onclick="navTo('ai',this)"><span class="nav-icon">🤖</span> AI Analiz</button>
@@ -638,6 +683,80 @@ body{
         <div id="cmpDiff" style="font-family:'DM Serif Display',serif;font-size:2rem">—</div>
       </div>
       <div class="card"><div class="chart-title">Bu Yıl vs Geçen Yıl — Aylık</div><div class="chart-wrap" id="cmpYearChart" style="height:180px"></div></div>
+    </div>
+
+    <!-- TOPLU İÇE AKTAR -->
+    <div class="page" id="page-import">
+      <div class="page-header">
+        <h1>📤 Toplu Veri Yükleme</h1>
+        <p>Geçmiş ciro kayıtlarınızı toplu olarak sisteme aktarın</p>
+      </div>
+
+      <!-- FORMAT BİLGİSİ -->
+      <div class="format-hint card" style="margin-bottom:1.25rem">
+        <div style="font-weight:700;margin-bottom:.5rem;font-size:.9rem">📋 Desteklenen Formatlar</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem">
+          <div>
+            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.25rem;font-weight:700">GG.AA.YYYY CIRO</div>
+            <code>01.01.2026 5000</code><br>
+            <code>15.03.2025 8750</code>
+          </div>
+          <div>
+            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.25rem;font-weight:700">GG/AA/YYYY CIRO</div>
+            <code>01/01/2026 5000</code><br>
+            <code>15/03/2025 8750</code>
+          </div>
+          <div>
+            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.25rem;font-weight:700">YYYY-AA-GG CIRO</div>
+            <code>2026-01-01 5000</code><br>
+            <code>2025-03-15 8750</code>
+          </div>
+          <div>
+            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.25rem;font-weight:700">GG.AA.YYYY;CIRO (noktalı virgül)</div>
+            <code>01.01.2026;5000</code><br>
+            <code>15.03.2025;8750</code>
+          </div>
+        </div>
+        <div style="margin-top:.75rem;font-size:.78rem;color:var(--muted)">⚠️ Aynı tarihe zaten kayıt varsa <strong style="color:var(--warn)">üzerine yazılır</strong>. Her satır bir gün. Boş satırlar atlanır.</div>
+      </div>
+
+      <!-- DOSYA YÜKLE -->
+      <div class="import-drop" id="importDrop" onclick="document.getElementById('importFile').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+        <input type="file" id="importFile" accept=".txt,.csv" style="display:none" onchange="fileSelected(this)">
+        <div class="import-drop-icon">📂</div>
+        <div class="import-drop-text">Dosya sürükle & bırak veya tıkla</div>
+        <div class="import-drop-sub">.txt veya .csv dosyası</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:.78rem;color:var(--muted)">veya aşağıya yapıştır</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <!-- METİN ALANI -->
+      <textarea class="import-textarea" id="importText" placeholder="01.01.2026 5000&#10;02.01.2026 6200&#10;03.01.2026 4800&#10;..." oninput="parseImport()"></textarea>
+
+      <!-- ÖNİZLEME -->
+      <div id="importPreviewWrap" style="display:none">
+        <div class="import-summary" id="importSummary"></div>
+        <div class="card" style="overflow-x:auto;margin-bottom:1rem">
+          <table class="import-preview-table">
+            <thead><tr><th>#</th><th>Tarih</th><th>Ciro</th><th>Durum</th></tr></thead>
+            <tbody id="importPreviewBody"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
+          <button class="btn-save" id="importBtn" onclick="runImport()">⬆️ Yükle</button>
+          <button class="filter-btn" onclick="clearImport()">Temizle</button>
+          <span style="font-size:.8rem;color:var(--muted)" id="importHint"></span>
+        </div>
+        <!-- Yükleme progressu -->
+        <div id="importProgress" style="display:none;margin-top:1rem">
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:.4rem" id="importProgressText">Yükleniyor...</div>
+          <div class="progress-import"><div class="progress-import-fill" id="importProgressFill" style="width:0%"></div></div>
+        </div>
+      </div>
     </div>
 
     <!-- AI ANALİZ -->
@@ -937,7 +1056,178 @@ function renderCompare(){
   bars('cmpYearChart',cV,labels,180);
 }
 
-// AI ANALİZ
+// ── TOPLU İÇE AKTAR ──
+let parsedRows = [];
+
+window.dragOver  = function(e){ e.preventDefault(); document.getElementById('importDrop').classList.add('drag-over'); };
+window.dragLeave = function()  { document.getElementById('importDrop').classList.remove('drag-over'); };
+window.dropFile  = function(e) {
+  e.preventDefault(); dragLeave();
+  const file = e.dataTransfer.files[0];
+  if(file) readFile(file);
+};
+window.fileSelected = function(input) {
+  if(input.files[0]) readFile(input.files[0]);
+};
+function readFile(file) {
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('importText').value = e.target.result;
+    parseImport();
+  };
+  r.readAsText(file, 'UTF-8');
+}
+
+window.parseImport = function() {
+  const raw = document.getElementById('importText').value;
+  const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (!lines.length) { document.getElementById('importPreviewWrap').style.display='none'; return; }
+
+  parsedRows = lines.map((line, i) => {
+    // Ayraçları normalize et: noktalı virgül, virgül, tab → boşluk
+    const norm = line.replace(/[;,\t]+/g,' ').replace(/\s+/g,' ').trim();
+    const parts = norm.split(' ');
+
+    let dateStr = null, amount = null, error = null;
+
+    // Tarih + ciro bul
+    for(let p = 0; p < parts.length; p++) {
+      const d = parseDate(parts[p]);
+      if(d && !dateStr) { dateStr = d; continue; }
+      const n = parseFloat(parts[p].replace(/[.,]/g, m => m === ',' && parts[p].indexOf(',') === parts[p].lastIndexOf(',') ? '.' : ''));
+      if(!isNaN(n) && n > 0 && !amount) { amount = Math.round(n); }
+    }
+
+    if(!dateStr) error = 'Tarih anlaşılamadı';
+    else if(!amount) error = 'Ciro bulunamadı';
+
+    // Mevcut kayıt var mı kontrol
+    const exists = AR.some(r => r.id === dateStr);
+
+    return { line: i+1, raw: line, date: dateStr, amount, error, exists };
+  });
+
+  renderPreview();
+};
+
+function parseDate(str) {
+  // GG.AA.YYYY veya GG/AA/YYYY
+  let m = str.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/);
+  if(m) {
+    const [,d,mo,y] = m;
+    const dd = d.padStart(2,'0'), mm = mo.padStart(2,'0');
+    const dt = new Date(`${y}-${mm}-${dd}T00:00:00`);
+    if(!isNaN(dt) && dt.getFullYear() > 2000 && dt.getFullYear() < 2100) return `${y}-${mm}-${dd}`;
+  }
+  // YYYY-AA-GG
+  m = str.match(/^(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})$/);
+  if(m) {
+    const [,y,mo,d] = m;
+    const dd = d.padStart(2,'0'), mm = mo.padStart(2,'0');
+    const dt = new Date(`${y}-${mm}-${dd}T00:00:00`);
+    if(!isNaN(dt) && dt.getFullYear() > 2000 && dt.getFullYear() < 2100) return `${y}-${mm}-${dd}`;
+  }
+  return null;
+}
+
+function renderPreview() {
+  const wrap = document.getElementById('importPreviewWrap');
+  wrap.style.display = 'block';
+
+  const ok   = parsedRows.filter(r => !r.error);
+  const err  = parsedRows.filter(r => r.error);
+  const skip = ok.filter(r => r.exists);
+  const neu  = ok.filter(r => !r.exists);
+
+  // Özet
+  document.getElementById('importSummary').innerHTML = `
+    <div class="is-item"><div class="is-num" style="color:var(--text)">${parsedRows.length}</div><div class="is-label">Toplam Satır</div></div>
+    <div class="is-item"><div class="is-num" style="color:var(--success)">${neu.length}</div><div class="is-label">Yeni Kayıt</div></div>
+    <div class="is-item"><div class="is-num" style="color:var(--warn)">${skip.length}</div><div class="is-label">Üzerine Yazılacak</div></div>
+    <div class="is-item"><div class="is-num" style="color:var(--danger)">${err.length}</div><div class="is-label">Hatalı</div></div>
+  `;
+
+  document.getElementById('importHint').textContent =
+    ok.length > 0 ? `${ok.length} kayıt yüklenecek` : 'Yüklenecek geçerli kayıt yok';
+
+  document.getElementById('importBtn').disabled = ok.length === 0;
+
+  const MSHORT2 = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  const DAYS2   = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
+
+  document.getElementById('importPreviewBody').innerHTML = parsedRows.map(r => {
+    if(r.error) return `<tr class="err">
+      <td style="color:var(--muted)">${r.line}</td>
+      <td colspan="2" style="font-family:monospace;font-size:.78rem">${r.raw}</td>
+      <td><span class="row-badge rb-err">✕ ${r.error}</span></td>
+    </tr>`;
+
+    const d = new Date(r.date+'T00:00:00');
+    const label = `${d.getDate()} ${MSHORT2[d.getMonth()]} ${d.getFullYear()} ${DAYS2[d.getDay()]}`;
+    const badge = r.exists
+      ? `<span class="row-badge rb-skip">↺ Güncelle</span>`
+      : `<span class="row-badge rb-ok">✓ Yeni</span>`;
+
+    return `<tr class="${r.exists?'skip':'ok'}">
+      <td style="color:var(--muted)">${r.line}</td>
+      <td>${label}</td>
+      <td style="font-weight:700;color:var(--accent)">₺${r.amount.toLocaleString('tr-TR')}</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.clearImport = function() {
+  document.getElementById('importText').value = '';
+  document.getElementById('importFile').value = '';
+  document.getElementById('importPreviewWrap').style.display = 'none';
+  parsedRows = [];
+};
+
+window.runImport = async function() {
+  const valid = parsedRows.filter(r => !r.error);
+  if(!valid.length) return;
+
+  const btn = document.getElementById('importBtn');
+  btn.disabled = true; btn.textContent = '⏳ Yükleniyor...';
+
+  const prog     = document.getElementById('importProgress');
+  const progFill = document.getElementById('importProgressFill');
+  const progText = document.getElementById('importProgressText');
+  prog.style.display = 'block';
+
+  let done = 0, errors = 0;
+  for(const row of valid) {
+    try {
+      await saveE(row.date, row.amount, '');
+      done++;
+    } catch(e) {
+      errors++;
+    }
+    const pct = Math.round(((done+errors) / valid.length) * 100);
+    progFill.style.width = pct + '%';
+    progText.textContent = `${done+errors} / ${valid.length} yüklendi...`;
+    // Firebase'i boğmamak için küçük bekleme
+    await new Promise(res => setTimeout(res, 80));
+  }
+
+  renderDash();
+  renderRecords();
+
+  prog.style.display = 'none';
+  btn.textContent = '✓ Tamamlandı';
+
+  if(errors === 0) {
+    toast(`${done} kayıt başarıyla yüklendi ✓`, 's');
+    setTimeout(() => clearImport(), 1500);
+  } else {
+    toast(`${done} yüklendi, ${errors} hata oluştu`, 'w');
+    btn.disabled = false;
+    btn.textContent = '⬆️ Tekrar Dene';
+  }
+};
+
+// ── AI ANALİZ ──
 window.runAI=async function(){
   const btn=document.getElementById('aiBtn');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Analiz ediliyor...';
