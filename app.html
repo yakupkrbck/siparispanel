@@ -641,33 +641,105 @@ body{
         <button class="tab active" onclick="switchTab('haftalik',this)">Haftalık</button>
         <button class="tab" onclick="switchTab('aylik',this)">Aylık</button>
         <button class="tab" onclick="switchTab('yillik',this)">Yıllık</button>
+        <button class="tab" onclick="switchTab('gunler',this)">Gün Analizi</button>
       </div>
+
+      <!-- HAFTALIK -->
       <div id="tab-haftalik">
-        <div class="stat-grid" style="margin-bottom:1.5rem">
-          <div class="stat-card"><div class="stat-label">Toplam</div><div class="stat-value" id="rWeekTotal">₺0</div></div>
-          <div class="stat-card"><div class="stat-label">Ort. / Gün</div><div class="stat-value" id="rWeekAvg">₺0</div></div>
-          <div class="stat-card"><div class="stat-label">En Yüksek</div><div class="stat-value" id="rWeekMax">₺0</div></div>
-          <div class="stat-card"><div class="stat-label">En Düşük</div><div class="stat-value" id="rWeekMin">₺0</div></div>
+        <div class="stat-grid" style="margin-bottom:1rem">
+          <div class="stat-card"><div class="stat-label">Bu Hafta</div><div class="stat-value" id="rWeekTotal">₺0</div></div>
+          <div class="stat-card"><div class="stat-label">Geçen Hafta</div><div class="stat-value" id="rWeekPrev">₺0</div></div>
+          <div class="stat-card"><div class="stat-label">Değişim</div><div class="stat-value" id="rWeekChange">—</div></div>
+          <div class="stat-card"><div class="stat-label">Günlük Ort.</div><div class="stat-value" id="rWeekAvg">₺0</div></div>
         </div>
-        <div class="card"><div class="chart-title">Günlük Kırılım</div><div class="chart-wrap" id="rWeekChart" style="height:200px"></div></div>
+        <!-- Ay içi 4 hafta kıyası -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">Bu Ayki 4 Hafta Kıyası</div>
+          <div id="rWeek4Grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem"></div>
+          <div class="chart-wrap" id="rWeek4Chart" style="height:160px"></div>
+        </div>
+        <div class="card">
+          <div class="chart-title">Son 7 Gün</div>
+          <div class="chart-wrap" id="rWeekChart" style="height:180px"></div>
+        </div>
       </div>
+
+      <!-- AYLIK -->
       <div id="tab-aylik" style="display:none">
-        <div class="stat-grid" style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+          <select id="monthPickYear" onchange="renderMonthTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none"></select>
+          <select id="monthPickMonth" onchange="renderMonthTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none"></select>
+        </div>
+        <div class="stat-grid" style="margin-bottom:1rem">
           <div class="stat-card"><div class="stat-label">Ay Toplamı</div><div class="stat-value" id="rMonthTotal">₺0</div></div>
-          <div class="stat-card"><div class="stat-label">Ort. / Gün</div><div class="stat-value" id="rMonthAvg">₺0</div></div>
+          <div class="stat-card"><div class="stat-label">Önceki Ay</div><div class="stat-value" id="rMonthPrev">₺0</div></div>
+          <div class="stat-card"><div class="stat-label">Değişim</div><div class="stat-value" id="rMonthChange">—</div></div>
+          <div class="stat-card"><div class="stat-label">Günlük Ort.</div><div class="stat-value" id="rMonthAvg">₺0</div></div>
           <div class="stat-card"><div class="stat-label">Kayıtlı Gün</div><div class="stat-value" id="rMonthDays">0</div></div>
           <div class="stat-card"><div class="stat-label">Hedef Doluluk</div><div class="stat-value" id="rMonthGoal">—</div></div>
         </div>
-        <div class="card"><div class="chart-title" id="monthChartTitle">Bu Ay</div><div class="chart-wrap" id="rMonthChart" style="height:180px"></div></div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title" id="monthChartTitle">Bu Ay</div>
+          <div class="chart-wrap" id="rMonthChart" style="height:180px"></div>
+        </div>
+        <!-- Ay içi 4 hafta detay -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">4 Haftalık Kırılım</div>
+          <div id="rMonth4Weeks" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem"></div>
+        </div>
+        <!-- En iyi/kötü günler -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="card"><div class="chart-title">🏆 En İyi 5 Gün</div><div id="rMonthTopDays"></div></div>
+          <div class="card"><div class="chart-title">📉 En Zayıf 5 Gün</div><div id="rMonthBotDays"></div></div>
+        </div>
       </div>
+
+      <!-- YILLIK -->
       <div id="tab-yillik" style="display:none">
-        <div class="stat-grid" style="margin-bottom:1.5rem">
+        <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+          <select id="yearPick" onchange="renderYearTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none"></select>
+          <select id="yearPick2" onchange="renderYearTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
+            <option value="">— Karşılaştırma yılı (opsiyonel) —</option>
+          </select>
+        </div>
+        <div class="stat-grid" style="margin-bottom:1rem">
           <div class="stat-card"><div class="stat-label">Yıl Toplamı</div><div class="stat-value" id="rYearTotal">₺0</div></div>
           <div class="stat-card"><div class="stat-label">Aylık Ort.</div><div class="stat-value" id="rYearAvg">₺0</div></div>
           <div class="stat-card"><div class="stat-label">En İyi Ay</div><div class="stat-value" id="rYearBest">—</div></div>
           <div class="stat-card"><div class="stat-label">En Zayıf Ay</div><div class="stat-value" id="rYearWorst">—</div></div>
+          <div class="stat-card"><div class="stat-label">Kayıtlı Gün</div><div class="stat-value" id="rYearDays">—</div></div>
+          <div class="stat-card"><div class="stat-label">Günlük Ort.</div><div class="stat-value" id="rYearDayAvg">—</div></div>
         </div>
-        <div class="card"><div class="chart-title">Aylık Kırılım</div><div class="chart-wrap" id="rYearChart" style="height:180px"></div></div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title" id="rYearChartTitle">Aylık Kırılım</div>
+          <div class="chart-wrap" id="rYearChart" style="height:200px"></div>
+        </div>
+        <!-- Yıllık karşılaştırma tablosu -->
+        <div class="card" style="margin-bottom:1rem;overflow-x:auto">
+          <div class="chart-title">Ay Bazlı Karşılaştırma Tablosu</div>
+          <table style="width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.5rem" id="rYearTable"></table>
+        </div>
+        <!-- Çeyreklik analiz -->
+        <div class="card">
+          <div class="chart-title">Çeyreklik Performans</div>
+          <div id="rYearQuarters" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:.5rem"></div>
+        </div>
+      </div>
+
+      <!-- GÜN ANALİZİ -->
+      <div id="tab-gunler" style="display:none">
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">Haftanın Günleri — Ortalama Ciro</div>
+          <div class="chart-wrap" id="rDayOfWeekChart" style="height:180px"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div class="card"><div class="chart-title">🏆 En Yüksek 10 Gün</div><div id="rTopDaysList"></div></div>
+          <div class="card"><div class="chart-title">📉 En Düşük 10 Gün</div><div id="rBotDaysList"></div></div>
+        </div>
+        <div class="card">
+          <div class="chart-title">Hafta İçi vs Hafta Sonu</div>
+          <div id="rWeekdayWeekend" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem"></div>
+        </div>
       </div>
     </div>
 
@@ -763,10 +835,31 @@ body{
     <div class="page" id="page-ai">
       <div class="page-header"><h1>🤖 AI Analiz</h1><p>Yapay zeka destekli satış değerlendirmesi</p></div>
       <div class="card" style="margin-bottom:1rem">
-        <p style="font-size:.875rem;color:var(--muted);line-height:1.7;margin-bottom:1.25rem">Son <strong style="color:var(--text)">90 günlük</strong> satış verileriniz analiz edilir. Performans değerlendirmesi, trend tespiti ve öneriler sunulur.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem">
+          <div>
+            <div style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">Analiz Türü</div>
+            <select id="aiType" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.65rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
+              <option value="genel">Genel Performans Analizi</option>
+              <option value="aylik">Aylık Karşılaştırma</option>
+              <option value="yillik">Yıllık Değerlendirme</option>
+              <option value="trend">Trend ve Tahmin</option>
+              <option value="gun">Gün/Hafta Analizi</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">Veri Aralığı</div>
+            <select id="aiRange" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.65rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
+              <option value="30">Son 30 Gün</option>
+              <option value="90" selected>Son 90 Gün</option>
+              <option value="180">Son 6 Ay</option>
+              <option value="365">Son 1 Yıl</option>
+              <option value="all">Tüm Veriler</option>
+            </select>
+          </div>
+        </div>
         <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
           <button class="btn-save" id="aiBtn" onclick="runAI()">🚀 Analizi Başlat</button>
-          <span style="font-size:.8rem;color:var(--muted)">~15 saniye</span>
+          <span style="font-size:.8rem;color:var(--muted)">~10–20 saniye</span>
         </div>
       </div>
       <div id="aiResult"></div>
@@ -1022,27 +1115,13 @@ function bars(cid,vals,labels,h){
 function renderWeekChart(){
   const now=new Date();const vals=[],labels=[];
   for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);const k=d.toISOString().split('T')[0];const r=AR.find(x=>x.id===k);vals.push(r?Number(r.amount):0);labels.push(DSH[d.getDay()]);}
-  bars('weekChart',vals,labels,200);bars('rWeekChart',vals,labels,200);
-  const nz=vals.filter(v=>v>0);
-  if(nz.length){const t=vals.reduce((s,v)=>s+v,0);$('rWeekTotal','₺'+fmt(t));$('rWeekAvg','₺'+fmt(Math.round(nz.reduce((s,v)=>s+v,0)/nz.length)));$('rWeekMax','₺'+fmt(Math.max(...nz)));$('rWeekMin','₺'+fmt(Math.min(...nz)));}
+  bars('weekChart',vals,labels,200);
 }
 
 function renderYearChart(){
   const y=new Date().getFullYear();const m=new Date().getMonth();const vals=[],labels=[];
   for(let i=0;i<=m;i++){const t=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y&&d.getMonth()===i;}).reduce((s,r)=>s+Number(r.amount),0);vals.push(t);labels.push(MSH[i]);}
-  bars('yearChart',vals,labels,160);bars('rYearChart',vals,labels,180);
-  const nz=vals.filter(v=>v>0);
-  if(nz.length){const t=vals.reduce((s,v)=>s+v,0);const bi=vals.indexOf(Math.max(...vals));const wi=vals.indexOf(Math.min(...nz));$('rYearTotal','₺'+fmt(t));$('rYearAvg','₺'+fmt(Math.round(t/nz.length)));$('rYearBest',MON[bi]);$('rYearWorst',MON[wi]);}
-}
-
-function renderMonthChart(){
-  const now=new Date();const y=now.getFullYear();const m=now.getMonth();const days=new Date(y,m+1,0).getDate();const vals=[],labels=[];
-  for(let d=1;d<=days;d++){const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const r=AR.find(x=>x.id===k);vals.push(r?Number(r.amount):0);labels.push(String(d));}
-  bars('rMonthChart',vals,labels,180);
-  const recs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y&&d.getMonth()===m;});
-  const total=recs.reduce((s,r)=>s+Number(r.amount),0);
-  $('rMonthTotal','₺'+fmt(total));$('rMonthDays',recs.length);$('rMonthAvg',recs.length?'₺'+fmt(Math.round(total/recs.length)):'₺0');
-  const g=cp?.monthlyGoal||0;$('rMonthGoal',g>0?'%'+Math.min(100,Math.round((total/g)*100)):'—');$('monthChartTitle',MON[m]+' '+y);
+  bars('yearChart',vals,labels,160);
 }
 
 function renderCompare(){
@@ -1278,14 +1357,307 @@ window.navTo=function(page,el){
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById('sidebar')?.classList.remove('open');
   document.getElementById('sidebarOverlay')?.classList.remove('show');
-  if(page==='raporlar')renderWeekChart();
+  if(page==='raporlar'){ renderWeekTab(); }
   if(page==='karsilastir')renderCompare();
 };
 window.switchTab=function(name,el){
   document.querySelectorAll('#page-raporlar .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
-  ['haftalik','aylik','yillik'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
-  if(name==='haftalik')renderWeekChart();if(name==='aylik')renderMonthChart();if(name==='yillik')renderYearChart();
+  ['haftalik','aylik','yillik','gunler'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
+  if(name==='haftalik') renderWeekTab();
+  if(name==='aylik')    { initMonthPickers(); renderMonthTab(); }
+  if(name==='yillik')   { initYearPickers(); renderYearTab(); }
+  if(name==='gunler')   renderDayTab();
 };
+
+// ════ HAFTALIK TAB ════
+function renderWeekTab(){
+  const now=new Date();
+  // Bu hafta (Pzt-Paz)
+  const monday=new Date(now); monday.setDate(now.getDate()-((now.getDay()+6)%7));
+  const weekDays=[]; for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);weekDays.push(d.toISOString().split('T')[0]);}
+  const prevWeekDays=weekDays.map(d=>{const nd=new Date(d+'T00:00:00');nd.setDate(nd.getDate()-7);return nd.toISOString().split('T')[0];});
+  const thisSum=weekDays.reduce((s,d)=>{const r=AR.find(x=>x.id===d);return s+(r?Number(r.amount):0);},0);
+  const prevSum=prevWeekDays.reduce((s,d)=>{const r=AR.find(x=>x.id===d);return s+(r?Number(r.amount):0);},0);
+  const changePct=prevSum>0?Math.round((thisSum-prevSum)/prevSum*100):null;
+  $('rWeekTotal','₺'+fmt(thisSum));
+  $('rWeekPrev','₺'+fmt(prevSum));
+  const ce=document.getElementById('rWeekChange');
+  if(changePct!==null){ce.textContent=(changePct>=0?'+':'')+changePct+'%';ce.style.color=changePct>=0?'var(--success)':'var(--danger)';}
+  else ce.textContent='—';
+  const nonZ=weekDays.map(d=>{const r=AR.find(x=>x.id===d);return r?Number(r.amount):0;}).filter(v=>v>0);
+  $('rWeekAvg',nonZ.length?'₺'+fmt(Math.round(nonZ.reduce((s,v)=>s+v,0)/nonZ.length)):'₺0');
+  // Son 7 gün grafik
+  const vals=[],labels=[];
+  for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);const k=d.toISOString().split('T')[0];const r=AR.find(x=>x.id===k);vals.push(r?Number(r.amount):0);labels.push(DSH[d.getDay()]);}
+  bars('rWeekChart',vals,labels,180);
+
+  // Bu aydaki 4 hafta kıyası
+  const y=now.getFullYear(); const m=now.getMonth();
+  const weeks=getMonthWeeks(y,m);
+  const w4vals=weeks.map(w=>w.reduce((s,d)=>{const r=AR.find(x=>x.id===d);return s+(r?Number(r.amount):0);},0));
+  const grid=document.getElementById('rWeek4Grid');
+  grid.innerHTML=weeks.map((w,i)=>{
+    const label=`${i+1}. Hafta`;
+    const sum=w4vals[i];
+    const pct=w4vals.some(v=>v>0)?Math.round((sum/Math.max(...w4vals))*100):0;
+    const prev=i>0?w4vals[i-1]:null;
+    const chg=prev&&prev>0?Math.round((sum-prev)/prev*100):null;
+    return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:.85rem;text-align:center">
+      <div style="font-size:.7rem;color:var(--muted);margin-bottom:.25rem;text-transform:uppercase">${label}</div>
+      <div style="font-family:var(--font-display);font-size:1.2rem">₺${fmt(sum)}</div>
+      ${chg!==null?`<div style="font-size:.72rem;color:${chg>=0?'var(--success)':'var(--danger)'}">${chg>=0?'+':''}${chg}%</div>`:'<div style="font-size:.72rem;color:var(--muted)">—</div>'}
+      <div style="height:4px;background:var(--border);border-radius:99px;margin-top:.5rem"><div style="height:100%;background:var(--accent);border-radius:99px;width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  bars('rWeek4Chart',w4vals,weeks.map((_,i)=>`H${i+1}`),160);
+}
+
+function getMonthWeeks(y,m){
+  const first=new Date(y,m,1); const last=new Date(y,m+1,0);
+  const weeks=[]; let cur=[];
+  for(let d=1;d<=last.getDate();d++){
+    const dt=new Date(y,m,d);
+    cur.push(dt.toISOString().split('T')[0]);
+    if(dt.getDay()===0||d===last.getDate()){weeks.push([...cur]);cur=[];}
+  }
+  if(cur.length>0&&weeks.length>0) weeks[weeks.length-1]=[...weeks[weeks.length-1],...cur];
+  // Ensure max 4 week groups
+  while(weeks.length>4) weeks[weeks.length-2]=[...weeks[weeks.length-2],...weeks.pop()];
+  while(weeks.length<4) weeks.push([]);
+  return weeks;
+}
+
+// ════ AYLIK TAB ════
+function initMonthPickers(){
+  // Verimdeki yılları bul
+  const years=[...new Set(AR.map(r=>new Date(r.date+'T00:00:00').getFullYear()))].sort((a,b)=>b-a);
+  const now=new Date();
+  if(!years.includes(now.getFullYear())) years.unshift(now.getFullYear());
+  const ysel=document.getElementById('monthPickYear');
+  if(!ysel.options.length){
+    years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;ysel.appendChild(o);});
+  }
+  const msel=document.getElementById('monthPickMonth');
+  if(!msel.options.length){
+    MON.forEach((mn,i)=>{const o=document.createElement('option');o.value=i;o.textContent=mn;msel.appendChild(o);});
+    msel.value=now.getMonth();
+  }
+}
+
+window.renderMonthTab=function(){
+  const y=parseInt(document.getElementById('monthPickYear')?.value||new Date().getFullYear());
+  const m=parseInt(document.getElementById('monthPickMonth')?.value||new Date().getMonth());
+  const days=new Date(y,m+1,0).getDate();
+  const vals=[],labels=[];
+  for(let d=1;d<=days;d++){
+    const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const r=AR.find(x=>x.id===k);
+    vals.push(r?Number(r.amount):0);labels.push(String(d));
+  }
+  const recs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y&&d.getMonth()===m;});
+  const total=recs.reduce((s,r)=>s+Number(r.amount),0);
+  // Önceki ay
+  const pm=m===0?11:m-1; const py=m===0?y-1:y;
+  const prevRecs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===py&&d.getMonth()===pm;});
+  const prevTotal=prevRecs.reduce((s,r)=>s+Number(r.amount),0);
+  const chg=prevTotal>0?Math.round((total-prevTotal)/prevTotal*100):null;
+  $('rMonthTotal','₺'+fmt(total));$('rMonthPrev','₺'+fmt(prevTotal));
+  const ce=document.getElementById('rMonthChange');
+  if(chg!==null){ce.textContent=(chg>=0?'+':'')+chg+'%';ce.style.color=chg>=0?'var(--success)':'var(--danger)';}
+  else ce.textContent='—';
+  $('rMonthDays',recs.length);
+  $('rMonthAvg',recs.length?'₺'+fmt(Math.round(total/recs.length)):'₺0');
+  const goal=cp?.monthlyGoal||0;
+  $('rMonthGoal',goal>0?'%'+Math.min(100,Math.round((total/goal)*100))+'  (₺'+fmt(goal)+')'  :'—');
+  $('monthChartTitle',MON[m]+' '+y+' — Günlük');
+  bars('rMonthChart',vals,labels,180);
+
+  // 4 Hafta kırılımı
+  const weeks=getMonthWeeks(y,m);
+  const w4=document.getElementById('rMonth4Weeks');
+  w4.innerHTML=weeks.map((wk,i)=>{
+    const wSum=wk.reduce((s,d)=>{const r=AR.find(x=>x.id===d);return s+(r?Number(r.amount):0);},0);
+    const wAvg=wk.filter(d=>AR.some(r=>r.id===d)).length;
+    return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1rem">
+      <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">${i+1}. Hafta (${wk[0]?.slice(5).replace('-','.')}–${wk[wk.length-1]?.slice(5).replace('-','.')||''})</div>
+      <div style="font-family:var(--font-display);font-size:1.3rem">₺${fmt(wSum)}</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem">Ort: ₺${wAvg?fmt(Math.round(wSum/wAvg)):'0'} / gün</div>
+    </div>`;
+  }).join('');
+
+  // En iyi / en kötü 5 gün
+  const sortedDesc=[...recs].sort((a,b)=>Number(b.amount)-Number(a.amount));
+  const renderDayList=(items,el)=>{
+    document.getElementById(el).innerHTML=items.slice(0,5).map(r=>{
+      const d=new Date(r.date+'T00:00:00');
+      return `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.875rem">
+        <span>${d.getDate()} ${MSH[d.getMonth()]} ${DSH[d.getDay()]}</span>
+        <span style="font-weight:700;color:var(--accent)">₺${fmt(r.amount)}</span>
+      </div>`;
+    }).join('')||'<div style="color:var(--muted);font-size:.85rem;padding:.5rem 0">Veri yok</div>';
+  };
+  renderDayList(sortedDesc,'rMonthTopDays');
+  renderDayList([...sortedDesc].reverse(),'rMonthBotDays');
+};
+
+// ════ YILLIK TAB ════
+function initYearPickers(){
+  const years=[...new Set(AR.map(r=>new Date(r.date+'T00:00:00').getFullYear()))].sort((a,b)=>b-a);
+  const now=new Date();
+  if(!years.includes(now.getFullYear())) years.unshift(now.getFullYear());
+  const s1=document.getElementById('yearPick');
+  const s2=document.getElementById('yearPick2');
+  if(!s1.options.length){
+    years.forEach(y=>{
+      const o1=document.createElement('option');o1.value=y;o1.textContent=y;s1.appendChild(o1);
+      const o2=document.createElement('option');o2.value=y;o2.textContent=y;s2.appendChild(o2);
+    });
+  }
+}
+
+window.renderYearTab=function(){
+  const y=parseInt(document.getElementById('yearPick')?.value||new Date().getFullYear());
+  const y2val=document.getElementById('yearPick2')?.value;
+  const y2=y2val?parseInt(y2val):null;
+
+  const monthData=(yr)=>MON.map((_,mi)=>{
+    const recs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===yr&&d.getMonth()===mi;});
+    return recs.reduce((s,r)=>s+Number(r.amount),0);
+  });
+
+  const vals1=monthData(y);
+  const vals2=y2?monthData(y2):null;
+  const total=vals1.reduce((s,v)=>s+v,0);
+  const nz=vals1.filter(v=>v>0);
+  const bi=vals1.indexOf(Math.max(...vals1));
+  const wi=vals1.indexOf(Math.min(...vals1.filter(v=>v>0)));
+  const allRecs=AR.filter(r=>new Date(r.date+'T00:00:00').getFullYear()===y);
+
+  $('rYearTotal','₺'+fmt(total));
+  $('rYearAvg',nz.length?'₺'+fmt(Math.round(total/nz.length)):'₺0');
+  $('rYearBest',MON[bi]+' ₺'+fmt(vals1[bi]));
+  $('rYearWorst',nz.length?MON[wi]+' ₺'+fmt(vals1[wi]):'—');
+  $('rYearDays',allRecs.length+' gün');
+  $('rYearDayAvg',allRecs.length?'₺'+fmt(Math.round(total/allRecs.length)):'₺0');
+  $('rYearChartTitle',(y2?`${y} vs ${y2}`:y)+' — Aylık Kırılım');
+
+  // Grafik: iki yıl olursa renkli
+  if(y2&&vals2){
+    const el=document.getElementById('rYearChart');
+    const max=Math.max(...vals1,...vals2,1);
+    el.style.height='200px';
+    el.innerHTML=vals1.map((v,i)=>`
+      <div class="bar-col">
+        <div class="bar-val" style="font-size:.6rem">${v>0?'₺'+(v/1000).toFixed(0)+'K':''}</div>
+        <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:${Math.round(el.offsetHeight*0.75)||140}px">
+          <div style="flex:1;background:var(--accent);border-radius:3px 3px 0 0;height:${Math.max((v/max)*100,v>0?3:1)}%;transition:height .6s" title="${y}: ₺${fmt(v)}"></div>
+          <div style="flex:1;background:var(--accent2);border-radius:3px 3px 0 0;height:${Math.max(((vals2[i]||0)/max)*100,(vals2[i]||0)>0?3:1)}%;transition:height .6s" title="${y2}: ₺${fmt(vals2[i]||0)}"></div>
+        </div>
+        <div class="bar-label">${MSH[i]}</div>
+      </div>`).join('');
+  } else {
+    bars('rYearChart',vals1,MSH.slice(0,12),200);
+  }
+
+  // Karşılaştırma tablosu
+  const tbl=document.getElementById('rYearTable');
+  const pctClass=(v)=>v>0?'color:var(--success)':v<0?'color:var(--danger)':'color:var(--muted)';
+  tbl.innerHTML=`<tr style="border-bottom:1px solid var(--border)">
+    <th style="text-align:left;padding:.5rem .75rem;font-size:.72rem;color:var(--muted);text-transform:uppercase">Ay</th>
+    <th style="text-align:right;padding:.5rem .75rem;font-size:.72rem;color:var(--muted);text-transform:uppercase">${y}</th>
+    ${y2?`<th style="text-align:right;padding:.5rem .75rem;font-size:.72rem;color:var(--muted);text-transform:uppercase">${y2}</th><th style="text-align:right;padding:.5rem .75rem;font-size:.72rem;color:var(--muted);text-transform:uppercase">Fark</th>`:''}
+    <th style="text-align:right;padding:.5rem .75rem;font-size:.72rem;color:var(--muted);text-transform:uppercase">Pay %</th>
+  </tr>`+vals1.map((v,i)=>{
+    const v2=vals2?vals2[i]:null;
+    const diff=v2!=null?v-v2:null;
+    const diffPct=v2&&v2>0?Math.round((diff/v2)*100):null;
+    const share=total>0?Math.round((v/total)*100):0;
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:.5rem .75rem;font-size:.85rem;font-weight:600">${MON[i]}</td>
+      <td style="text-align:right;padding:.5rem .75rem;font-size:.875rem;${v===Math.max(...vals1)?'color:var(--accent);font-weight:700':''}">${v>0?'₺'+fmt(v):'—'}</td>
+      ${y2?`<td style="text-align:right;padding:.5rem .75rem;font-size:.875rem">${v2>0?'₺'+fmt(v2):'—'}</td>
+      <td style="text-align:right;padding:.5rem .75rem;font-size:.85rem;${diffPct!=null?pctClass(diffPct):''}">${diffPct!=null?(diffPct>=0?'+':'')+diffPct+'%':'—'}</td>`:''}
+      <td style="text-align:right;padding:.5rem .75rem">
+        <div style="display:flex;align-items:center;gap:.35rem;justify-content:flex-end">
+          <div style="width:40px;height:4px;background:var(--border);border-radius:99px"><div style="height:100%;background:var(--accent);border-radius:99px;width:${share}%"></div></div>
+          <span style="font-size:.75rem;color:var(--muted)">${share}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Çeyreklik
+  const quarters=[
+    {label:'Q1 Oca–Mar',months:[0,1,2]},
+    {label:'Q2 Nis–Haz',months:[3,4,5]},
+    {label:'Q3 Tem–Eyl',months:[6,7,8]},
+    {label:'Q4 Eki–Ara',months:[9,10,11]},
+  ];
+  document.getElementById('rYearQuarters').innerHTML=quarters.map(q=>{
+    const qsum=q.months.reduce((s,mi)=>s+vals1[mi],0);
+    const share=total>0?Math.round((qsum/total)*100):0;
+    const q2sum=vals2?q.months.reduce((s,mi)=>s+(vals2[mi]||0),0):null;
+    const chg=q2sum&&q2sum>0?Math.round((qsum-q2sum)/q2sum*100):null;
+    return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1rem;text-align:center">
+      <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;margin-bottom:.4rem">${q.label}</div>
+      <div style="font-family:var(--font-display);font-size:1.2rem">₺${fmt(qsum)}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:.15rem">Toplam %${share}</div>
+      ${chg!=null?`<div style="font-size:.72rem;margin-top:.15rem;color:${chg>=0?'var(--success)':'var(--danger)'}">${chg>=0?'+':''}${chg}% vs ${y2}</div>`:''}
+    </div>`;
+  }).join('');
+};
+
+// ════ GÜN ANALİZİ TAB ════
+function renderDayTab(){
+  if(!AR.length) return;
+  // Haftanın günlerine göre ortalama
+  const dayTotals=[0,0,0,0,0,0,0], dayCounts=[0,0,0,0,0,0,0];
+  AR.forEach(r=>{const d=new Date(r.date+'T00:00:00');const wd=d.getDay();dayTotals[wd]+=Number(r.amount);dayCounts[wd]++;});
+  const dayAvgs=dayTotals.map((t,i)=>dayCounts[i]>0?Math.round(t/dayCounts[i]):0);
+  // Pzt'den Paz'a sırala (1,2,3,4,5,6,0)
+  const order=[1,2,3,4,5,6,0];
+  const orderedAvgs=order.map(i=>dayAvgs[i]);
+  const orderedLabels=order.map(i=>DAYS[i]);
+  bars('rDayOfWeekChart',orderedAvgs,orderedLabels.map(d=>d.slice(0,3)),180);
+
+  // En yüksek / en düşük 10
+  const sorted=[...AR].sort((a,b)=>Number(b.amount)-Number(a.amount));
+  const renderList=(items,elId)=>{
+    document.getElementById(elId).innerHTML=items.slice(0,10).map((r,i)=>{
+      const d=new Date(r.date+'T00:00:00');
+      const isTop=elId==='rTopDaysList';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.82rem">
+        <div>
+          <span style="color:var(--muted);margin-right:.4rem">${i+1}.</span>
+          ${d.getDate()} ${MSH[d.getMonth()]} ${d.getFullYear()}
+          <span style="color:var(--muted);font-size:.72rem;margin-left:.25rem">${DSH[d.getDay()]}</span>
+        </div>
+        <span style="font-weight:700;color:${isTop?'var(--success)':'var(--danger)'}">₺${fmt(r.amount)}</span>
+      </div>`;
+    }).join('')||'<div style="color:var(--muted);padding:.5rem 0;font-size:.85rem">Veri yok</div>';
+  };
+  renderList(sorted,'rTopDaysList');
+  renderList([...sorted].reverse(),'rBotDaysList');
+
+  // Hafta içi vs Hafta sonu
+  const wd=AR.filter(r=>![0,6].includes(new Date(r.date+'T00:00:00').getDay()));
+  const we=AR.filter(r=>[0,6].includes(new Date(r.date+'T00:00:00').getDay()));
+  const wdAvg=wd.length?Math.round(wd.reduce((s,r)=>s+Number(r.amount),0)/wd.length):0;
+  const weAvg=we.length?Math.round(we.reduce((s,r)=>s+Number(r.amount),0)/we.length):0;
+  const max2=Math.max(wdAvg,weAvg,1);
+  document.getElementById('rWeekdayWeekend').innerHTML=[
+    {label:'Hafta İçi',sub:'Pzt–Cum',val:wdAvg,cnt:wd.length},
+    {label:'Hafta Sonu',sub:'Cmt–Paz',val:weAvg,cnt:we.length},
+  ].map(x=>`<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1.25rem;text-align:center">
+    <div style="font-size:.75rem;color:var(--muted);text-transform:uppercase;margin-bottom:.35rem">${x.label}</div>
+    <div style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem">${x.sub}</div>
+    <div style="font-family:var(--font-display);font-size:1.6rem">₺${fmt(x.val)}</div>
+    <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">ort. / gün · ${x.cnt} kayıt</div>
+    <div style="height:6px;background:var(--border);border-radius:99px;margin-top:.75rem"><div style="height:100%;background:var(--accent);border-radius:99px;width:${Math.round((x.val/max2)*100)}%"></div></div>
+  </div>`).join('');
+}
+
+// ── AI ANALİZ (yukarda tanımlı) ──
 window.toggleSidebar=function(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');};
 
 // SETTINGS
