@@ -636,13 +636,185 @@ body{
 
     <!-- RAPORLAR -->
     <div class="page" id="page-raporlar">
-      <div class="page-header"><h1>Raporlar</h1><p>Detaylı satış analizleri</p></div>
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('haftalik',this)">Haftalık</button>
-        <button class="tab" onclick="switchTab('aylik',this)">Aylık</button>
-        <button class="tab" onclick="switchTab('yillik',this)">Yıllık</button>
-        <button class="tab" onclick="switchTab('gunler',this)">Gün Analizi</button>
+      <div class="page-header"><h1>Raporlar</h1><p id="raporSubtitle">Detaylı satış analizleri</p></div>
+      <div class="tabs" style="flex-wrap:wrap">
+        <button class="tab active" onclick="switchTab('haftalik',this)">📅 Haftalık</button>
+        <button class="tab" onclick="switchTab('aylik',this)">🗓 Aylık</button>
+        <button class="tab" onclick="switchTab('yillik',this)">📆 Yıllık</button>
+        <button class="tab" onclick="switchTab('gunler',this)">📊 Gün Analizi</button>
       </div>
+
+      <!-- HAFTALIK -->
+      <div id="tab-haftalik">
+        <!-- Bu hafta vs geçen hafta -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div class="card" style="border-left:3px solid var(--accent)">
+            <div class="stat-label">Bu Hafta</div>
+            <div class="stat-value" id="rW_thisTotal">₺0</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:.25rem" id="rW_thisDays"></div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--border)">
+            <div class="stat-label">Geçen Hafta</div>
+            <div class="stat-value" id="rW_prevTotal">₺0</div>
+            <div style="font-size:.78rem;margin-top:.25rem" id="rW_change"></div>
+          </div>
+        </div>
+        <div class="stat-grid" style="margin-bottom:1rem">
+          <div class="stat-card"><div class="stat-label">Günlük Ort.</div><div class="stat-value" id="rW_avg">₺0</div></div>
+          <div class="stat-card"><div class="stat-label">En Yüksek Gün</div><div class="stat-value" id="rW_max">₺0</div><div class="stat-delta" id="rW_maxDay" style="color:var(--muted)"></div></div>
+          <div class="stat-card"><div class="stat-label">En Düşük Gün</div><div class="stat-value" id="rW_min">₺0</div><div class="stat-delta" id="rW_minDay" style="color:var(--muted)"></div></div>
+        </div>
+        <!-- Son 7 gün bar -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">Son 7 Gün — Günlük Detay</div>
+          <div class="chart-wrap" id="rWeekChart" style="height:190px"></div>
+        </div>
+        <!-- Bu aydaki 4 hafta -->
+        <div class="card">
+          <div class="chart-title" id="rW_4wTitle">Bu Aydaki 4 Hafta</div>
+          <div id="rW_4wCards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:.75rem"></div>
+          <div class="chart-wrap" id="rW_4wChart" style="height:130px"></div>
+        </div>
+      </div>
+
+      <!-- AYLIK -->
+      <div id="tab-aylik" style="display:none">
+        <div style="display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap">
+          <select id="mPickY" onchange="renderMonthTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none;flex:1"></select>
+          <select id="mPickM" onchange="renderMonthTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none;flex:2"></select>
+        </div>
+        <!-- Ana metrikler -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div class="card" style="border-left:3px solid var(--accent)">
+            <div class="stat-label">Seçili Ay</div>
+            <div class="stat-value" id="rM_total">₺0</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem" id="rM_totalLabel"></div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--border)">
+            <div class="stat-label">Önceki Ay</div>
+            <div class="stat-value" id="rM_prev">₺0</div>
+            <div style="font-size:.78rem;margin-top:.2rem" id="rM_change"></div>
+          </div>
+        </div>
+        <div class="stat-grid" style="margin-bottom:1rem">
+          <div class="stat-card"><div class="stat-label">Günlük Ort.</div><div class="stat-value" id="rM_avg">₺0</div></div>
+          <div class="stat-card"><div class="stat-label">Kayıtlı Gün</div><div class="stat-value" id="rM_days">0</div></div>
+          <div class="stat-card"><div class="stat-label">Hedef Doluluk</div><div class="stat-value" id="rM_goal">—</div></div>
+          <div class="stat-card"><div class="stat-label">Geçen Yıl Aynı Ay</div><div class="stat-value" id="rM_lastYear">—</div></div>
+        </div>
+        <!-- Günlük grafik -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title" id="rM_chartTitle">Günlük Dağılım</div>
+          <div class="chart-wrap" id="rM_chart" style="height:180px"></div>
+        </div>
+        <!-- 4 hafta kırılımı -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">4 Haftalık Kırılım</div>
+          <div id="rM_4weeks" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem"></div>
+        </div>
+        <!-- En iyi / kötü -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="card">
+            <div class="chart-title">🏆 En İyi 5 Gün</div>
+            <div id="rM_topDays"></div>
+          </div>
+          <div class="card">
+            <div class="chart-title">📉 En Zayıf 5 Gün</div>
+            <div id="rM_botDays"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- YILLIK -->
+      <div id="tab-yillik" style="display:none">
+        <div style="display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap">
+          <select id="yPick1" onchange="renderYearTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none;flex:1"></select>
+          <select id="yPick2" onchange="renderYearTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none;flex:1">
+            <option value="">— Karşılaştır (opsiyonel) —</option>
+          </select>
+        </div>
+        <div class="stat-grid" style="margin-bottom:1rem">
+          <div class="stat-card"><div class="stat-label">Yıl Toplamı</div><div class="stat-value" id="rY_total">₺0</div></div>
+          <div class="stat-card"><div class="stat-label">Aylık Ort.</div><div class="stat-value" id="rY_avg">₺0</div></div>
+          <div class="stat-card"><div class="stat-label">En İyi Ay</div><div class="stat-value" id="rY_best">—</div></div>
+          <div class="stat-card"><div class="stat-label">En Zayıf Ay</div><div class="stat-value" id="rY_worst">—</div></div>
+        </div>
+        <!-- Yıllık grafik -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title" id="rY_chartTitle">Aylık Kırılım</div>
+          <div class="chart-wrap" id="rY_chart" style="height:200px"></div>
+        </div>
+        <!-- Ay bazlı tablo -->
+        <div class="card" style="margin-bottom:1rem;overflow-x:auto">
+          <div class="chart-title">Aylık Karşılaştırma Tablosu</div>
+          <table id="rY_table" style="width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.5rem"></table>
+        </div>
+        <!-- Çeyrekler -->
+        <div class="card">
+          <div class="chart-title">Çeyreklik Performans</div>
+          <div id="rY_quarters" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:.5rem"></div>
+        </div>
+      </div>
+
+      <!-- GÜN ANALİZİ -->
+      <div id="tab-gunler" style="display:none">
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">Haftanın Günleri — Ortalama Ciro (Tüm Zamanlar)</div>
+          <div class="chart-wrap" id="rD_dowChart" style="height:180px"></div>
+        </div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">Hafta İçi vs Hafta Sonu</div>
+          <div id="rD_wdwe" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="card"><div class="chart-title">🏆 En Yüksek 10 Gün</div><div id="rD_top"></div></div>
+          <div class="card"><div class="chart-title">📉 En Düşük 10 Gün</div><div id="rD_bot"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI ANALİZ -->
+    <div class="page" id="page-ai">
+      <div class="page-header"><h1>🤖 AI Analiz</h1><p>Yapay zeka ile satış danışmanı</p></div>
+
+      <!-- Proxy URL uyarısı -->
+      <div id="aiProxyWarn" class="card" style="border-color:var(--warn);background:rgba(245,200,66,.06);margin-bottom:1rem;display:none">
+        <div style="font-size:.875rem;color:var(--warn);font-weight:700;margin-bottom:.35rem">⚠️ Cloudflare Worker URL Gerekli</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.6">AI analizi için <code style="background:var(--surface2);padding:.1rem .35rem;border-radius:4px">cirolog-ai-worker.js</code> dosyasını Cloudflare Workers'a yükle, URL'yi Ayarlar → AI Proxy bölümüne gir.</div>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem">
+          <div>
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">Analiz Türü</div>
+            <select id="aiType" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.65rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
+              <option value="genel">📊 Genel Performans</option>
+              <option value="aylik">🗓 Aylık Karşılaştırma</option>
+              <option value="yillik">📆 Yıllık Değerlendirme</option>
+              <option value="trend">📈 Trend ve Tahmin</option>
+              <option value="gun">📅 Gün/Hafta Analizi</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">Veri Aralığı</div>
+            <select id="aiRange" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.65rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
+              <option value="30">Son 30 Gün</option>
+              <option value="90" selected>Son 90 Gün</option>
+              <option value="180">Son 6 Ay</option>
+              <option value="365">Son 1 Yıl</option>
+              <option value="all">Tüm Veriler</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+          <button class="btn-save" id="aiBtn" onclick="runAI()">🚀 Analizi Başlat</button>
+          <span style="font-size:.8rem;color:var(--muted)">~10–20 saniye</span>
+        </div>
+      </div>
+      <div id="aiResult"></div>
+    </div>
+
+    <!-- AYARLAR -->
 
       <!-- HAFTALIK -->
       <div id="tab-haftalik">
@@ -916,6 +1088,21 @@ body{
         </div>
       </div>
       <div class="settings-section">
+        <h3>AI Proxy URL</h3>
+        <div class="card">
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem;line-height:1.6">
+            AI Analiz özelliği için Cloudflare Worker URL'ini gir.<br>
+            <span style="font-size:.75rem">Worker dosyasını <strong style="color:var(--text)">cirolog-ai-worker.js</strong> olarak indirip Cloudflare'e yükle.</span>
+          </div>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+            <input type="url" id="aiProxyInput" placeholder="https://cirolog-ai.xxxxx.workers.dev"
+              style="flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
+            <button class="btn-save" onclick="saveAiProxy()">Kaydet</button>
+          </div>
+          <div style="margin-top:.6rem;font-size:.78rem" id="aiProxyStatus"></div>
+        </div>
+      </div>
+      <div class="settings-section">
         <h3>Hesap Bilgileri</h3>
         <div class="setting-row"><div class="setting-info"><p>E-Posta</p><span id="settingEmail">—</span></div></div>
         <div class="setting-row" style="margin-top:.5rem"><div class="setting-info"><p>Plan</p><span id="settingPlan">—</span></div></div>
@@ -1001,6 +1188,8 @@ async function init(){
   $('settingEmail',cp.email||'');$('settingPlan',pLabel(cp.plan));
   $('settingDate',cp.createdAt?.toDate?cp.createdAt.toDate().toLocaleDateString('tr-TR'):'—');
   if(cp.monthlyGoal)document.getElementById('goalInput').value=cp.monthlyGoal;
+  const sp=localStorage.getItem('cl_ai_proxy')||'';
+  if(sp){const pi=document.getElementById('aiProxyInput');if(pi){pi.value=sp;const st=document.getElementById('aiProxyStatus');if(st)st.innerHTML='<span style="color:var(--success)">✓ Kayıtlı</span>';}}
   await loadRecs();renderDash();fetchWx();
 }
 
@@ -1361,13 +1550,377 @@ window.navTo=function(page,el){
   if(page==='karsilastir')renderCompare();
 };
 window.switchTab=function(name,el){
-  document.querySelectorAll('#page-raporlar .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
-  ['haftalik','aylik','yillik','gunler'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
+  document.querySelectorAll('#page-raporlar .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['haftalik','aylik','yillik','gunler'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===name?'block':'none';
+  });
   if(name==='haftalik') renderWeekTab();
-  if(name==='aylik')    { initMonthPickers(); renderMonthTab(); }
-  if(name==='yillik')   { initYearPickers(); renderYearTab(); }
+  if(name==='aylik')   {initPickers();renderMonthTab();}
+  if(name==='yillik')  {initPickers();renderYearTab();}
   if(name==='gunler')   renderDayTab();
 };
+
+/* ── Yardımcı: ay içi 4 hafta ── */
+function monthWeeks(y,m){
+  const total=new Date(y,m+1,0).getDate();
+  const wks=[[],[],[],[]];
+  for(let d=1;d<=total;d++){
+    const dt=new Date(y,m,d);
+    const key=dt.toISOString().split('T')[0];
+    const wi=Math.min(3,Math.floor((d-1)/7));
+    wks[wi].push(key);
+  }
+  return wks;
+}
+function recSum(days){return days.reduce((s,d)=>{const r=AR.find(x=>x.id===d);return s+(r?Number(r.amount):0);},0);}
+function recAvg(days){const v=days.filter(d=>AR.some(x=>x.id===d));return v.length?Math.round(recSum(v)/v.length):0;}
+function chgPct(a,b){return b>0?Math.round((a-b)/b*100):null;}
+function chgHtml(pct){if(pct===null)return '';const c=pct>=0?'var(--success)':'var(--danger)';return `<span style="color:${c};font-size:.78rem">${pct>=0?'↑':'↓'} ${Math.abs(pct)}%</span>`;}
+function dayListHtml(items,top){
+  if(!items.length) return '<div style="color:var(--muted);font-size:.83rem;padding:.5rem 0">Veri yok</div>';
+  return items.slice(0,top||5).map((r,i)=>{
+    const d=new Date(r.date+'T00:00:00');
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.83rem">
+      <div><span style="color:var(--muted);margin-right:.35rem">${i+1}.</span>${d.getDate()} ${MSH[d.getMonth()]} — <span style="color:var(--muted)">${DSH[d.getDay()]}</span></div>
+      <strong style="color:var(--accent)">₺${fmt(r.amount)}</strong>
+    </div>`;
+  }).join('');
+}
+
+/* ════ HAFTALIK ════ */
+function renderWeekTab(){
+  const now=new Date();
+  const mon=new Date(now); mon.setDate(now.getDate()-((now.getDay()+6)%7));
+  const thisDays=[],prevDays=[];
+  for(let i=0;i<7;i++){
+    const a=new Date(mon);a.setDate(mon.getDate()+i);thisDays.push(a.toISOString().split('T')[0]);
+    const b=new Date(mon);b.setDate(mon.getDate()+i-7);prevDays.push(b.toISOString().split('T')[0]);
+  }
+  const thisT=recSum(thisDays), prevT=recSum(prevDays);
+  const pct=chgPct(thisT,prevT);
+  $('rW_thisTotal','₺'+fmt(thisT));
+  document.getElementById('rW_thisDays').innerHTML=`${thisDays.filter(d=>AR.some(r=>r.id===d)).length} kayıtlı gün`;
+  $('rW_prevTotal','₺'+fmt(prevT));
+  document.getElementById('rW_change').innerHTML=chgHtml(pct)||(prevT===0?'<span style="color:var(--muted);font-size:.78rem">Geçen hafta veri yok</span>':'');
+  // Ort / max / min
+  const vals7=[],labs7=[];
+  for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);const k=d.toISOString().split('T')[0];const r=AR.find(x=>x.id===k);vals7.push(r?Number(r.amount):0);labs7.push(DSH[d.getDay()]);}
+  const nonz=vals7.filter(v=>v>0);
+  const mx=nonz.length?Math.max(...nonz):0, mxi=nonz.length?vals7.indexOf(mx):-1;
+  const mn=nonz.length?Math.min(...nonz):0, mni=nonz.length?vals7.lastIndexOf(mn):-1;
+  $('rW_avg',nonz.length?'₺'+fmt(Math.round(nonz.reduce((a,b)=>a+b,0)/nonz.length)):'₺0');
+  $('rW_max',mx?'₺'+fmt(mx):'—');$('rW_maxDay',mxi>=0?labs7[mxi]:'');
+  $('rW_min',mn?'₺'+fmt(mn):'—');$('rW_minDay',mni>=0?labs7[mni]:'');
+  bars('rWeekChart',vals7,labs7,190);
+  // 4 hafta
+  const y=now.getFullYear(),m=now.getMonth();
+  const wks=monthWeeks(y,m);
+  const w4v=wks.map(w=>recSum(w));
+  const maxW=Math.max(...w4v,1);
+  document.getElementById('rW_4wCards').innerHTML=wks.map((w,i)=>{
+    const s=w4v[i],prev=i>0?w4v[i-1]:null,p=chgPct(s,prev);
+    return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:.75rem;text-align:center">
+      <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;margin-bottom:.25rem">${i+1}.Hafta</div>
+      <div style="font-family:var(--font-display);font-size:1.1rem">₺${s>=1000?(s/1000).toFixed(1)+'K':fmt(s)}</div>
+      <div style="margin-top:.2rem">${chgHtml(p)||'<span style="font-size:.65rem;color:var(--muted)">—</span>'}</div>
+      <div style="height:3px;background:var(--border);border-radius:99px;margin-top:.4rem"><div style="height:100%;background:var(--accent);border-radius:99px;width:${Math.round((s/maxW)*100)}%"></div></div>
+    </div>`;
+  }).join('');
+  $('rW_4wTitle',`${MON[m]} ${y} — 4 Hafta Kıyası`);
+  bars('rW_4wChart',w4v,['1.Hafta','2.Hafta','3.Hafta','4.Hafta'],130);
+}
+
+/* ════ AYLIK ════ */
+function initPickers(){
+  const years=[...new Set(AR.map(r=>new Date(r.date+'T00:00:00').getFullYear()))].sort((a,b)=>b-a);
+  const now=new Date();
+  if(!years.includes(now.getFullYear())) years.unshift(now.getFullYear());
+  ['mPickY','yPick1'].forEach(id=>{
+    const s=document.getElementById(id);if(!s||s.options.length)return;
+    years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;s.appendChild(o);});
+  });
+  ['yPick2'].forEach(id=>{
+    const s=document.getElementById(id);if(!s||s.options.length>1)return;
+    years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;s.appendChild(o);});
+  });
+  const ms=document.getElementById('mPickM');
+  if(ms&&!ms.options.length){MON.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;ms.appendChild(o);});ms.value=now.getMonth();}
+}
+
+window.renderMonthTab=function(){
+  const y=parseInt(document.getElementById('mPickY')?.value||new Date().getFullYear());
+  const m=parseInt(document.getElementById('mPickM')?.value??new Date().getMonth());
+  const days=new Date(y,m+1,0).getDate();
+  const vals=[],labs=[];
+  for(let d=1;d<=days;d++){
+    const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const r=AR.find(x=>x.id===k);vals.push(r?Number(r.amount):0);labs.push(String(d));
+  }
+  const recs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y&&d.getMonth()===m;});
+  const total=recs.reduce((s,r)=>s+Number(r.amount),0);
+  // Önceki ay
+  const pm=m===0?11:m-1,py=m===0?y-1:y;
+  const prevRecs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===py&&d.getMonth()===pm;});
+  const prevTotal=prevRecs.reduce((s,r)=>s+Number(r.amount),0);
+  // Geçen yıl aynı ay
+  const lyRecs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y-1&&d.getMonth()===m;});
+  const lyTotal=lyRecs.reduce((s,r)=>s+Number(r.amount),0);
+  const pct=chgPct(total,prevTotal);
+  $('rM_total','₺'+fmt(total));
+  document.getElementById('rM_totalLabel').textContent=`${recs.length} günlük kayıt`;
+  $('rM_prev','₺'+fmt(prevTotal));
+  document.getElementById('rM_change').innerHTML=chgHtml(pct)||'<span style="font-size:.78rem;color:var(--muted)">Önceki ay veri yok</span>';
+  $('rM_avg',recs.length?'₺'+fmt(Math.round(total/recs.length)):'₺0');
+  $('rM_days',recs.length);
+  const goal=cp?.monthlyGoal||0;
+  $('rM_goal',goal>0?`%${Math.min(100,Math.round((total/goal)*100))}`:' —');
+  $('rM_lastYear',lyTotal?'₺'+fmt(lyTotal):'—');
+  $('rM_chartTitle',`${MON[m]} ${y} — Günlük`);
+  bars('rM_chart',vals,labs,180);
+  // 4 hafta
+  const wks=monthWeeks(y,m);
+  document.getElementById('rM_4weeks').innerHTML=wks.map((wk,i)=>{
+    const ws=recSum(wk),wa=recAvg(wk);
+    const prev=i>0?recSum(wks[i-1]):null,p=chgPct(ws,prev);
+    const start=wk[0]?.slice(5).replace('-','.')||'',end=wk[wk.length-1]?.slice(5).replace('-','.')||'';
+    return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem">
+        <span style="font-size:.72rem;color:var(--muted);font-weight:700">${i+1}. HAFTA&nbsp;${start}–${end}</span>
+        <span>${chgHtml(p)||''}</span>
+      </div>
+      <div style="font-family:var(--font-display);font-size:1.3rem">₺${fmt(ws)}</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Günlük ort: ₺${fmt(wa)}</div>
+    </div>`;
+  }).join('');
+  // En iyi / kötü
+  const sortD=[...recs].sort((a,b)=>Number(b.amount)-Number(a.amount));
+  document.getElementById('rM_topDays').innerHTML=dayListHtml(sortD,5);
+  document.getElementById('rM_botDays').innerHTML=dayListHtml([...sortD].reverse(),5);
+};
+
+/* ════ YILLIK ════ */
+window.renderYearTab=function(){
+  const y=parseInt(document.getElementById('yPick1')?.value||new Date().getFullYear());
+  const y2v=document.getElementById('yPick2')?.value;
+  const y2=y2v?parseInt(y2v):null;
+  const mData=(yr)=>Array.from({length:12},(_,mi)=>{
+    return AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===yr&&d.getMonth()===mi;}).reduce((s,r)=>s+Number(r.amount),0);
+  });
+  const v1=mData(y), v2=y2?mData(y2):null;
+  const total=v1.reduce((s,v)=>s+v,0);
+  const nz=v1.filter(v=>v>0);
+  const bi=v1.indexOf(Math.max(...v1));
+  const wiArr=v1.map((v,i)=>({v,i})).filter(x=>x.v>0);
+  const wi=wiArr.length?wiArr.reduce((a,b)=>a.v<b.v?a:b).i:-1;
+  $('rY_total','₺'+fmt(total));
+  $('rY_avg',nz.length?'₺'+fmt(Math.round(total/nz.length)):'₺0');
+  $('rY_best',bi>=0&&v1[bi]>0?`${MSH[bi]} — ₺${fmt(v1[bi])}`:'—');
+  $('rY_worst',wi>=0?`${MSH[wi]} — ₺${fmt(v1[wi])}`:'—');
+  $('rY_chartTitle',y2?`${y} vs ${y2}`:y+' — Aylık Kırılım');
+  // Grafik
+  if(y2&&v2){
+    const el=document.getElementById('rY_chart');
+    const max=Math.max(...v1,...v2,1);
+    el.style.height='200px';
+    el.innerHTML=v1.map((v,i)=>`<div class="bar-col">
+      <div class="bar-val" style="font-size:.6rem">${v>0?'₺'+(v/1000).toFixed(0)+'K':''}</div>
+      <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:150px">
+        <div style="flex:1;background:var(--accent);border-radius:3px 3px 0 0;height:${Math.max((v/max)*100,v>0?3:0.5)}%;transition:height .5s" title="${y}: ₺${fmt(v)}"></div>
+        <div style="flex:1;background:var(--accent2);border-radius:3px 3px 0 0;height:${Math.max(((v2[i]||0)/max)*100,(v2[i]||0)>0?3:0.5)}%;transition:height .5s;opacity:.75" title="${y2}: ₺${fmt(v2[i]||0)}"></div>
+      </div>
+      <div class="bar-label">${MSH[i]}</div>
+    </div>`).join('');
+    // Lejant
+    el.insertAdjacentHTML('afterend',`<div style="display:flex;gap:1.5rem;margin-top:.5rem;font-size:.75rem;color:var(--muted)">
+      <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;margin-right:.3rem"></span>${y}</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent2);border-radius:2px;margin-right:.3rem;opacity:.75"></span>${y2}</span>
+    </div>`);
+  } else { bars('rY_chart',v1,MSH,200); }
+  // Tablo
+  const tbl=document.getElementById('rY_table');
+  tbl.innerHTML=`<thead><tr>
+    <th style="text-align:left;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">Ay</th>
+    <th style="text-align:right;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">${y}</th>
+    ${y2?`<th style="text-align:right;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">${y2}</th>
+    <th style="text-align:right;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">Fark</th>`:''}
+    <th style="text-align:right;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">Pay</th>
+  </tr></thead><tbody>${v1.map((v,i)=>{
+    const v2i=v2?v2[i]:null;
+    const diff=v2i!=null?v-v2i:null;
+    const dp=diff!=null&&v2i>0?Math.round((diff/v2i)*100):null;
+    const share=total>0?Math.round((v/total)*100):0;
+    const isBest=i===bi&&v>0;
+    return `<tr style="${isBest?'background:rgba(200,245,90,.05)':''}">
+      <td style="padding:.45rem .6rem;font-size:.85rem;font-weight:${isBest?'700':'400'};border-bottom:1px solid var(--border)">${MON[i]}</td>
+      <td style="text-align:right;padding:.45rem .6rem;font-size:.875rem;border-bottom:1px solid var(--border);${isBest?'color:var(--accent);font-weight:700':''}">${v>0?'₺'+fmt(v):'—'}</td>
+      ${y2?`<td style="text-align:right;padding:.45rem .6rem;font-size:.875rem;border-bottom:1px solid var(--border)">${v2i>0?'₺'+fmt(v2i):'—'}</td>
+      <td style="text-align:right;padding:.45rem .6rem;font-size:.82rem;border-bottom:1px solid var(--border);color:${dp>0?'var(--success)':dp<0?'var(--danger)':'var(--muted)'}">${dp!=null?(dp>=0?'+':'')+dp+'%':'—'}</td>`:''}
+      <td style="text-align:right;padding:.45rem .6rem;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:.3rem;justify-content:flex-end">
+          <div style="width:36px;height:4px;background:var(--border);border-radius:99px"><div style="height:100%;background:var(--accent);border-radius:99px;width:${share}%"></div></div>
+          <span style="font-size:.72rem;color:var(--muted)">${share}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('')}</tbody>`;
+  // Çeyrekler
+  const Q=[{l:'Q1',m:[0,1,2]},{l:'Q2',m:[3,4,5]},{l:'Q3',m:[6,7,8]},{l:'Q4',m:[9,10,11]}];
+  document.getElementById('rY_quarters').innerHTML=Q.map(q=>{
+    const qs=q.m.reduce((s,mi)=>s+v1[mi],0);
+    const qs2=v2?q.m.reduce((s,mi)=>s+(v2[mi]||0),0):null;
+    const qp=chgPct(qs,qs2);
+    const share=total>0?Math.round((qs/total)*100):0;
+    return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1rem;text-align:center">
+      <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:.3rem">${q.l} (${MON[q.m[0]].slice(0,3)}–${MON[q.m[2]].slice(0,3)})</div>
+      <div style="font-family:var(--font-display);font-size:1.15rem">₺${qs>=1000000?(qs/1000000).toFixed(2)+'M':fmt(qs)}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:.15rem">Toplam %${share}</div>
+      ${qp!=null?`<div style="margin-top:.2rem">${chgHtml(qp)}</div>`:''}
+    </div>`;
+  }).join('');
+};
+
+/* ════ GÜN ANALİZİ ════ */
+function renderDayTab(){
+  if(!AR.length) return;
+  const dt=[0,0,0,0,0,0,0],dc=[0,0,0,0,0,0,0];
+  AR.forEach(r=>{const wd=new Date(r.date+'T00:00:00').getDay();dt[wd]+=Number(r.amount);dc[wd]++;});
+  const avgs=dt.map((t,i)=>dc[i]>0?Math.round(t/dc[i]):0);
+  const ord=[1,2,3,4,5,6,0];
+  bars('rD_dowChart',ord.map(i=>avgs[i]),ord.map(i=>DAYS[i].slice(0,3)),180);
+  // Hafta içi vs sonu
+  const wdR=AR.filter(r=>![0,6].includes(new Date(r.date+'T00:00:00').getDay()));
+  const weR=AR.filter(r=>[0,6].includes(new Date(r.date+'T00:00:00').getDay()));
+  const wdA=wdR.length?Math.round(wdR.reduce((s,r)=>s+Number(r.amount),0)/wdR.length):0;
+  const weA=weR.length?Math.round(weR.reduce((s,r)=>s+Number(r.amount),0)/weR.length):0;
+  const mx2=Math.max(wdA,weA,1);
+  document.getElementById('rD_wdwe').innerHTML=[
+    {l:'Hafta İçi',s:'Pzt – Cum',v:wdA,c:wdR.length},
+    {l:'Hafta Sonu',s:'Cmt – Paz',v:weA,c:weR.length},
+  ].map(x=>`<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1.25rem;text-align:center">
+    <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:.25rem">${x.l}</div>
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:.5rem">${x.s}</div>
+    <div style="font-family:var(--font-display);font-size:1.6rem">₺${fmt(x.v)}</div>
+    <div style="font-size:.75rem;color:var(--muted);margin-top:.25rem">ort./gün · ${x.c} kayıt</div>
+    <div style="height:5px;background:var(--border);border-radius:99px;margin-top:.6rem"><div style="height:100%;background:var(--accent);border-radius:99px;width:${Math.round((x.v/mx2)*100)}%"></div></div>
+  </div>`).join('');
+  const sorted=[...AR].sort((a,b)=>Number(b.amount)-Number(a.amount));
+  document.getElementById('rD_top').innerHTML=dayListHtml(sorted,10);
+  document.getElementById('rD_bot').innerHTML=dayListHtml([...sorted].reverse(),10);
+}
+
+/* ════ AI ANALİZ ════ */
+const AI_PROXY = localStorage.getItem('cl_ai_proxy')||'';
+
+window.runAI=async function(){
+  const btn=document.getElementById('aiBtn');
+  const type=document.getElementById('aiType')?.value||'genel';
+  const rangeVal=document.getElementById('aiRange')?.value||'90';
+
+  // Proxy kontrol
+  const proxy=localStorage.getItem('cl_ai_proxy')||'';
+  if(!proxy){
+    document.getElementById('aiProxyWarn').style.display='block';
+    document.getElementById('aiResult').innerHTML=`<div class="ai-box" style="border-color:var(--warn)">
+      <div style="color:var(--warn);font-weight:700;margin-bottom:.5rem">⚠️ Worker URL Girilmemiş</div>
+      <div style="font-size:.875rem;color:var(--muted);line-height:1.7">
+        AI analizi için Cloudflare Worker kurulumu gerekli.<br>
+        <strong style="color:var(--text)">Ayarlar → AI Proxy URL</strong> bölümüne Worker URL'ini gir.
+      </div>
+    </div>`;
+    return;
+  }
+  document.getElementById('aiProxyWarn').style.display='none';
+
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Analiz ediliyor...';
+
+  // Veri hazırla
+  let filtered=AR;
+  if(rangeVal!=='all'){
+    const cut=new Date();cut.setDate(cut.getDate()-parseInt(rangeVal));
+    filtered=AR.filter(r=>r.date>=cut.toISOString().split('T')[0]);
+  }
+  if(filtered.length<3){toast('En az 3 kayıt gerekli','w');btn.disabled=false;btn.textContent='🚀 Analizi Başlat';return;}
+
+  const sorted=[...filtered].sort((a,b)=>a.date.localeCompare(b.date));
+  const total=sorted.reduce((s,r)=>s+Number(r.amount),0);
+  const avg=Math.round(total/sorted.length);
+  const maxR=sorted.reduce((a,b)=>Number(a.amount)>Number(b.amount)?a:b);
+  const minR=sorted.reduce((a,b)=>Number(a.amount)<Number(b.amount)?a:b);
+  const monthMap={};
+  sorted.forEach(r=>{const k=r.date.slice(0,7);monthMap[k]=(monthMap[k]||0)+Number(r.amount);});
+  const monthSummary=Object.entries(monthMap).map(([k,v])=>`${k}: ₺${fmt(v)}`).join('\n');
+  const dt2=[0,0,0,0,0,0,0],dc2=[0,0,0,0,0,0,0];
+  sorted.forEach(r=>{const wd=new Date(r.date+'T00:00:00').getDay();dt2[wd]+=Number(r.amount);dc2[wd]++;});
+  const dayAvgs=DAYS.map((d,i)=>dc2[i]>0?`${d}: ₺${fmt(Math.round(dt2[i]/dc2[i]))}`:null).filter(Boolean).join('\n');
+
+  const typeHints={
+    genel:'Genel performans özeti, güçlü/zayıf dönemler, trend yönü ve 4 somut eylem önerisi.',
+    aylik:'Her ayı öncekiyle karşılaştır (% fark ile). En iyi/kötü 3 ayı belirt. Mevsimsel pattern var mı?',
+    yillik:'Yıllık büyüme trendi, çeyreklik performans (Q1–Q4), gelecek 3 ay tahmini.',
+    trend:'Yükselen/düşen periyotlar, ivme değişimleri, 90 günlük projeksiyon.',
+    gun:'En verimli/verimsiz günler, hafta içi-sonu farkı yüzdesi, ideal çalışma takvimi önerisi.',
+  };
+
+  const prompt=`Sen deneyimli bir Türk işletme danışmanısın. Sana verilen ciro verilerini analiz et.
+
+İŞLETME: ${cp.businessName||'—'}
+ANALİZ ODAĞI: ${typeHints[type]}
+VERİ: ${sorted[0].date} → ${sorted[sorted.length-1].date} (${sorted.length} kayıt)
+HEDEF: ${cp.monthlyGoal?'₺'+fmt(cp.monthlyGoal)+'/ay':'Belirsiz'}
+
+ÖZET:
+Toplam: ₺${fmt(total)} | Günlük ort: ₺${fmt(avg)}
+En yüksek: ${maxR.date} ₺${fmt(maxR.amount)} | En düşük: ${minR.date} ₺${fmt(minR.amount)}
+
+AYLIK:
+${monthSummary}
+
+GÜNLÜK ORT:
+${dayAvgs}
+
+KURALLAR:
+- Türkçe yaz
+- Her iddiayı sayıyla destekle
+- Belirsiz, genel ifade kullanma ("iyi performans" yerine "%12 artış" de)
+- Başlıkları ## ile işaretle
+- Sonunda "ÖNERİLER" başlığı altında numaralı liste ver`;
+
+  try{
+    const res=await fetch(proxy,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok)throw new Error(`Worker yanıt vermedi (${res.status})`);
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
+    const text=data.content?.[0]?.text||'Yanıt boş geldi.';
+    const html=text
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/^##\s*(.+)$/gm,'<h3 style="font-family:var(--font-display);color:var(--accent);margin:1.1rem 0 .4rem;font-size:1rem">$1</h3>')
+      .replace(/^(\d+\.)\s+/gm,'<br><strong>$1</strong> ')
+      .replace(/\n\n/g,'<br><br>')
+      .replace(/\n/g,'<br>');
+    document.getElementById('aiResult').innerHTML=`<div class="ai-box">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)">
+        <span style="font-size:1.1rem">🤖</span>
+        <div><div style="font-size:.82rem;font-weight:700">Analiz Tamamlandı</div>
+        <div style="font-size:.7rem;color:var(--muted)">${new Date().toLocaleString('tr-TR')} · ${sorted.length} kayıt · ${rangeVal==='all'?'Tüm veriler':'Son '+rangeVal+' gün'}</div></div>
+      </div>
+      <div style="line-height:1.85;font-size:.9rem">${html}</div>
+    </div>`;
+  }catch(e){
+    document.getElementById('aiResult').innerHTML=`<div class="ai-box" style="border-color:var(--danger)">
+      <div style="color:var(--danger);font-weight:700;margin-bottom:.4rem">✕ Hata</div>
+      <div style="font-size:.85rem;color:var(--muted)">${e.message}</div>
+    </div>`;
+    toast('AI hatası: '+e.message,'e');
+  }
+  finally{btn.disabled=false;btn.textContent='🔄 Yeniden Analiz Et';}
+};
+
+// ── AI ANALİZ (yukarda tanımlı) ──
 
 // ════ HAFTALIK TAB ════
 function renderWeekTab(){
@@ -1665,6 +2218,16 @@ window.saveGoal=async function(){
   const g=parseFloat(document.getElementById('goalInput').value);if(!g||g<=0)return;
   try{await updateDoc(doc(db,C.users,cu.uid),{monthlyGoal:g});cp.monthlyGoal=g;renderDash();toast('Hedef güncellendi ✓','s');}
   catch(e){toast('Hata: '+e.message,'e');}
+};
+window.saveAiProxy=function(){
+  const url=document.getElementById('aiProxyInput')?.value?.trim();
+  if(!url){toast('URL boş','w');return;}
+  if(!url.startsWith('https://')){toast('URL https:// ile başlamalı','w');return;}
+  localStorage.setItem('cl_ai_proxy',url);
+  const st=document.getElementById('aiProxyStatus');
+  if(st){st.innerHTML='<span style="color:var(--success)">✓ Kaydedildi</span>';}
+  toast('AI Proxy URL kaydedildi ✓','s');
+  document.getElementById('aiProxyWarn')&&(document.getElementById('aiProxyWarn').style.display='none');
 };
 window.toggleWeather=function(on){
   document.getElementById('weatherChip').style.display=on?'flex':'none';
