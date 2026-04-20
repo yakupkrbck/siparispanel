@@ -1,0 +1,68 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Helpers ---
+    
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'businessName'])
+        && data.name is string && data.name.size() <= 100
+        && data.businessName is string && data.businessName.size() <= 200
+        && (!('monthlyGoal' in data) || (data.monthlyGoal is number && data.monthlyGoal >= 0))
+        && (!('aiProxyUrl' in data) || (data.aiProxyUrl is string && data.aiProxyUrl.size() <= 500))
+        && (!('plan' in data) || (data.plan is string))
+        && (!('approved' in data) || (data.approved is bool));
+    }
+
+    function isValidRecord(data) {
+      return data.keys().hasAll(['date', 'amount'])
+        && data.date is string && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$')
+        && data.amount is number && data.amount >= 0
+        && (!('note' in data) || (data.note is string && data.note.size() <= 1000));
+    }
+
+    // --- Match Rules ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) 
+        && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'businessName', 'monthlyGoal', 'aiProxyUrl', 'plan']);
+      
+      match /records/{recordId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(recordId) && isValidRecord(incoming());
+        allow update: if isOwner(userId) && isValidId(recordId) && isValidRecord(incoming())
+          && incoming().diff(existing()).affectedKeys().hasOnly(['amount', 'note', 'updatedAt']);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

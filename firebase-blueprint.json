@@ -1,0 +1,41 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Details about the business owner and their business.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "businessName": { "type": "string" },
+        "monthlyGoal": { "type": "number" },
+        "aiProxyUrl": { "type": "string" },
+        "plan": { "type": "string" },
+        "approved": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "businessName"]
+    },
+    "TurnoverRecord": {
+      "title": "Daily Turnover Record",
+      "description": "Daily revenue data and notes.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "amount": { "type": "number" },
+        "note": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["date", "amount"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document."
+    },
+    "/users/{userId}/records/{recordDate}": {
+      "schema": "TurnoverRecord",
+      "description": "Daily turnover records for a user."
+    }
+  }
+}
