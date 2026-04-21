@@ -1303,10 +1303,10 @@ window.runLocalAI=async function(){
       `Son 14 günün açık gün ort.: <strong>₺${fmt(l14avg)}</strong>`,
       `Mevcut hız ile 30 günlük tahmini ciro (22 açık gün): <strong>₺${fmt(Math.round(projected30))}</strong>`,
       `Aylık hedef: ${cp?.monthlyGoal?'₺'+fmt(cp.monthlyGoal):'Belirlenmemiş'}`,
-      cp?.monthlyGoal&&projected30>=cp.monthlyGoal?`${badge('ib-up','✓ Hedefe Ulaşacak')} Mevcut hızla hedef aşılacak.`:cp?.monthlyGoal?`${badge('ib-dn','⚠ Hedef Riski')} Günlük ortalama ₺${fmt(Math.ceil((cp.monthlyGoal-projected30)/22)} artırılmalı.`:'',
+      cp?.monthlyGoal&&projected30>=cp.monthlyGoal?`${badge('ib-up','✓ Hedefe Ulaşacak')} Mevcut hızla hedef aşılacak.`:cp?.monthlyGoal?`${badge('ib-dn','⚠ Hedef Riski')} Günlük ortalama ₺${fmt(Math.ceil((cp.monthlyGoal-projected30)/22))} artırılmalı.`:'',
     ].filter(Boolean));
     if(months.length>=2){
-      const mArr=months.slice(-6);html+=section('📉 Aylık Eğilim (Son 6 Ay)',mArr.map(([k,v],i,a)=>{const prev=i>0?a[i-1][1]:null;const p=prev?Math.round((v-prev)/prev*100):null;const [y2,mn]=k.split('-');return`<strong>${MON[parseInt(mn)-1]} ${y2}:</strong> ₺${fmt(v)}${p!==null?` ${badge(p>=0?'ib-up':'ib-dn',(p>=0?'+':'')+p+'%')}`:'`'}`;}).map(s=>s.replace(/`/g,'')));
+      const mArr=months.slice(-6);html+=section('📉 Aylık Eğilim (Son 6 Ay)',mArr.map(([k,v],i,a)=>{const prev=i>0?a[i-1][1]:null;const p=prev?Math.round((v-prev)/prev*100):null;const [y2,mn]=k.split('-');const pBadge=p!==null?' '+badge(p>=0?'ib-up':'ib-dn',(p>=0?'+':'')+p+'%'):'';return'<strong>'+MON[parseInt(mn)-1]+' '+y2+':</strong> ₺'+fmt(v)+pBadge;}).filter(Boolean));
     }
   }
   if(type==='kapali'){
