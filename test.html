@@ -1,232 +1,369 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CiroLog v2 — Akıllı İş Zekası Platformu</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <style>
+
+<html data-theme="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>CiroLog v2 — Akıllı İş Zekası Platformu</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=DM+Sans:wght@300;400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<style>
         /* ══ TASARIM SİSTEMİ & TEMALAR ══ */
         :root {
             /* Varsayılan: Tech-Noir (Koyu) */
-            --bg: #0d0f06; --surface: #12140b; --surface2: #1a1d13; --border: #2a2d21;
+            --bg: #0a0a0f; --surface: #13131a; --surface2: #1c1c27; --border: #2a2a3a;
             --accent: #c8f55a; --accent2: #7b6ff0; --text: #f0f0f5; --muted: #6b6b85;
-            --danger: #ff5e5e; --success: #4edb8f; --warn: #f5c842; --sh: rgba(0,0,0,0.6);
+            --danger: #ff5e5e; --success: #4edb8f; --warn: #f5c842; --sh: rgba(0,0,0,0.45);
             --font-body: 'DM Sans', sans-serif; --font-display: 'DM Serif Display', serif;
-            --radius: 16px; --radius-sm: 10px; --sidebar-w: 260px;
+            --radius: 14px; --radius-sm: 10px; --sidebar-w: 260px;
+            --nav-active-bg: rgba(200, 245, 90, 0.1);
         }
 
         [data-theme="light"] {
-            --bg: #f8f9fa; --surface: #ffffff; --surface2: #f1f3f5; --border: #dee2e6;
-            --accent: #4f46e5; --accent2: #0ea5e9; --text: #1a1a2e; --muted: #6c757d;
-            --danger: #dc3545; --success: #28a745; --warn: #ffc107; --sh: rgba(0,0,0,0.08);
+            --bg: #f0f2f8; --surface: #ffffff; --surface2: #e8ebf4; --border: #d4d8e8;
+            --accent: #4f46e5; --accent2: #0ea5e9; --text: #1e1e3a; --muted: #8890b0;
+            --danger: #e53e3e; --success: #38a169; --warn: #d69e2e; --sh: rgba(30,30,80,0.1);
             --font-body: 'Space Grotesk', sans-serif; --font-display: 'Space Grotesk', sans-serif;
-        }
-
-        [data-theme="midnight"] {
-            --bg: #02040a; --surface: #0d1117; --surface2: #161b22; --border: #30363d;
-            --accent: #58a6ff; --accent2: #bc8cf2; --text: #c9d1d9; --muted: #8b949e;
-            --font-body: 'IBM Plex Mono', monospace; --font-display: 'IBM Plex Mono', monospace;
+            --nav-active-bg: #ede9fe;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 15px; }
         body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; transition: background 0.3s, color 0.3s; overflow-x: hidden; }
         h1, h2, h3 { font-family: var(--font-display); }
 
-        /* ══ EKRAN YÖNETİMİ ══ */
-        .screen { display: none; min-height: 100vh; }
+        /* ══ SCREENS ══ */
+        .screen { display: none; min-height: 100vh; width: 100%; }
         .screen.active { display: flex; flex-direction: column; }
-        #appContainer { display: flex; flex-direction: row; }
+        #screenApp { flex-direction: row; }
 
         /* ══ AUTH ══ */
-        .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; background: radial-gradient(circle at top right, rgba(200,245,90,0.05), transparent); }
-        .auth-card { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: calc(var(--radius)*1.5); padding: 2.5rem; box-shadow: 0 20px 50px var(--sh); position: relative; }
-        .logo { font-family: var(--font-display); font-size: 2rem; margin-bottom: 0.5rem; }
+        .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background: radial-gradient(circle at top right, rgba(200,245,90,0.05), transparent); }
+        .auth-card { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--border); border-radius: calc(var(--radius)*1.5); padding: 2.75rem 2.25rem; box-shadow: 0 20px 60px var(--sh); position: relative; overflow: hidden; }
+        .auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+        .logo { font-family: var(--font-display); font-size: 2.25rem; margin-bottom: 0.5rem; }
         .logo span { color: var(--accent); }
+        .auth-sub { color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem; }
         .fg { margin-bottom: 1.25rem; }
-        .fg label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 0.5rem; }
-        .fg input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.9rem; color: var(--text); font-family: var(--font-body); outline: none; transition: border-color 0.2s; }
-        .fg input:focus { border-color: var(--accent); }
-        .btn { display: block; width: 100%; padding: 1rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; text-align: center; font-size: 1rem; }
+        .fg label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+        .fg input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.9rem; color: var(--text); font-family: var(--font-body); outline: none; transition: all 0.2s; }
+        .fg input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200, 245, 90, 0.1); }
+        .btn { display: block; width: 100%; padding: 1rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; text-align: center; font-size: 1rem; font-family: var(--font-body); }
         .btn-primary { background: var(--accent); color: #000; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
 
         /* ══ SIDEBAR ══ */
-        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 1.5rem 1rem; flex-shrink: 0; }
-        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm); cursor: pointer; color: var(--muted); font-size: 0.9rem; margin-bottom: 0.25rem; transition: 0.2s; background: transparent; border: none; width: 100%; text-align: left; }
+        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 1.5rem 1rem; flex-shrink: 0; z-index: 100; transition: transform 0.3s; }
+        .sidebar-scroll { flex: 1; overflow-y: auto; padding-bottom: 1rem; }
+        .nav-cat { font-size: 0.65rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; padding: 1.5rem 0.75rem 0.5rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0.85rem; border-radius: var(--radius-sm); cursor: pointer; color: var(--muted); font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; transition: 0.2s; background: transparent; border: none; width: 100%; text-align: left; font-family: var(--font-body); }
         .nav-item:hover { background: var(--surface2); color: var(--text); }
-        .nav-item.active { background: rgba(200,245,90,0.1); color: var(--accent); font-weight: 700; }
-        .nav-cat { font-size: 0.65rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 1.5rem 1rem 0.5rem; }
+        .nav-item.active { background: var(--nav-active-bg); color: var(--accent); font-weight: 700; }
+        .nav-icon { font-size: 1.1rem; width: 1.5rem; text-align: center; }
+        .sidebar-footer { padding-top: 1rem; border-top: 1px solid var(--border); margin-top: auto; }
+        .user-pill { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 0.5rem; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
+        .user-info p { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+        .user-info span { font-size: 0.7rem; color: var(--muted); display: block; }
 
-        /* ══ DASHBOARD ══ */
-        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
-        .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+        /* ══ MAIN CONTENT ══ */
+        .main-content { flex: 1; min-height: 100vh; overflow-y: auto; background: var(--bg); position: relative; }
+        .page { display: none; padding: 2.5rem; max-width: 1200px; margin: 0 auto; width: 100%; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ══ DASHBOARD COMPONENTS ══ */
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 2.2rem; margin-bottom: 0.35rem; }
+        .page-header p { color: var(--muted); font-size: 1rem; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 4px 12px var(--sh); }
+        .stat-label { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
         .stat-value { font-size: 2rem; font-weight: 800; font-family: var(--font-display); }
+        .stat-delta { font-size: 0.75rem; margin-top: 0.4rem; font-weight: 600; }
+        .up { color: var(--success); }
+        .dn { color: var(--danger); }
+        .neu { color: var(--muted); }
 
-        /* ══ CHART SIM ══ */
-        .chart-wrap { height: 180px; display: flex; align-items: flex-end; gap: 8px; margin-top: 1rem; }
-        .bar { flex: 1; background: var(--accent); border-radius: 4px 4px 0 0; transition: height 0.5s ease-out; }
+        .chart-wrap { height: 200px; display: flex; align-items: flex-end; gap: 8px; margin-top: 1.5rem; padding-bottom: 1.5rem; }
+        .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; gap: 8px; }
+        .bar { width: 100%; background: var(--accent); border-radius: 6px 6px 0 0; transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; min-height: 2px; }
+        .bar:hover { filter: brightness(1.1); }
+        .bar-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; }
+        .bar-val { font-size: 0.65rem; color: var(--text); font-weight: 700; }
+
+        .progress-bar { height: 8px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin: 1rem 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.8s ease; width: 0; }
+
+        /* ══ TABLES / LISTS ══ */
+        .record-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .record-item { display: flex; align-items: center; gap: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; transition: 0.2s; }
+        .record-item:hover { border-color: var(--accent); }
+        .rec-date { text-align: center; min-width: 50px; }
+        .rec-day { font-size: 1.6rem; font-weight: 800; font-family: var(--font-display); line-height: 1; }
+        .rec-month { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+        .rec-info { flex: 1; }
+        .rec-amount { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+        .icon-btn { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); transition: 0.2s; }
+        .icon-btn:hover { border-color: var(--accent); }
+        .icon-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+
+        /* ══ PAYWALLS ══ */
+        .paywall-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, var(--bg) 90%); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 4rem; z-index: 10; pointer-events: none; }
+        .paywall-content { pointer-events: auto; background: var(--surface); padding: 2.5rem; border-radius: var(--radius); border: 1px solid var(--accent); text-align: center; max-width: 450px; box-shadow: 0 25px 50px var(--sh); }
+        .blur-content { filter: blur(6px); opacity: 0.4; pointer-events: none; user-select: none; }
+
+        /* ══ TOASTS ══ */
+        .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.75rem; }
+        .toast { padding: 1rem 1.5rem; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--border); color: var(--text); font-size: 0.9rem; box-shadow: 0 10px 25px var(--sh); display: flex; align-items: center; gap: 0.75rem; animation: slideIn 0.3s ease; border-left: 4px solid var(--accent); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.success { border-left-color: var(--success); }
 
         /* ══ THEME SELECTOR ══ */
         .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-        .theme-card { border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; cursor: pointer; transition: 0.2s; }
-        .theme-card.active { border-color: var(--accent); background: rgba(200,245,90,0.05); }
-
-        /* ══ PAYWALL ══ */
-        .paywall { text-align: center; padding: 3rem 1.5rem; background: linear-gradient(135deg, rgba(200,245,90,0.1), rgba(123,111,240,0.1)); border-radius: var(--radius); }
-        .locked-feature { filter: blur(4px); opacity: 0.3; pointer-events: none; }
+        .theme-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; cursor: pointer; transition: 0.2s; position: relative; }
+        .theme-card.active { border-color: var(--accent); background: var(--surface2); }
+        .theme-card strong { display: block; margin-bottom: 0.25rem; }
+        .theme-card span { font-size: 0.75rem; color: var(--muted); }
 
         /* ══ MOBILE ══ */
+        .mobile-header { display: none; height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); align-items: center; padding: 0 1.25rem; position: sticky; top: 0; z-index: 1000; }
         @media (max-width: 768px) {
-            #appContainer { flex-direction: column; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 1rem; flex-direction: row; overflow-x: auto; position: sticky; top: 0; z-index: 100; }
-            .nav-cat { display: none; }
-            .nav-item { margin-bottom: 0; white-space: nowrap; }
-            .main-content { padding: 1.25rem; }
+            .mobile-header { display: flex; justify-content: space-between; }
+            #screenApp { flex-direction: column; }
+            .sidebar { position: fixed; left: 0; top: 60px; bottom: 0; transform: translateX(-100%); width: 280px; transition: transform 0.3s ease; }
+            .sidebar.active { transform: translateX(0); }
+            .page { padding: 1.5rem; }
+            .stat-grid { grid-template-columns: 1fr; }
+            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; top: 60px; }
+            .sidebar-overlay.active { display: block; }
         }
     </style>
 </head>
 <body>
-
-    <!-- ══ GİRİŞ EKRANI ══ -->
-    <div class="screen active" id="loginScreen">
-        <div class="auth-wrap">
-            <div class="auth-card">
-                <div class="logo">Ciro<span>Log</span></div>
-                <p style="color: var(--muted); margin-bottom: 2rem;">İş zekası paneline güvenli erişim.</p>
-                <div class="fg">
-                    <label>E-POSTA</label>
-                    <input type="email" id="emailInput" placeholder="admin@cirolog.bi">
-                </div>
-                <div class="fg">
-                    <label>ŞİFRE</label>
-                    <input type="password" id="passInput" placeholder="••••••••">
-                </div>
-                <button class="btn btn-primary" onclick="handleLogin()">Giriş Yap</button>
-                <p style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--muted);">
-                    Hesabınız yok mu? <a href="#" style="color: var(--accent); text-decoration: none; font-weight: 700;">Hemen Başvurun</a>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ══ ANA UYGULAMA ══ -->
-    <div class="screen" id="appScreen">
-        <div id="appContainer">
-            <nav class="sidebar">
-                <div class="logo" style="padding: 0.5rem 1rem;">Ciro<span>Log</span></div>
-                <div class="nav-cat">YÖNETİM</div>
-                <button class="nav-item active" onclick="showPage('dashboard', this)">📊 Özet</button>
-                <button class="nav-item" onclick="showPage('kayit', this)">✏️ Ciro Girişi</button>
-                <button class="nav-item" onclick="showPage('rapor', this)">📈 Raporlar</button>
-                <div class="nav-cat">SİSTEM</div>
-                <button class="nav-item" onclick="showPage('ai', this)">🧠 AI Analiz</button>
-                <button class="nav-item" onclick="showPage('ayarlar', this)">⚙️ Ayarlar</button>
-                <button class="nav-item" style="color: var(--danger); margin-top: auto;" onclick="logout()">🚪 Çıkış</button>
-            </nav>
-
-            <main class="main-content">
-                <!-- DASHBOARD PAGE -->
-                <div id="page-dashboard" class="page">
-                    <h1 style="margin-bottom: 0.5rem;">Hoş Geldin, Yönetici 👋</h1>
-                    <p style="color: var(--muted); margin-bottom: 2rem;">İşte bugünün performans özeti.</p>
-                    
-                    <div class="stat-grid">
-                        <div class="card">
-                            <div class="stat-label">BUGÜN</div>
-                            <div class="stat-value">₺12.450</div>
-                            <div style="color: var(--success); font-size: 0.8rem; margin-top: 0.5rem;">+ %8.2 trend</div>
-                        </div>
-                        <div class="card">
-                            <div class="stat-label">BU AY</div>
-                            <div class="stat-value">₺284.1K</div>
-                            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem;">- %1.1 kayıp</div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="margin-bottom: 1rem;">Haftalık Performans</h3>
-                        <div class="chart-wrap">
-                            <div class="bar" style="height: 40%;"></div>
-                            <div class="bar" style="height: 60%;"></div>
-                            <div class="bar" style="height: 45%;"></div>
-                            <div class="bar" style="height: 90%;"></div>
-                            <div class="bar" style="height: 75%;"></div>
-                            <div class="bar" style="height: 30%;"></div>
-                            <div class="bar" style="height: 55%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KAYIT PAGE -->
-                <div id="page-kayit" class="page" style="display: none;">
-                    <h1>Ciro Girişi</h1>
-                    <div class="card" style="margin-top: 1.5rem;">
-                        <div class="fg">
-                            <label>TARİH</label>
-                            <input type="date" value="2024-05-24">
-                        </div>
-                        <div class="fg">
-                            <label>TUTAR (₺)</label>
-                            <input type="number" placeholder="0.00">
-                        </div>
-                        <button class="btn btn-primary">Kaydı Tamamla</button>
-                    </div>
-                </div>
-
-                <!-- AI PAGE -->
-                <div id="page-ai" class="page" style="display: none;">
-                    <h1>Yapay Zeka Analizi</h1>
-                    <div class="paywall" style="margin-top: 2rem;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
-                        <h2>AI Modülü Kilitli</h2>
-                        <p style="color: var(--muted); margin-bottom: 2rem;">Trendleri önceden tahmin etmek ve akıllı raporlar almak için Pro'ya geçin.</p>
-                        <button class="btn btn-primary" style="max-width: 300px; margin: 0 auto;">PRO'yu Satın Al — ₺299/Yıl</button>
-                    </div>
-                    <div class="locked-feature" style="margin-top: 2rem;">
-                        <div class="card">Örnek trend analizi verisi...</div>
-                    </div>
-                </div>
-
-                <!-- AYARLAR PAGE -->
-                <div id="page-ayarlar" class="page" style="display: none;">
-                    <h1>Ayarlar</h1>
-                    <div class="card" style="margin-top: 1.5rem;">
-                        <h3>Tema Seçimi</h3>
-                        <div class="theme-grid">
-                            <div class="theme-card active" onclick="setTheme('dark')">
-                                <strong>🌙 Tech-Noir</strong>
-                                <p style="font-size: 0.75rem; color: var(--muted);">Koyu ve modern</p>
-                            </div>
-                            <div class="theme-card" onclick="setTheme('light')">
-                                <strong>☀️ Crystal Light</strong>
-                                <p style="font-size: 0.75rem; color: var(--muted);">Aydınlık ve ferah</p>
-                            </div>
-                            <div class="theme-card" onclick="setTheme('midnight')">
-                                <strong>⚓ Midnight</strong>
-                                <p style="font-size: 0.75rem; color: var(--muted);">Derin mavi tonlar</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- ══ FIREBASE & MANTIK ══ -->
-    <script type="module">
+<div class="toast-container" id="toastC"></div>
+<!-- ══ GİRİŞ EKRANI ══ -->
+<div class="screen active" id="screenLogin">
+<div class="auth-wrap">
+<div class="auth-card">
+<div class="logo">Ciro<span>Log</span></div>
+<div class="auth-sub">İşletme hesabınıza güvenli erişim sağlayın.</div>
+<div class="fg">
+<label>E-POSTA ADRESİ</label>
+<input id="loginEmail" placeholder="admin@isletme.com" type="email"/>
+</div>
+<div class="fg">
+<label>ŞİFRE</label>
+<input id="loginPass" placeholder="••••••••" type="password"/>
+</div>
+<button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">Giriş Yap</button>
+<div style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--muted);">
+                    Henüz hesabınız yok mu? <a href="#" style="color: var(--accent); text-decoration: none; font-weight: 700;">Hemen Başvurun</a>
+</div>
+</div>
+</div>
+</div>
+<!-- ══ ONAY BEKLENİYOR ══ -->
+<div class="screen" id="screenPending">
+<div class="auth-wrap">
+<div class="auth-card" style="text-align: center;">
+<div class="logo">Ciro<span>Log</span></div>
+<div style="font-size: 4rem; margin: 2rem 0;">⏳</div>
+<h3>Erişim Onayı Bekleniyor</h3>
+<p style="color: var(--muted); margin: 1rem 0 2rem; line-height: 1.6;">Hesabınız yönetici tarafından inceleniyor. Onaylandığında otomatik olarak panele yönlendirileceksiniz.</p>
+<button class="btn btn-ghost" onclick="logout()">Giriş Ekranına Dön</button>
+</div>
+</div>
+</div>
+<!-- ══ ANA UYGULAMA ══ -->
+<div class="screen" id="screenApp">
+<div class="mobile-header">
+<div class="logo" style="font-size: 1.5rem; margin-bottom: 0;">Ciro<span>Log</span></div>
+<button class="icon-btn" onclick="toggleSidebar()">☰</button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-scroll">
+<div class="logo" style="padding: 0 0.85rem 1rem;">Ciro<span>Log</span></div>
+<div class="nav-cat">YÖNETİM</div>
+<button class="nav-item active" onclick="navTo('dashboard', this)"><span class="nav-icon">📊</span> Özet</button>
+<button class="nav-item" onclick="navTo('kayit', this)"><span class="nav-icon">✏️</span> Ciro Girişi</button>
+<button class="nav-item" onclick="navTo('import', this)"><span class="nav-icon">📤</span> Toplu Yükle</button>
+<button class="nav-item" onclick="navTo('takvim', this)"><span class="nav-icon">📅</span> Takvim</button>
+<div class="nav-cat">ANALİZ</div>
+<button class="nav-item" onclick="navTo('raporlar', this)"><span class="nav-icon">📈</span> Raporlar</button>
+<button class="nav-item" onclick="navTo('karsilastir', this)"><span class="nav-icon">⚖️</span> Karşılaştır</button>
+<button class="nav-item" onclick="navTo('ai', this)"><span class="nav-icon">🧠</span> AI Analiz</button>
+<div class="nav-cat">SİSTEM</div>
+<button class="nav-item" onclick="navTo('profil', this)"><span class="nav-icon">👤</span> Profil</button>
+<button class="nav-item" onclick="navTo('ayarlar', this)"><span class="nav-icon">⚙️</span> Ayarlar</button>
+<button class="nav-item" onclick="navTo('lisans', this)"><span class="nav-icon">🔑</span> Lisans</button>
+<button class="nav-item" onclick="navTo('ihracat', this)"><span class="nav-icon">📄</span> Dışa Aktar</button>
+</div>
+<div class="sidebar-footer">
+<div class="user-pill">
+<div class="avatar" id="userAvatar">A</div>
+<div class="user-info">
+<p id="userName">Yönetici</p>
+<span id="userPlan">Pro Plan</span>
+</div>
+</div>
+<button class="nav-item" onclick="logout()" style="color: var(--danger); font-weight: 700;">
+<span class="nav-icon">🚪</span> Çıkış Yap
+                </button>
+</div>
+</nav>
+<main class="main-content">
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+<div class="page-header">
+<h1 id="welcomeMsg">Hoş geldin! 👋</h1>
+<p id="todayDateStr">24 Mayıs 2024, Cuma</p>
+</div>
+<div class="stat-grid">
+<div class="card">
+<div class="stat-label">BUGÜNÜN CİROSU</div>
+<div class="stat-value" id="statToday">₺0</div>
+<div class="stat-delta neu" id="statTodayLabel">— kayıt yok</div>
+</div>
+<div class="card">
+<div class="stat-label">BU HAFTA</div>
+<div class="stat-value" id="statWeek">₺0</div>
+<div class="stat-delta up" id="statWeekLabel">+ %0 trend</div>
+</div>
+<div class="card">
+<div class="stat-label">BU AY</div>
+<div class="stat-value" id="statMonth">₺0</div>
+<div class="stat-delta up" id="statMonthLabel">+ %0 trend</div>
+</div>
+</div>
+<div class="card">
+<h3 style="margin-bottom: 1.5rem;">Haftalık Performans</h3>
+<div class="chart-wrap" id="dashChart">
+<!-- Chart Bars JS ile dolacak -->
+</div>
+</div>
+</div>
+<!-- CİRO GİRİŞİ -->
+<div class="page" id="page-kayit">
+<div class="page-header">
+<h1>Ciro Girişi</h1>
+<p>Günlük satış rakamlarını hızlıca kaydedin.</p>
+</div>
+<div class="card" style="margin-bottom: 2rem;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+<div class="fg" style="margin-bottom: 0;">
+<label>TARİH</label>
+<input id="entryDate" type="date"/>
+</div>
+<div class="fg" style="margin-bottom: 0;">
+<label>TUTAR (₺)</label>
+<input id="entryAmount" placeholder="0.00" type="number"/>
+</div>
+</div>
+<button class="btn btn-primary" onclick="saveRecord()">Kaydı Kaydet</button>
+</div>
+<div class="record-list" id="recordList">
+<!-- Kayıtlar listelenecek -->
+</div>
+</div>
+<!-- AI ANALİZ -->
+<div class="page" id="page-ai">
+<div class="page-header">
+<h1>Yapay Zeka Analizi</h1>
+<p>Trendleri tahmin edin ve akıllı tavsiyeler alın.</p>
+</div>
+<div style="position: relative;">
+<div class="blur-content">
+<div class="card" style="margin-bottom: 1.5rem;">
+<h3>Trend Projeksiyonu</h3>
+<p style="margin: 1rem 0; color: var(--muted);">Son 30 günlük verileriniz inceleniyor...</p>
+<div style="height: 150px; background: var(--surface2); border-radius: 8px;"></div>
+</div>
+<div class="stat-grid">
+<div class="card"><h4>Ay Sonu Tahmini</h4><div class="stat-value">₺582K</div></div>
+<div class="card"><h4>Büyüme Potansiyeli</h4><div class="stat-value">%14</div></div>
+</div>
+</div>
+<div class="paywall-overlay">
+<div class="paywall-content">
+<div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
+<h2>AI Modülü Kilitli</h2>
+<p style="color: var(--muted); margin: 1rem 0 2rem;">Gelecek ayların cirosunu tahmin etmek ve veri odaklı kararlar almak için Pro'ya yükseltin.</p>
+<button class="btn btn-primary" onclick="navTo('lisans')" style="width: 100%;">PRO'ya Yükselt — ₺299/Ay</button>
+</div>
+</div>
+</div>
+</div>
+<!-- TAKVİM -->
+<div class="page" id="page-takvim">
+<div class="page-header">
+<h1>Ciro Takvimi</h1>
+<p>Aylık performansınızı görsel bir takvim üzerinden takip edin.</p>
+</div>
+<div class="card">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+<button class="icon-btn" onclick="changeMonth(-1)">←</button>
+<h2 id="calendarTitle">Mayıs 2024</h2>
+<button class="icon-btn" onclick="changeMonth(1)">→</button>
+</div>
+<div id="calendarGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
+<!-- Takvim JS ile dolacak -->
+</div>
+</div>
+</div>
+<!-- AYARLAR -->
+<div class="page" id="page-ayarlar">
+<div class="page-header">
+<h1>Ayarlar</h1>
+<p>Sistem tercihlerini buradan yönetin.</p>
+</div>
+<div class="card">
+<h3>Görünüm ve Tema</h3>
+<div class="theme-grid">
+<div class="theme-card active" id="theme-dark" onclick="setTheme('dark')">
+<strong>🌙 Tech-Noir</strong>
+<span>Koyu ve modern tasarım</span>
+</div>
+<div class="theme-card" id="theme-light" onclick="setTheme('light')">
+<strong>☀️ Crystal Light</strong>
+<span>Aydınlık ve ferah görünüm</span>
+</div>
+</div>
+</div>
+<div class="card" style="margin-top: 1.5rem;">
+<h3>Birimler</h3>
+<div class="fg" style="margin-top: 1rem;">
+<label>Para Birimi</label>
+<input readonly="" type="text" value="₺ (TRY)"/>
+</div>
+</div>
+</div>
+<!-- DİĞER SAYFALAR (Placeholder) -->
+<div class="page" id="page-import"><h1>Toplu Veri Yükle</h1><p class="neu" style="margin-top:2rem">Çok yakında...</p></div>
+<div class="page" id="page-raporlar"><h1>Raporlar</h1><p class="neu" style="margin-top:2rem">Haftalık ve aylık raporlar hazırlanıyor...</p></div>
+<div class="page" id="page-karsilastir"><h1>Karşılaştır</h1><p class="neu" style="margin-top:2rem">Dönemsel karşılaştırma aracı aktif edilecek.</p></div>
+<div class="page" id="page-profil"><h1>Profil Ayarları</h1><p class="neu" style="margin-top:2rem">Kullanıcı bilgilerinizi buradan güncelleyin.</p></div>
+<div class="page" id="page-lisans"><h1>Lisans &amp; Abonelik</h1><p class="neu" style="margin-top:2rem">Abonelik durumunuz: PRO</p></div>
+<div class="page" id="page-ihracat"><h1>Dışa Aktar</h1><p class="neu" style="margin-top:2rem">Excel ve PDF formatında çıktı alın.</p></div>
+</main>
+</div>
+<!-- ══ FIREBASE & SPA LOGIC ══ -->
+<script type="module">
+        // Firebase Modülleri (Demo için CDN üzerinden)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // BURAYI KENDİ FIREBASE BİLGİLERİNİZLE GÜNCELLEYİN
         const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "cirolog.firebaseapp.com",
-            projectId: "cirolog",
-            storageBucket: "cirolog.appspot.com",
+            apiKey: "AIzaSyD-Your-Key",
+            authDomain: "cirolog-demo.firebaseapp.com",
+            projectId: "cirolog-demo",
+            storageBucket: "cirolog-demo.appspot.com",
             messagingSenderId: "123456789",
             appId: "1:12345:web:abc"
         };
@@ -235,34 +372,193 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // LOGIN
-        window.handleLogin = () => {
-            const email = document.getElementById('emailInput').value;
-            const pass = document.getElementById('passInput').value;
+        // Global State
+        let currentUser = null;
+        let records = [
+            { date: '2024-05-24', amount: 12450 },
+            { date: '2024-05-23', amount: 8900 },
+            { date: '2024-05-22', amount: 11200 },
+            { date: '2024-05-21', amount: 15600 },
+            { date: '2024-05-20', amount: 9800 },
+        ];
+
+        // SCREEN NAV
+        window.ss = (id) => {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(id);
+            if(target) target.classList.add('active');
+        };
+
+        window.navTo = (pageId, el) => {
+            // UI Update
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
             
-            // Demo için direkt geçiş (Firebase bağlantısı hazır olduğunda aktif edilebilir)
-            document.getElementById('loginScreen').classList.remove('active');
-            document.getElementById('appScreen').classList.add('active');
-        };
-
-        // NAV
-        window.showPage = (id, el) => {
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById('page-' + id).style.display = 'block';
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
+            if(el) el.classList.add('active');
+
+            // Mobile Auto Close
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+
+            // Logic trigger
+            if(pageId === 'dashboard') updateDashboard();
+            if(pageId === 'kayit') renderRecordList();
+            if(pageId === 'takvim') renderCalendar();
         };
 
-        // TEMA
-        window.setTheme = (theme) => {
-            document.documentElement.setAttribute('data-theme', theme);
-            document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+        window.toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        };
+
+        // AUTH HANDLERS
+        window.handleLogin = async () => {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+
+            if(!email || !pass) {
+                toast('Lütfen tüm alanları doldurun.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.textContent = 'Giriş yapılıyor...';
+
+            // DEMO için direkt geçiş (Gerçek auth için firebase login açılır)
+            setTimeout(() => {
+                currentUser = { email, name: 'Ahmet Yılmaz', plan: 'Pro' };
+                ss('screenApp');
+                updateDashboard();
+                toast('Başarıyla giriş yapıldı.', 'success');
+            }, 1000);
         };
 
         window.logout = () => {
-            location.reload();
+            currentUser = null;
+            ss('screenLogin');
         };
+
+        // THEME SYSTEM
+        window.setTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('theme-' + theme).classList.add('active');
+            localStorage.setItem('cirolog_theme', theme);
+        };
+
+        // DATA LOGIC
+        window.saveRecord = () => {
+            const date = document.getElementById('entryDate').value;
+            const amount = parseFloat(document.getElementById('entryAmount').value);
+
+            if(!date || isNaN(amount)) {
+                toast('Lütfen tarih ve tutar girin.', 'error');
+                return;
+            }
+
+            records.unshift({ date, amount });
+            renderRecordList();
+            updateDashboard();
+            toast('Ciro kaydı eklendi.', 'success');
+
+            document.getElementById('entryAmount').value = '';
+        };
+
+        function renderRecordList() {
+            const list = document.getElementById('recordList');
+            list.innerHTML = records.map(r => `
+                <div class="record-item">
+                    <div class="rec-date">
+                        <div class="rec-day">${r.date.split('-')[2]}</div>
+                        <div class="rec-month">${getMonthName(r.date.split('-')[1])}</div>
+                    </div>
+                    <div class="rec-info">
+                        <p style="font-weight: 600;">Satış Verisi</p>
+                        <span style="font-size: 0.75rem; color: var(--muted);">${r.date}</span>
+                    </div>
+                    <div class="rec-amount">₺${r.amount.toLocaleString()}</div>
+                    <button class="icon-btn danger" onclick="deleteRecord('${r.date}')">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function updateDashboard() {
+            const today = records[0] ? records[0].amount : 0;
+            const weekTotal = records.slice(0, 7).reduce((acc, curr) => acc + curr.amount, 0);
+            const monthTotal = records.reduce((acc, curr) => acc + curr.amount, 0);
+
+            document.getElementById('statToday').textContent = `₺${today.toLocaleString()}`;
+            document.getElementById('statWeek').textContent = `₺${weekTotal.toLocaleString()}`;
+            document.getElementById('statMonth').textContent = `₺${monthTotal.toLocaleString()}`;
+            
+            // Render Chart
+            const chart = document.getElementById('dashChart');
+            const max = Math.max(...records.map(r => r.amount), 1);
+            chart.innerHTML = records.slice(0, 7).reverse().map(r => `
+                <div class="bar-col">
+                    <div class="bar-val">₺${(r.amount/1000).toFixed(1)}K</div>
+                    <div class="bar" style="height: ${(r.amount/max)*100}%"></div>
+                    <div class="bar-label">${r.date.split('-')[2]}</div>
+                </div>
+            `).join('');
+        }
+
+        // CALENDAR
+        let currentCalDate = new Date();
+        window.renderCalendar = () => {
+            const grid = document.getElementById('calendarGrid');
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth();
+            
+            document.getElementById('calendarTitle').textContent = `${new Intl.DateTimeFormat('tr-TR', {month: 'long'}).format(currentCalDate)} ${year}`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            let html = '';
+            // Boş günler
+            for(let i=0; i<(firstDay === 0 ? 6 : firstDay - 1); i++) html += '<div></div>';
+            
+            // Günler
+            for(let d=1; d<=daysInMonth; d++) {
+                const dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const rec = records.find(r => r.date === dateStr);
+                html += `
+                    <div style="aspect-ratio: 1; border-radius: 8px; background: ${rec ? 'var(--accent)' : 'var(--surface2)'}; display: flex; flex-direction: column; align-items: center; justify-content: center; color: ${rec ? '#000' : 'var(--text)'}; font-size: 0.8rem; position: relative; border: 1px solid var(--border);">
+                        <span style="font-weight: 700;">${d}</span>
+                        ${rec ? `<span style="font-size: 0.55rem; font-weight: 800;">₺${(rec.amount/1000).toFixed(0)}K</span>` : ''}
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
+        };
+
+        window.changeMonth = (val) => {
+            currentCalDate.setMonth(currentCalDate.getMonth() + val);
+            renderCalendar();
+        };
+
+        // UTILS
+        function getMonthName(m) {
+            const names = ['OCA','ŞUB','MAR','NİS','MAY','HAZ','TEM','AĞU','EYL','EKİ','KAS','ARA'];
+            return names[parseInt(m)-1];
+        }
+
+        window.toast = (msg, type = 'success') => {
+            const c = document.getElementById('toastC');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        };
+
+        // Initial Setup
+        document.getElementById('entryDate').valueAsDate = new Date();
+        const savedTheme = localStorage.getItem('cirolog_theme') || 'dark';
+        setTheme(savedTheme);
+
     </script>
-</body>
-</html>
+</body></html>
