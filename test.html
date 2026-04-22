@@ -1,2097 +1,331 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="dark">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CiroLog v2 — Akıllı İş Zekası</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#27069c",
+                        "on-secondary-fixed": "#150066",
+                        "on-primary-container": "#526d00",
+                        "on-surface-variant": "#c4c9b1",
+                        "inverse-primary": "#4d6700",
+                        "secondary-container": "#3f2eb2",
+                        "primary-container": "#c5f258",
+                        "on-tertiary-fixed": "#121b2e",
+                        "error-container": "#93000a",
+                        "secondary": "#c6c0ff",
+                        "on-primary-fixed-variant": "#394d00",
+                        "surface-variant": "#33362b",
+                        "background": "#12140b",
+                        "tertiary-container": "#d9e2fc",
+                        "surface-container": "#1e2116",
+                        "surface-container-high": "#282b20",
+                        "on-primary-fixed": "#151f00",
+                        "on-tertiary": "#273044",
+                        "surface-container-low": "#1a1d13",
+                        "on-secondary-container": "#b3acff",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#2f3226",
+                        "on-surface": "#e2e4d3",
+                        "primary": "#ffffff",
+                        "on-tertiary-container": "#5b647a",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#e4dfff",
+                        "outline-variant": "#444936",
+                        "tertiary-fixed": "#d9e2fc",
+                        "on-tertiary-fixed-variant": "#3e475b",
+                        "on-primary": "#263500",
+                        "surface": "#12140b",
+                        "surface-container-lowest": "#0d0f06",
+                        "surface-container-highest": "#33362b",
+                        "inverse-surface": "#e2e4d3",
+                        "primary-fixed-dim": "#aad53d",
+                        "secondary-fixed-dim": "#c6c0ff",
+                        "tertiary-fixed-dim": "#bdc6df",
+                        "surface-dim": "#12140b",
+                        "on-secondary-fixed-variant": "#3f2eb2",
+                        "outline": "#8e937d",
+                        "on-background": "#e2e4d3",
+                        "primary-fixed": "#c5f258",
+                        "on-error": "#690005",
+                        "tertiary": "#ffffff",
+                        "surface-tint": "#aad53d",
+                        "surface-bright": "#383a2f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "40px",
+                        "gutter": "20px",
+                        "container-margin": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Space Grotesk"],
+                        "label-caps": ["Space Grotesk"],
+                        "body-md": ["Manrope"],
+                        "h2": ["Space Grotesk"],
+                        "display": ["Space Grotesk"],
+                        "body-lg": ["Manrope"],
+                        "data-tabular": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "h1": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "h2": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "data-tabular": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
 <style>
-/* ══ TEMALAR ══ */
-[data-theme="dark"]{
-  --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c27; --border:#2a2a3a;
-  --accent:#c8f55a; --accent2:#7b6ff0; --text:#f0f0f5; --muted:#6b6b85;
-  --danger:#ff5e5e; --success:#4edb8f; --warn:#f5c842; --sh:rgba(0,0,0,.45);
-  --font-body:'DM Sans',sans-serif; --font-display:'DM Serif Display',serif;
-  --radius:14px; --radius-sm:10px; --sidebar-w:240px;
-  --nav-active-bg:rgba(200,245,90,.1);
-}
-[data-theme="light"]{
-  --bg:#f0f2f8; --surface:#ffffff; --surface2:#e8ebf4; --border:#d4d8e8;
-  --accent:#4f46e5; --accent2:#0ea5e9; --text:#1e1e3a; --muted:#8890b0;
-  --danger:#e53e3e; --success:#38a169; --warn:#d69e2e; --sh:rgba(30,30,80,.1);
-  --font-body:'Space Grotesk',sans-serif; --font-display:'Space Grotesk',sans-serif;
-  --radius:8px; --radius-sm:6px; --sidebar-w:240px;
-  --nav-active-bg:#ede9fe;
-}
-
-*{margin:0;padding:0;box-sizing:border-box;}
-html{font-size:15px;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
-h1,h2,h3{font-family:var(--font-display);}
-
-/* ══ SCREENS ══ */
-.screen{display:none;min-height:100vh;}
-.screen.active{display:flex;flex-direction:column;}
-#screenApp{flex-direction:row;}
-
-/* ══ AUTH ══ */
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;
-  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(200,245,90,.07),transparent);}
-.auth-card{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);
-  border-radius:calc(var(--radius)*1.5);padding:2.75rem 2.25rem;
-  box-shadow:0 20px 60px var(--sh);position:relative;overflow:hidden;}
-.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));}
-.logo{font-family:var(--font-display);font-size:2.25rem;margin-bottom:.25rem;}
-.logo span{color:var(--accent);}
-.auth-sub{color:var(--muted);font-size:.875rem;margin-bottom:2rem;}
-.fg{margin-bottom:1.1rem;}
-.fg label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;}
-.fg input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:.8rem 1rem;color:var(--text);font-family:var(--font-body);font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s;}
-.fg input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent);}
-.btn{display:block;width:100%;padding:.9rem;border-radius:var(--radius-sm);border:none;cursor:pointer;
-  font-family:var(--font-body);font-size:.95rem;font-weight:600;transition:all .2s;margin-bottom:.5rem;text-align:center;}
-.btn-primary{background:var(--accent);color:#000;}
-.btn-primary:hover{opacity:.9;transform:translateY(-1px);}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
-.btn-ghost:hover{border-color:var(--accent);color:var(--text);}
-.auth-link{text-align:center;margin-top:1.25rem;font-size:.875rem;color:var(--muted);}
-.auth-link a{color:var(--accent);text-decoration:none;font-weight:700;}
-
-/* ══ HEADER (mobile) ══ */
-.top-bar{
-  display:none;height:56px;background:var(--surface);border-bottom:1px solid var(--border);
-  align-items:center;padding:0;justify-content:flex-start;
-  position:sticky;top:0;z-index:200;
-}
-.hamburger-btn{
-  background:none;border:none;color:var(--text);font-size:1.4rem;cursor:pointer;
-  padding:0 1rem;height:56px;line-height:56px;
-  flex-shrink:0;z-index:201;position:relative;
-}
-.top-bar-logo{
-  font-family:var(--font-display);font-size:1.4rem;
-  position:absolute;left:50%;transform:translateX(-50%);
-  pointer-events:none;
-}
-.top-bar-logo span{color:var(--accent);}
-
-/* ══ SIDEBAR ══ */
-.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:1.5rem 1rem 0;flex-shrink:0;transition:transform .3s;}
-.sidebar-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding-bottom:.5rem;}
-.sidebar-footer{
-  position:sticky;bottom:0;background:var(--surface);
-  padding:.75rem 0;border-top:1px solid var(--border);
-  padding-bottom:max(.75rem,env(safe-area-inset-bottom));
-}
-.sidebar-logo{font-family:var(--font-display);font-size:1.6rem;padding:.5rem .75rem 1.75rem;
-  display:flex;align-items:center;gap:.5rem;}
-.sidebar-logo span{color:var(--accent);}
-.sidebar-version{font-size:.6rem;color:var(--muted);font-family:var(--font-body);background:var(--surface2);
-  padding:.1rem .4rem;border-radius:4px;margin-left:.25rem;}
-.nav-cat{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;
-  padding:.4rem .75rem .2rem;margin-top:.75rem;}
-.nav-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:var(--radius-sm);
-  cursor:pointer;font-size:.875rem;font-weight:500;color:var(--muted);transition:all .15s;margin-bottom:.1rem;
-  border:none;background:transparent;width:100%;text-align:left;font-family:var(--font-body);}
-.nav-item:hover{background:var(--surface2);color:var(--text);}
-.nav-item.active{background:var(--nav-active-bg);color:var(--accent);font-weight:700;}
-.nav-icon{font-size:1rem;width:1.25rem;text-align:center;}
-.sidebar-spacer{flex:1;}
-.user-pill{display:flex;align-items:center;gap:.75rem;padding:.75rem;border-radius:var(--radius-sm);background:var(--surface2);}
-.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;color:#000;}
-.user-info p{font-size:.875rem;font-weight:600;}
-.user-info span{font-size:.72rem;color:var(--muted);}
-/* License badge */
-.license-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;
-  padding:.2rem .5rem;border-radius:4px;margin-top:.2rem;}
-.lb-active{background:rgba(78,219,143,.15);color:var(--success);}
-.lb-expire{background:rgba(245,200,66,.15);color:var(--warn);}
-.lb-expired{background:rgba(255,94,94,.15);color:var(--danger);}
-.lb-unlimited{background:rgba(200,245,90,.15);color:var(--accent);}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:49;backdrop-filter:blur(2px);}
-
-/* ══ MAIN ══ */
-.main-content{flex:1;overflow-y:auto;}
-.page{display:none;padding:2rem;}
-.page.active{display:block;}
-.page-header{margin-bottom:1.75rem;}
-.page-header h1{font-size:1.85rem;font-weight:700;}
-.page-header p{color:var(--muted);font-size:.875rem;margin-top:.3rem;}
-
-/* ══ STAT CARDS ══ */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--card-shadow,none);}
-.stat-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;}
-.stat-value{font-family:var(--font-display);font-size:1.85rem;font-weight:700;}
-.stat-delta{font-size:.75rem;margin-top:.2rem;}
-.up{color:var(--success);} .dn{color:var(--danger);} .neu{color:var(--muted);}
-
-/* ══ CARDS ══ */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--card-shadow,none);margin-bottom:1rem;}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.chart-title{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;}
-
-/* ══ QUICK ENTRY ══ */
-.quick-entry{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--accent2) 6%,transparent));
-  border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;
-  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
-.ql-title{font-size:.7rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.2rem;}
-.ql-date{font-size:.8rem;color:var(--muted);}
-.qi-wrap{flex:2;min-width:180px;position:relative;}
-.qi-wrap .cur{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;}
-.qi-wrap input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:.85rem 1rem .85rem 2.5rem;color:var(--text);font-family:var(--font-display);font-size:1.1rem;font-weight:700;outline:none;transition:border-color .2s;}
-.qi-wrap input:focus{border-color:var(--accent);}
-.quick-btn{background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);
-  padding:.85rem 1.5rem;font-family:var(--font-body);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.quick-btn:hover{opacity:.9;transform:translateY(-1px);}
-.quick-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-
-/* ══ CHARTS ══ */
-.chart-wrap{display:flex;align-items:flex-end;gap:6px;padding:.5rem 0 0;}
-.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:.35rem;}
-.bar{width:100%;border-radius:var(--radius-sm) var(--radius-sm) 0 0;transition:height .5s cubic-bezier(.34,1.56,.64,1);cursor:pointer;}
-.bar:hover{filter:brightness(1.15);}
-.bar-label{font-size:.65rem;color:var(--muted);}
-.bar-val{font-size:.6rem;color:var(--text);white-space:nowrap;}
-
-/* ══ PROGRESS ══ */
-.progress-bar{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width 1s ease;}
-
-/* ══ RECORD LIST ══ */
-.record-list{display:flex;flex-direction:column;gap:.6rem;}
-.record-item{display:flex;align-items:center;gap:1rem;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:1rem 1.25rem;transition:border-color .2s;}
-.record-item:hover{border-color:var(--accent);}
-.record-item.closed-day{opacity:.6;border-style:dashed;}
-.rec-date{text-align:center;min-width:48px;}
-.rec-day{font-size:1.5rem;font-weight:700;font-family:var(--font-display);line-height:1;}
-.rec-month{font-size:.62rem;color:var(--muted);text-transform:uppercase;}
-.rec-wd{font-size:.62rem;color:var(--muted);}
-.rec-div{width:1px;height:40px;background:var(--border);}
-.rec-info{flex:1;}
-.rec-note{font-size:.78rem;color:var(--muted);margin-top:.15rem;}
-.rec-amount{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--accent);}
-.rec-insight{font-size:.72rem;margin-top:.1rem;}
-.rec-actions{display:flex;gap:.4rem;opacity:0;transition:opacity .2s;}
-.record-item:hover .rec-actions{opacity:1;}
-.icon-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);
-  width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .15s;}
-.icon-btn:hover{border-color:var(--accent);}
-.icon-btn.danger:hover{color:var(--danger);border-color:var(--danger);}
-
-/* ══ FORMS ══ */
-.entry-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;margin-bottom:1.5rem;}
-.entry-form h2{font-family:var(--font-display);font-size:1.1rem;margin-bottom:1.25rem;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.form-group{margin-bottom:1.1rem;}
-.form-group label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius-sm);padding:.8rem 1rem;color:var(--text);font-family:var(--font-body);font-size:.95rem;outline:none;transition:border-color .2s;}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);}
-.form-group textarea{min-height:80px;resize:vertical;}
-.amt-wrap{position:relative;}
-.amt-wrap .cur{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;}
-.amt-wrap input{padding-left:2.5rem!important;font-family:var(--font-display)!important;font-size:1.1rem!important;font-weight:700!important;}
-.btn-save{background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);
-  padding:.9rem 2rem;font-family:var(--font-body);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;}
-.btn-save:hover{opacity:.9;transform:translateY(-1px);}
-.btn-save:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:.8rem 1.5rem;font-family:var(--font-body);font-weight:600;font-size:.875rem;cursor:pointer;transition:all .2s;}
-.btn-secondary:hover{border-color:var(--accent);}
-
-/* ══ FILTER BAR ══ */
-.filter-bar{display:flex;gap:.75rem;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;}
-.filter-bar input[type=date]{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:.55rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none;transition:border-color .2s;}
-.filter-bar input[type=date]:focus{border-color:var(--accent);}
-.filter-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:.55rem 1rem;color:var(--muted);font-size:.82rem;cursor:pointer;font-family:var(--font-body);font-weight:600;transition:all .15s;}
-.filter-btn:hover{border-color:var(--accent);color:var(--text);}
-
-/* ══ TABS ══ */
-.tabs{display:flex;gap:.3rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:4px;margin-bottom:1.5rem;width:fit-content;flex-wrap:wrap;}
-.tab{padding:.45rem .9rem;border-radius:calc(var(--radius-sm) - 2px);cursor:pointer;font-size:.82rem;
-  font-weight:600;color:var(--muted);transition:all .15s;border:none;background:transparent;font-family:var(--font-body);}
-.tab.active{background:var(--accent);color:#000;}
-
-/* ══ IMPORT ══ */
-.import-drop{border:1px dashed var(--border);border-radius:var(--radius);padding:2rem;text-align:center;
-  cursor:pointer;transition:all .2s;background:var(--surface2);margin-bottom:1.25rem;}
-.import-drop:hover,.import-drop.drag-over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 5%,var(--surface2));}
-.import-preview-table{width:100%;border-collapse:collapse;font-size:.85rem;}
-.import-preview-table th{text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:.6rem .75rem;border-bottom:1px solid var(--border);}
-.import-preview-table td{padding:.6rem .75rem;border-bottom:1px solid var(--border);}
-.import-summary{display:flex;gap:1rem;padding:1rem;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:1rem;flex-wrap:wrap;}
-.is-item{text-align:center;flex:1;min-width:60px;}
-.is-num{font-family:var(--font-display);font-size:1.5rem;font-weight:700;}
-.is-label{font-size:.7rem;color:var(--muted);margin-top:.1rem;}
-.row-badge{display:inline-block;padding:.1rem .5rem;border-radius:4px;font-size:.68rem;font-weight:700;}
-.rb-ok{background:rgba(78,219,143,.15);color:var(--success);}
-.rb-err{background:rgba(255,94,94,.15);color:var(--danger);}
-.rb-skip{background:rgba(245,200,66,.15);color:var(--warn);}
-.progress-import{height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;}
-.progress-import-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .1s;}
-
-/* ══ SMART CALENDAR ══ */
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:.75rem;}
-.cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:.25rem;}
-.cal-head{text-align:center;font-size:.65rem;font-weight:700;color:var(--muted);padding:.3rem;}
-.cal-day{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .15s;border:1px solid transparent;font-size:.75rem;position:relative;}
-.cal-day:hover{border-color:var(--accent);}
-.cal-day.today{border-color:var(--accent);font-weight:700;}
-.cal-day.has-data{background:color-mix(in srgb,var(--accent) 12%,var(--surface2));}
-.cal-day.closed{background:color-mix(in srgb,var(--danger) 8%,var(--surface2));color:var(--muted);}
-.cal-day.closed::after{content:'×';position:absolute;top:2px;right:4px;font-size:.55rem;color:var(--danger);opacity:.7;}
-.cal-day.empty{color:var(--muted);}
-.cal-day.other-month{opacity:.3;}
-.cal-amount{font-size:.55rem;color:var(--accent);font-weight:700;white-space:nowrap;}
-
-/* ══ AI INSIGHT BOX ══ */
-.ai-insight-card{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 6%,var(--surface)),color-mix(in srgb,var(--accent2) 5%,var(--surface)));
-  border:1px solid color-mix(in srgb,var(--accent) 25%,var(--border));border-radius:var(--radius);padding:1.5rem;}
-.ai-insight-card h3{font-size:.8rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
-.insight-item{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--border);}
-.insight-item:last-child{border-bottom:none;}
-.insight-icon{font-size:1.1rem;flex-shrink:0;margin-top:.1rem;}
-.insight-text{font-size:.875rem;line-height:1.6;}
-.insight-text strong{color:var(--text);}
-.insight-badge{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-weight:700;margin-left:.4rem;}
-.ib-up{background:rgba(78,219,143,.15);color:var(--success);}
-.ib-dn{background:rgba(255,94,94,.15);color:var(--danger);}
-.ib-neu{background:var(--surface2);color:var(--muted);}
-.ib-warn{background:rgba(245,200,66,.15);color:var(--warn);}
-
-/* ══ SETTINGS ══ */
-.settings-section{margin-bottom:2rem;}
-.settings-section h3{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;}
-.setting-row{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:.5rem;}
-.setting-info p{font-size:.9rem;font-weight:600;}
-.setting-info span{font-size:.78rem;color:var(--muted);}
-.toggle{position:relative;width:44px;height:24px;}
-.toggle input{opacity:0;width:0;height:0;}
-.toggle-slider{position:absolute;inset:0;background:var(--surface2);border:1px solid var(--border);border-radius:99px;cursor:pointer;transition:.3s;}
-.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:.3s;}
-.toggle input:checked+.toggle-slider{background:color-mix(in srgb,var(--accent) 20%,var(--surface2));border-color:var(--accent);}
-.toggle input:checked+.toggle-slider::before{transform:translateX(20px);background:var(--accent);}
-
-/* Closed days checkboxes */
-.day-checks{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.5rem;}
-.day-check{display:flex;align-items:center;gap:.4rem;padding:.5rem .75rem;background:var(--surface2);
-  border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:.82rem;}
-.day-check input[type=checkbox]{accent-color:var(--accent);}
-.day-check.checked{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 8%,var(--surface2));}
-
-/* ══ CLOSED PERIODS ══ */
-.period-list{display:flex;flex-direction:column;gap:.5rem;}
-.period-item{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);}
-.period-item .period-info{font-size:.875rem;}
-.period-item .period-dates{font-size:.75rem;color:var(--muted);}
-
-/* ══ LICENSE ══ */
-.license-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;}
-.license-status{display:flex;align-items:center;gap:1rem;padding:1rem;border-radius:var(--radius-sm);margin-bottom:1rem;}
-.license-status.active{background:rgba(78,219,143,.08);border:1px solid rgba(78,219,143,.2);}
-.license-status.warning{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);}
-.license-status.expired{background:rgba(255,94,94,.08);border:1px solid rgba(255,94,94,.2);}
-.ls-icon{font-size:2rem;}
-.ls-info h4{font-size:1rem;font-weight:700;margin-bottom:.2rem;}
-.ls-info p{font-size:.82rem;color:var(--muted);}
-.plan-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.875rem;margin-top:1rem;}
-.plan-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all .2s;text-align:center;}
-.plan-card:hover,.plan-card.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface));}
-.plan-card h4{font-size:1rem;font-weight:700;margin-bottom:.4rem;}
-.plan-card .price{font-family:var(--font-display);font-size:1.4rem;color:var(--accent);}
-.plan-card ul{list-style:none;font-size:.78rem;color:var(--muted);margin-top:.5rem;text-align:left;}
-.plan-card ul li::before{content:'✓ ';color:var(--success);}
-
-/* ══ THEME GRID ══ */
-.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-top:.75rem;}
-.theme-btn{border:2px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;cursor:pointer;transition:all .2s;background:transparent;text-align:left;}
-.theme-btn:hover{border-color:var(--accent);}
-.theme-btn.active{border-color:var(--accent);}
-.th-preview{width:100%;height:36px;border-radius:6px;margin-bottom:.5rem;}
-.th-name{font-size:.82rem;font-weight:700;}
-.th-sub{font-size:.7rem;color:var(--muted);}
-
-/* ══ PDF EXPORT ══ */
-.export-preview{background:var(--surface2);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;}
-.export-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.875rem;}
-.export-row:last-child{border-bottom:none;}
-
-/* ══ TOAST ══ */
-.toast-c{position:fixed;bottom:1.5rem;right:1.5rem;display:flex;flex-direction:column;gap:.5rem;z-index:9999;}
-.toast{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.85rem 1.2rem;
-  font-size:.875rem;display:flex;align-items:center;gap:.75rem;animation:slideIn .3s ease;box-shadow:0 8px 30px var(--sh);}
-.toast.s{border-left:3px solid var(--success);}
-.toast.w{border-left:3px solid var(--warn);}
-.toast.e{border-left:3px solid var(--danger);}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(128,128,128,.3);
-  border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:.4rem;}
-@keyframes spin{to{transform:rotate(360deg)}}
-::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-
-/* ══ MOBILE ══ */
-@media(max-width:768px){
-  #screenApp{flex-direction:column;}
-  .top-bar{display:flex;}
-  .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:50;transform:translateX(-100%);}
-  .sidebar.open{transform:translateX(0);}
-  .sidebar-overlay.show{display:block;}
-  .page{padding:1rem;}
-  .two-col,.form-row,.plan-cards{grid-template-columns:1fr;}
-  .stat-grid{grid-template-columns:1fr 1fr;}
-  .day-checks{grid-template-columns:repeat(2,1fr);}
-  .theme-grid{grid-template-columns:1fr;}
-}
-
-/* ══ PRINT / PDF ══ */
-@media print{
-  .sidebar,.top-bar,.hamburger-btn,.toast-c,.nav-item,.quick-entry,.filter-bar,.btn,.btn-save,.btn-secondary,.icon-btn,.rec-actions{display:none!important;}
-  body{background:#fff;color:#000;}
-  .page{display:block!important;padding:0;}
-  .stat-card,.card{break-inside:avoid;}
-}
-
-/* ══ PAYWALL / PURCHASE ══ */
-.paywall-overlay{
-  position:absolute;inset:0;border-radius:var(--radius);
-  background:linear-gradient(180deg,transparent 0%,rgba(10,10,15,.85) 50%,var(--bg) 100%);
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  padding:2rem;z-index:10;
-}
-.paywall-wrap{position:relative;overflow:hidden;border-radius:var(--radius);}
-.paywall-blur{filter:blur(3px);pointer-events:none;user-select:none;}
-.paywall-card{
-  width:100%;max-width:520px;margin:0 auto;
-  background:var(--surface);border:1px solid var(--border);border-radius:calc(var(--radius)*1.5);
-  overflow:hidden;box-shadow:0 24px 64px var(--sh);
-}
-.paywall-hero{
-  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 15%,var(--surface)),color-mix(in srgb,var(--accent2) 12%,var(--surface)));
-  padding:2rem;text-align:center;border-bottom:1px solid var(--border);
-}
-.paywall-hero-icon{font-size:3rem;margin-bottom:.75rem;}
-.paywall-hero h2{font-family:var(--font-display);font-size:1.6rem;margin-bottom:.4rem;}
-.paywall-hero p{color:var(--muted);font-size:.875rem;line-height:1.6;}
-.paywall-features{padding:1.5rem;}
-.pf-item{display:flex;align-items:flex-start;gap:.875rem;padding:.625rem 0;border-bottom:1px solid var(--border);}
-.pf-item:last-child{border-bottom:none;}
-.pf-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem;}
-.pf-text strong{display:block;font-size:.875rem;margin-bottom:.1rem;}
-.pf-text span{font-size:.78rem;color:var(--muted);}
-.paywall-pricing{padding:1.5rem;background:var(--surface2);border-top:1px solid var(--border);}
-.pricing-options{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;}
-.pricing-opt{
-  border:2px solid var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center;
-  cursor:pointer;transition:all .2s;position:relative;background:var(--surface);
-}
-.pricing-opt:hover{border-color:var(--accent);}
-.pricing-opt.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface));}
-.pricing-opt .po-label{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
-.pricing-opt .po-price{font-family:var(--font-display);font-size:1.5rem;margin:.3rem 0;}
-.pricing-opt .po-sub{font-size:.72rem;color:var(--muted);}
-.pricing-opt .po-badge{
-  position:absolute;top:-9px;left:50%;transform:translateX(-50%);
-  background:var(--accent);color:#000;font-size:.62rem;font-weight:700;
-  padding:.1rem .6rem;border-radius:99px;white-space:nowrap;
-}
-.paywall-cta{
-  width:100%;padding:1rem;border:none;border-radius:var(--radius-sm);cursor:pointer;
-  background:var(--accent);color:#000;font-family:var(--font-display);font-size:1rem;font-weight:700;
-  transition:all .2s;letter-spacing:.02em;
-}
-.paywall-cta:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 8px 24px color-mix(in srgb,var(--accent) 35%,transparent);}
-.paywall-cta:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.paywall-note{text-align:center;font-size:.72rem;color:var(--muted);margin-top:.75rem;line-height:1.5;}
-.paywall-restore{background:none;border:none;color:var(--accent);font-size:.78rem;cursor:pointer;font-family:var(--font-body);text-decoration:underline;margin-top:.4rem;}
-.feature-locked-banner{
-  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,var(--surface)),color-mix(in srgb,var(--accent2) 6%,var(--surface)));
-  border:1px solid color-mix(in srgb,var(--accent) 30%,var(--border));
-  border-radius:var(--radius);padding:1.5rem;text-align:center;
-}
-/* Play Store badge */
-.play-badge{display:inline-flex;align-items:center;gap:.5rem;background:#000;color:#fff;
-  border-radius:8px;padding:.5rem 1rem;font-size:.78rem;cursor:pointer;border:1px solid #333;}
-.play-badge img,.play-badge span{font-size:1.2rem;}
-/* Purchase status pill */
-.purchase-status{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .75rem;border-radius:99px;font-size:.72rem;font-weight:700;}
-.ps-owned{background:rgba(78,219,143,.12);color:var(--success);border:1px solid rgba(78,219,143,.2);}
-.ps-not-owned{background:rgba(245,200,66,.1);color:var(--warn);border:1px solid rgba(245,200,66,.2);}
-/* Manifest info box */
-.manifest-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;font-size:.82rem;line-height:1.8;}
-.manifest-box code{background:var(--surface);padding:.1rem .4rem;border-radius:4px;font-family:monospace;color:var(--accent);font-size:.78rem;}
-
-/* ══ MOBILE SAFE AREA ══ */
-@supports(padding-bottom:env(safe-area-inset-bottom)){
-  .sidebar-footer{padding-bottom:calc(.75rem + env(safe-area-inset-bottom));}
-  .top-bar{padding-top:env(safe-area-inset-top);}
-  .main-content{padding-bottom:env(safe-area-inset-bottom);}
-}
-
-</style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
 </head>
-<body>
-<div class="toast-c" id="toastC"></div>
-
-<!-- ══ GİRİŞ ══ -->
-<div class="screen active" id="screenLogin">
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <div class="logo">Ciro<span>Log</span></div>
-      <div class="auth-sub">İşletme hesabınıza giriş yapın</div>
-      <div class="fg"><label>E-Posta</label><input type="email" id="loginEmail" placeholder="isletme@mail.com"></div>
-      <div class="fg"><label>Şifre</label><input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
-      <div class="auth-link">Hesabın yok mu? <a href="./index.html#apply">Paket Seç & Başvur →</a></div>
-    </div>
-  </div>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-lg">
+<div class="flex items-center gap-4">
+<span class="text-xl font-black text-primary-fixed uppercase tracking-widest font-['Space_Grotesk']">CiroLog v2</span>
 </div>
-
-<!-- ══ ONAY BEKLENİYOR ══ -->
-<div class="screen" id="screenPending">
-  <div class="auth-wrap">
-    <div class="auth-card" style="text-align:center">
-      <div class="logo">Ciro<span>Log</span></div>
-      <div style="font-size:3.5rem;margin:1.5rem 0">⏳</div>
-      <h2 style="margin-bottom:.75rem">Onay Bekleniyor</h2>
-      <p style="color:var(--muted);font-size:.9rem;line-height:1.65">Başvurunuz yönetici tarafından inceleniyor.<br>Onaylandığında bu sayfa otomatik açılacak.</p>
-      <button class="btn btn-ghost" style="margin-top:1.5rem" onclick="doLogout()">Çıkış Yap</button>
-    </div>
-  </div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-8 font-['Space_Grotesk'] text-[12px] uppercase font-bold tracking-widest">
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Reports</a>
+<a class="text-primary-fixed transition-colors" href="#">Analytics</a>
+<a class="text-on-surface-variant hover:text-primary-fixed transition-colors" href="#">Settings</a>
 </div>
-
-<!-- ══ ANA UYGULAMA ══ -->
-<div class="screen" id="screenApp">
-  <!-- Mobile header: hamburger LEFT, logo CENTERED -->
-  <div class="top-bar">
-    <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menü">☰</button>
-    <div class="top-bar-logo">Ciro<span>Log</span></div>
-  </div>
-
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-  <nav class="sidebar" id="sidebar">
-    <!-- Scrollable section -->
-    <div class="sidebar-scroll">
-      <div class="sidebar-logo">Ciro<span>Log</span><span class="sidebar-version">v2</span></div>
-
-      <div class="nav-cat">Ana Menü</div>
-      <button class="nav-item active" onclick="navTo('dashboard',this)"><span class="nav-icon">📊</span> Özet</button>
-      <button class="nav-item" onclick="navTo('kayit',this)"><span class="nav-icon">✏️</span> Ciro Girişi</button>
-      <button class="nav-item" onclick="navTo('import',this)"><span class="nav-icon">📤</span> Toplu Yükle</button>
-
-      <div class="nav-cat">Analiz</div>
-      <button class="nav-item" onclick="navTo('raporlar',this)"><span class="nav-icon">📈</span> Raporlar</button>
-      <button class="nav-item" onclick="navTo('karsilastir',this)"><span class="nav-icon">⚖️</span> Karşılaştır</button>
-      <button class="nav-item" id="navAiBtn" onclick="navTo('ai',this)"><span class="nav-icon">🧠</span> Yerel AI Analiz <span id="aiLockBadge" style="font-size:.6rem;background:var(--warn);color:#000;padding:.05rem .3rem;border-radius:3px;margin-left:.3rem;display:none">KİLİTLİ</span></button>
-      <button class="nav-item" onclick="navTo('takvim',this)"><span class="nav-icon">📅</span> Takvim Görünümü</button>
-
-      <div class="nav-cat">Hesap</div>
-      <button class="nav-item" onclick="navTo('profil',this)"><span class="nav-icon">👤</span> Profil</button>
-      <button class="nav-item" onclick="navTo('ayarlar',this)"><span class="nav-icon">⚙️</span> Ayarlar</button>
-      <button class="nav-item" onclick="navTo('satin-al',this)"><span class="nav-icon">💳</span> Satın Al / Plan</button>
-      <button class="nav-item" onclick="navTo('lisans',this)"><span class="nav-icon">🔑</span> Lisans</button>
-      <button class="nav-item" onclick="navTo('ihracat',this)"><span class="nav-icon">📄</span> Dışa Aktar</button>
-    </div><!-- /sidebar-scroll -->
-
-    <!-- STICKY FOOTER — always visible, safe-area aware -->
-    <div class="sidebar-footer">
-      <div class="user-pill">
-        <div class="avatar" id="userAvatar">?</div>
-        <div class="user-info">
-          <p id="userName">—</p>
-          <span id="userBusiness">—</span>
-          <div id="licenseBadge" class="license-badge lb-active" style="display:none"></div>
-        </div>
-      </div>
-      <button class="nav-item" style="margin-top:.35rem;color:var(--danger);width:100%" onclick="doLogout()"><span class="nav-icon">🚪</span> Çıkış Yap</button>
-    </div>
-  </nav>
-
-  <div class="main-content">
-
-    <!-- ════ DASHBOARD ════ -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header">
-        <h1 id="welcomeMsg">Hoş geldin 👋</h1>
-        <p id="todayStr"></p>
-      </div>
-      <div class="quick-entry">
-        <div><div class="ql-title">Bugünün Cirosu</div><div class="ql-date" id="quickDateLabel"></div></div>
-        <div class="qi-wrap"><span class="cur">₺</span><input type="number" id="quickAmount" placeholder="0" min="0" onkeydown="if(event.key==='Enter')quickSave()"></div>
-        <button class="quick-btn" id="quickBtn" onclick="quickSave()">Kaydet ↵</button>
-      </div>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="stat-label">Bugün</div><div class="stat-value" id="statToday">₺0</div><div class="stat-delta neu" id="statTodayNote">— kayıt yok</div></div>
-        <div class="stat-card"><div class="stat-label">Bu Hafta (açık gün ort.)</div><div class="stat-value" id="statWeek">₺0</div><div class="stat-delta neu" id="statWeekNote">Son 7 gün</div></div>
-        <div class="stat-card"><div class="stat-label">Bu Ay (net ort.)</div><div class="stat-value" id="statMonth">₺0</div><div class="stat-delta neu" id="statMonthNote">Bu ay</div></div>
-        <div class="stat-card"><div class="stat-label">Bu Yıl</div><div class="stat-value" id="statYear">₺0</div><div class="stat-delta neu">Yıl toplamı</div></div>
-      </div>
-      <div class="two-col" style="margin-bottom:1rem">
-        <div class="card">
-          <div class="chart-title">Son 7 Gün</div>
-          <div class="chart-wrap" id="weekChart" style="height:200px"></div>
-        </div>
-        <div class="card">
-          <div class="chart-title">Aylık Hedef</div>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem">
-            <span id="goalCur" style="font-family:var(--font-display);font-size:1.5rem">₺0</span>
-            <span id="goalTarget" style="font-size:.82rem;color:var(--muted)">Hedef belirlenmedi</span>
-          </div>
-          <div class="progress-bar"><div class="progress-fill" id="goalBar" style="width:0%"></div></div>
-          <div style="display:flex;justify-content:space-between;margin-top:.4rem">
-            <span style="font-size:.78rem;color:var(--muted)">%<span id="goalPct">0</span> tamamlandı</span>
-            <span style="font-size:.78rem;color:var(--muted)" id="goalLeft"></span>
-          </div>
-          <div style="margin-top:.75rem;background:var(--surface2);border-radius:var(--radius-sm);padding:.85rem">
-            <div style="font-size:.75rem;color:var(--muted);margin-bottom:.2rem">Günlük (açık gün) ort. gerekli</div>
-            <div style="font-family:var(--font-display);font-size:1.2rem"><span id="goalDaily">—</span> <span style="font-size:.8rem;color:var(--muted);font-family:var(--font-body)" id="goalDays"></span></div>
-          </div>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:1rem">
-        <div class="chart-title">Yıllık Performans</div>
-        <div class="chart-wrap" id="yearChart" style="height:160px"></div>
-      </div>
-      <!-- LOCAL AI quick insights -->
-      <div class="ai-insight-card">
-        <h3>🧠 Akıllı Analiz</h3>
-        <div id="dashInsights"><div style="color:var(--muted);font-size:.875rem">Veriler yüklendikten sonra analizler burada görünecek...</div></div>
-      </div>
-    </div>
-
-    <!-- ════ CİRO GİRİŞİ ════ -->
-    <div class="page" id="page-kayit">
-      <div class="page-header"><h1>Ciro Girişi</h1><p>Günlük satış rakamlarınızı kaydedin</p></div>
-      <div class="entry-form">
-        <h2>Kayıt Ekle / Güncelle</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Tarih</label><input type="date" id="entryDate"></div>
-          <div class="form-group"><label>Ciro (₺)</label><div class="amt-wrap"><span class="cur">₺</span><input type="number" id="entryAmount" placeholder="0" min="0"></div></div>
-        </div>
-        <div class="form-group"><label>Not (Opsiyonel)</label><input type="text" id="entryNote" placeholder="Kampanya, özel gün..."></div>
-        <button class="btn-save" id="saveBtn" onclick="saveRecord()">💾 Kaydet</button>
-      </div>
-      <div class="filter-bar">
-        <span style="font-size:.82rem;color:var(--muted);font-weight:700">FİLTRE:</span>
-        <input type="date" id="filterFrom"><span style="color:var(--muted)">→</span><input type="date" id="filterTo">
-        <button class="filter-btn" onclick="applyFilter()">Uygula</button>
-        <button class="filter-btn" onclick="clearFilter()">Temizle</button>
-        <button class="filter-btn" onclick="exportCSV()">📥 CSV</button>
-      </div>
-      <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:1rem">Kayıtlar</div>
-      <div class="record-list" id="recordList"></div>
-    </div>
-
-    <!-- ════ TOPLU YÜKLEME ════ -->
-    <div class="page" id="page-import">
-      <div class="page-header"><h1>Toplu Veri Yükleme</h1><p>Geçmiş ciro kayıtlarınızı aktarın</p></div>
-      <div class="card" style="font-size:.85rem;line-height:1.8;background:var(--surface2)">
-        <strong>Desteklenen formatlar:</strong> <code>01.01.2026 5000</code> &nbsp;|&nbsp; <code>2026-01-01 5000</code> &nbsp;|&nbsp; <code>01/01/2026;5000</code><br>
-        <span style="color:var(--muted);font-size:.78rem">⚠️ Aynı tarihe kayıt varsa üzerine yazılır.</span>
-      </div>
-      <div class="import-drop" id="importDrop" onclick="document.getElementById('importFile').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
-        <input type="file" id="importFile" accept=".txt,.csv" style="display:none" onchange="fileSelected(this)">
-        <div style="font-size:2rem;margin-bottom:.5rem">📂</div>
-        <div style="font-size:.9rem;color:var(--muted)">Dosya sürükle & bırak veya tıkla</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-top:.25rem;opacity:.7">.txt veya .csv</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
-        <div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:.78rem;color:var(--muted)">veya yapıştır</span><div style="flex:1;height:1px;background:var(--border)"></div>
-      </div>
-      <textarea class="form-group" style="width:100%;min-height:160px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.9rem;color:var(--text);font-family:monospace;font-size:.85rem;outline:none;resize:vertical" id="importText" placeholder="01.01.2026 5000&#10;02.01.2026 6200&#10;..." oninput="parseImport()"></textarea>
-      <div id="importPreviewWrap" style="display:none">
-        <div class="import-summary" id="importSummary"></div>
-        <div class="card" style="overflow-x:auto">
-          <table class="import-preview-table"><thead><tr><th>#</th><th>Tarih</th><th>Ciro</th><th>Durum</th></tr></thead><tbody id="importPreviewBody"></tbody></table>
-        </div>
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-top:.75rem">
-          <button class="btn-save" id="importBtn" onclick="runImport()">⬆️ Yükle</button>
-          <button class="btn-secondary" onclick="clearImport()">Temizle</button>
-          <span style="font-size:.8rem;color:var(--muted)" id="importHint"></span>
-        </div>
-        <div id="importProgress" style="display:none;margin-top:1rem">
-          <div style="font-size:.82rem;color:var(--muted);margin-bottom:.4rem" id="importProgressText">Yükleniyor...</div>
-          <div class="progress-import"><div class="progress-import-fill" id="importProgressFill" style="width:0%"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════ RAPORLAR ════ -->
-    <div class="page" id="page-raporlar">
-      <div class="page-header"><h1>Raporlar</h1><p>Detaylı satış analizleri</p></div>
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('haftalik',this)">📅 Haftalık</button>
-        <button class="tab" onclick="switchTab('aylik',this)">🗓 Aylık</button>
-        <button class="tab" onclick="switchTab('yillik',this)">📆 Yıllık</button>
-        <button class="tab" onclick="switchTab('gunler',this)">📊 Gün Analizi</button>
-      </div>
-      <div id="tab-haftalik">
-        <div class="two-col" style="margin-bottom:1rem">
-          <div class="card" style="border-left:3px solid var(--accent)"><div class="stat-label">Bu Hafta</div><div class="stat-value" id="rW_thisTotal">₺0</div><div style="font-size:.78rem;color:var(--muted);margin-top:.25rem" id="rW_thisDays"></div></div>
-          <div class="card"><div class="stat-label">Geçen Hafta</div><div class="stat-value" id="rW_prevTotal">₺0</div><div style="font-size:.78rem;margin-top:.25rem" id="rW_change"></div></div>
-        </div>
-        <div class="stat-grid" style="margin-bottom:1rem">
-          <div class="stat-card"><div class="stat-label">Ort. (açık gün)</div><div class="stat-value" id="rW_avg">₺0</div></div>
-          <div class="stat-card"><div class="stat-label">En Yüksek</div><div class="stat-value" id="rW_max">₺0</div><div class="stat-delta" id="rW_maxDay" style="color:var(--muted)"></div></div>
-          <div class="stat-card"><div class="stat-label">En Düşük</div><div class="stat-value" id="rW_min">₺0</div><div class="stat-delta" id="rW_minDay" style="color:var(--muted)"></div></div>
-        </div>
-        <div class="card" style="margin-bottom:1rem"><div class="chart-title">Son 7 Gün</div><div class="chart-wrap" id="rWeekChart" style="height:190px"></div></div>
-        <div class="card"><div class="chart-title" id="rW_4wTitle">Bu Aydaki 4 Hafta</div><div id="rW_4wCards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:.75rem"></div><div class="chart-wrap" id="rW_4wChart" style="height:130px"></div></div>
-      </div>
-      <div id="tab-aylik" style="display:none">
-        <div style="display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap">
-          <select id="mPickY" onchange="renderMonthTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .9rem;color:var(--text);font-family:var(--font-body);outline:none;flex:1"></select>
-          <select id="mPickM" onchange="renderMonthTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .9rem;color:var(--text);font-family:var(--font-body);outline:none;flex:2"></select>
-        </div>
-        <div class="two-col" style="margin-bottom:1rem">
-          <div class="card" style="border-left:3px solid var(--accent)"><div class="stat-label">Seçili Ay</div><div class="stat-value" id="rM_total">₺0</div><div style="font-size:.78rem;color:var(--muted);margin-top:.2rem" id="rM_totalLabel"></div></div>
-          <div class="card"><div class="stat-label">Önceki Ay</div><div class="stat-value" id="rM_prev">₺0</div><div style="font-size:.78rem;margin-top:.2rem" id="rM_change"></div></div>
-        </div>
-        <div class="stat-grid" style="margin-bottom:1rem">
-          <div class="stat-card"><div class="stat-label">Ort. (açık gün)</div><div class="stat-value" id="rM_avg">₺0</div></div>
-          <div class="stat-card"><div class="stat-label">Açık Gün</div><div class="stat-value" id="rM_days">0</div><div class="stat-delta" id="rM_closedNote" style="color:var(--muted)"></div></div>
-          <div class="stat-card"><div class="stat-label">Hedef Doluluk</div><div class="stat-value" id="rM_goal">—</div></div>
-          <div class="stat-card"><div class="stat-label">Geçen Yıl Aynı Ay</div><div class="stat-value" id="rM_lastYear">—</div></div>
-        </div>
-        <div class="card" style="margin-bottom:1rem"><div class="chart-title" id="rM_chartTitle">Günlük Dağılım</div><div class="chart-wrap" id="rM_chart" style="height:180px"></div></div>
-        <div class="card" style="margin-bottom:1rem"><div class="chart-title">4 Haftalık Kırılım</div><div id="rM_4weeks" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem"></div></div>
-        <div class="two-col">
-          <div class="card"><div class="chart-title">🏆 En İyi 5 Gün</div><div id="rM_topDays"></div></div>
-          <div class="card"><div class="chart-title">📉 En Zayıf 5 Gün</div><div id="rM_botDays"></div></div>
-        </div>
-      </div>
-      <div id="tab-yillik" style="display:none">
-        <div style="display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap">
-          <select id="yPick1" onchange="renderYearTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .9rem;color:var(--text);font-family:var(--font-body);outline:none;flex:1"></select>
-          <select id="yPick2" onchange="renderYearTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .9rem;color:var(--text);font-family:var(--font-body);outline:none;flex:1"><option value="">— Karşılaştır —</option></select>
-        </div>
-        <div class="stat-grid" style="margin-bottom:1rem">
-          <div class="stat-card"><div class="stat-label">Yıl Toplamı</div><div class="stat-value" id="rY_total">₺0</div></div>
-          <div class="stat-card"><div class="stat-label">Aylık Ort.</div><div class="stat-value" id="rY_avg">₺0</div></div>
-          <div class="stat-card"><div class="stat-label">En İyi Ay</div><div class="stat-value" id="rY_best">—</div></div>
-          <div class="stat-card"><div class="stat-label">En Zayıf Ay</div><div class="stat-value" id="rY_worst">—</div></div>
-        </div>
-        <div class="card" style="margin-bottom:1rem"><div class="chart-title" id="rY_chartTitle">Aylık Kırılım</div><div class="chart-wrap" id="rY_chart" style="height:200px"></div></div>
-        <div class="card" style="margin-bottom:1rem;overflow-x:auto"><div class="chart-title">Aylık Tablo</div><table id="rY_table" style="width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.5rem"></table></div>
-        <div class="card"><div class="chart-title">Çeyreklik Performans</div><div id="rY_quarters" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:.5rem"></div></div>
-      </div>
-      <div id="tab-gunler" style="display:none">
-        <div class="card" style="margin-bottom:1rem"><div class="chart-title">Haftanın Günleri — Ortalama Ciro</div><div class="chart-wrap" id="rD_dowChart" style="height:180px"></div></div>
-        <div class="card" style="margin-bottom:1rem"><div class="chart-title">Hafta İçi vs Hafta Sonu</div><div id="rD_wdwe" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem"></div></div>
-        <div class="two-col">
-          <div class="card"><div class="chart-title">🏆 En Yüksek 10 Gün</div><div id="rD_top"></div></div>
-          <div class="card"><div class="chart-title">📉 En Düşük 10 Gün</div><div id="rD_bot"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════ KARŞILAŞTIR ════ -->
-    <div class="page" id="page-karsilastir">
-      <div class="page-header"><h1>Karşılaştırma</h1><p>Yıl bazlı detaylı kıyas</p></div>
-      <div style="display:flex;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center">
-        <select id="cmpY1" onchange="renderCompare()"></select><span style="color:var(--muted)">vs</span><select id="cmpY2" onchange="renderCompare()"></select>
-      </div>
-      <div class="two-col" style="margin-bottom:1rem">
-        <div class="card" style="border-left:3px solid var(--accent);text-align:center"><div class="stat-label" id="cmpY1Label">—</div><div style="font-family:var(--font-display);font-size:2rem" id="cmpThis">—</div><div style="font-size:.78rem;color:var(--muted)" id="cmpThisDays"></div></div>
-        <div class="card" style="text-align:center"><div class="stat-label" id="cmpY2Label">—</div><div style="font-family:var(--font-display);font-size:2rem" id="cmpLast">—</div><div style="font-size:.78rem;color:var(--muted)" id="cmpLastDays"></div></div>
-      </div>
-      <div class="card" style="text-align:center;padding:1.25rem">
-        <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.35rem">Yıllık Fark</div>
-        <div style="font-family:var(--font-display);font-size:2.2rem" id="cmpDiff">—</div>
-        <div style="font-size:.82rem;color:var(--muted);margin-top:.25rem" id="cmpDiffLabel"></div>
-      </div>
-      <div class="card" style="margin-top:1rem"><div class="chart-title" id="cmpChartTitle">Aylık Kıyas</div><div style="display:flex;gap:1rem;margin-bottom:.5rem;font-size:.75rem;color:var(--muted)" id="cmpLegend"></div><div class="chart-wrap" id="cmpYearChart" style="height:200px"></div></div>
-      <div class="card" style="margin-top:1rem;overflow-x:auto"><div class="chart-title">Ay Bazlı Detay</div><table id="cmpTable" style="width:100%;border-collapse:collapse;font-size:.85rem;margin-top:.5rem"></table></div>
-      <div class="two-col" style="margin-top:1rem">
-        <div class="card" style="text-align:center"><div class="stat-label" id="cmpTodayY1Label">Bugün</div><div style="font-family:var(--font-display);font-size:1.6rem" id="cmpTodayY1">—</div></div>
-        <div class="card" style="text-align:center"><div class="stat-label" id="cmpTodayY2Label">Geçen Yıl Bugün</div><div style="font-family:var(--font-display);font-size:1.6rem" id="cmpTodayY2">—</div></div>
-      </div>
-    </div>
-
-    <!-- ════ YEREl AI ANALİZ (FEATURE GATED) ════ -->
-    <div class="page" id="page-ai">
-      <div class="page-header"><h1>🧠 Yerel AI Analiz</h1><p>Dış API bağımsız, istatistiksel analiz motoru</p></div>
-
-      <!-- LOCKED STATE — shown if aiUnlocked=false -->
-      <div id="aiLockedView" style="display:none">
-        <div class="feature-locked-banner" style="margin-bottom:1rem">
-          <div style="font-size:3rem;margin-bottom:.75rem">🔒</div>
-          <h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:.5rem">AI Analiz Modülü Kilitli</h2>
-          <p style="color:var(--muted);font-size:.875rem;line-height:1.65;max-width:400px;margin:0 auto .5rem">
-            Haftalık tahminler, trend analizi, kapalı gün etkisi ve 30 günlük projeksiyon gibi güçlü analizlere erişin.
-          </p>
-          <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap">
-            <span class="purchase-status ps-not-owned">⚠ Bu özellik için ek satın alım gerekli</span>
-          </div>
-        </div>
-        <!-- Preview (blurred) -->
-        <div class="paywall-wrap" style="margin-bottom:1rem">
-          <div class="paywall-blur">
-            <div class="ai-insight-card">
-              <h3>🧠 Örnek Analiz Raporu</h3>
-              <div class="insight-item"><div class="insight-icon">📈</div><div class="insight-text"><strong>Trend Analizi:</strong> Son 30 günde ciro trendi %12 yukarı yönlü. Cuma günleri zirve performans.</div></div>
-              <div class="insight-item"><div class="insight-icon">🔮</div><div class="insight-text"><strong>30 Günlük Projeksiyon:</strong> Mevcut hızla ay sonu tahmini ₺127.500. Hedefinizin %102'si.</div></div>
-              <div class="insight-item"><div class="insight-icon">📅</div><div class="insight-text"><strong>En Verimli Gün:</strong> Cuma — günlük ort. ₺8.400. Hafta sonu farkı %34.</div></div>
-            </div>
-          </div>
-          <div class="paywall-overlay">
-            <button class="paywall-cta" onclick="navTo('satin-al', document.querySelector('[onclick*="satin-al"]'))" style="max-width:320px">
-              🔓 AI Modülünü Satın Al — ₺299
-            </button>
-            <div class="paywall-note">Tek seferlik ödeme · Anında aktivasyon</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- UNLOCKED STATE — shown if aiUnlocked=true -->
-      <div id="aiUnlockedView" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-          <span class="purchase-status ps-owned">✓ AI Analiz Modülü Aktif</span>
-        </div>
-        <div class="card" style="margin-bottom:1rem">
-          <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
-            <div style="flex:1">
-              <div style="font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.35rem">Analiz Türü</div>
-              <select id="aiType" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .9rem;color:var(--text);font-family:var(--font-body);outline:none">
-                <option value="genel">📊 Genel Özet</option>
-                <option value="trend">📈 Trend Analizi</option>
-                <option value="gun">📅 Gün/Hafta Dağılımı</option>
-                <option value="tahmin">🔮 30 Günlük Tahmin</option>
-                <option value="kapali">🏪 Kapalı Gün Etkisi</option>
-              </select>
-            </div>
-            <div style="flex:1">
-              <div style="font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.35rem">Veri Aralığı</div>
-              <select id="aiRange" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .9rem;color:var(--text);font-family:var(--font-body);outline:none">
-                <option value="30">Son 30 Gün</option>
-                <option value="90" selected>Son 90 Gün</option>
-                <option value="180">Son 6 Ay</option>
-                <option value="365">Son 1 Yıl</option>
-                <option value="all">Tüm Veriler</option>
-              </select>
-            </div>
-          </div>
-          <button class="btn-save" id="aiBtn" onclick="runLocalAI()">🧠 Analizi Çalıştır</button>
-        </div>
-        <div id="aiResult" class="ai-insight-card">
-          <h3>🧠 Analiz Raporu</h3>
-          <div style="color:var(--muted);font-size:.875rem">Analiz için yukarıdan tür ve aralık seçip "Çalıştır"a basın.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════ TAKVİM ════ -->
-    <div class="page" id="page-takvim">
-      <div class="page-header"><h1>📅 Takvim Görünümü</h1><p>Aylık ciro takvimi</p></div>
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap">
-        <button class="btn-secondary" onclick="calNav(-1)">←</button>
-        <div style="font-family:var(--font-display);font-size:1.2rem;flex:1;text-align:center" id="calTitle">—</div>
-        <button class="btn-secondary" onclick="calNav(1)">→</button>
-      </div>
-      <div class="card">
-        <div class="cal-header" id="calHead"></div>
-        <div class="cal-grid" id="calGrid"></div>
-      </div>
-      <div class="card" style="margin-top:1rem">
-        <div class="chart-title">Bu Ay Özet</div>
-        <div id="calSummary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:.5rem"></div>
-      </div>
-    </div>
-
-    <!-- ════ SATIN AL / PRICING ════ -->
-    <div class="page" id="page-satin-al">
-      <div class="page-header"><h1>💳 Satın Al</h1><p>Plan ve ek özellikler</p></div>
-
-      <!-- Current status -->
-      <div class="card" style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
-        <div style="flex:1">
-          <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.35rem">Mevcut Durum</div>
-          <div id="purchaseCurrentStatus" style="font-size:.9rem">Yükleniyor...</div>
-        </div>
-        <button class="btn-secondary" onclick="restorePurchases()" style="white-space:nowrap">↺ Satın Alımları Geri Yükle</button>
-      </div>
-
-      <!-- AI MODULE PAYWALL CARD -->
-      <div class="paywall-card" style="margin-bottom:1.5rem">
-        <div class="paywall-hero">
-          <div class="paywall-hero-icon">🧠</div>
-          <h2>AI Analiz Modülü</h2>
-          <p>İşletmenizi veriyle yönetin. Yapay zeka destekli tahminler ve derinlemesine analizlerle bir adım önde olun.</p>
-        </div>
-        <div class="paywall-features">
-          <div class="pf-item"><div class="pf-icon">🔮</div><div class="pf-text"><strong>30 Günlük Projeksiyon</strong><span>Mevcut verilerinizle ay sonu ciro tahmini yapın</span></div></div>
-          <div class="pf-item"><div class="pf-icon">📈</div><div class="pf-text"><strong>Trend Analizi</strong><span>Yükselen ve düşen dönemleri erken tespit edin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">📅</div><div class="pf-text"><strong>Gün/Hafta Dağılımı</strong><span>En verimli gün ve saatleri keşfedin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">🏪</div><div class="pf-text"><strong>Kapalı Gün Zekası</strong><span>Tatil etkisini hesaplamalara dahil edin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">⚡</div><div class="pf-text"><strong>Anında Aktivasyon</strong><span>Ödeme onaylanınca hemen kullanıma açılır</span></div></div>
-        </div>
-        <div class="paywall-pricing">
-          <div class="pricing-options">
-            <div class="pricing-opt selected" id="po-one" onclick="selectPricing('one',this)">
-              <div class="po-label">Tek Seferlik</div>
-              <div class="po-price">₺299</div>
-              <div class="po-sub">Sınırsız kullanım</div>
-            </div>
-            <div class="pricing-opt" id="po-sub" onclick="selectPricing('sub',this)">
-              <div class="po-badge">POPÜLER</div>
-              <div class="po-label">Aylık</div>
-              <div class="po-price">₺79</div>
-              <div class="po-sub">/ay · İptal edilebilir</div>
-            </div>
-          </div>
-          <div id="aiModuleBuySection">
-            <button class="paywall-cta" id="buyAiBtn" onclick="purchaseAiModule()">
-              🔓 AI Modülünü Satın Al
-            </button>
-          </div>
-          <div id="aiModuleOwnedSection" style="display:none">
-            <div style="text-align:center;padding:.75rem;background:rgba(78,219,143,.08);border:1px solid rgba(78,219,143,.2);border-radius:var(--radius-sm)">
-              <span style="color:var(--success);font-weight:700">✓ AI Modülü Aktif</span>
-              <div style="font-size:.75rem;color:var(--muted);margin-top:.25rem">Satın alındı — sınırsız kullanım</div>
-            </div>
-          </div>
-          <div class="paywall-note">
-            🔒 Güvenli ödeme · Google Play Billing<br>
-            <button class="paywall-restore" onclick="restorePurchases()">Önceki satın alımı geri yükle</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- APP PLAN SECTION -->
-      <div style="font-family:var(--font-display);font-size:1.2rem;margin-bottom:1rem">📱 Uygulama Planı</div>
-      <div class="plan-cards" id="planCards">
-        <div class="plan-card" onclick="selectPlan('baslangic',this)">
-          <h4>Başlangıç</h4>
-          <div class="price">Ücretsiz</div>
-          <ul><li>14 gün deneme</li><li>Temel raporlar</li><li>CSV dışa aktarım</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('pro',this)">
-          <h4>Pro</h4>
-          <div class="price">₺499/ay</div>
-          <ul><li>Sınırsız kayıt</li><li>Gelişmiş raporlar</li><li>PDF dışa aktarım</li><li>AI Modülü dahil</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('kurumsal',this)">
-          <h4>Kurumsal</h4>
-          <div class="price">₺999/ay</div>
-          <ul><li>Tüm Pro özellikleri</li><li>Öncelikli destek</li><li>Çoklu işletme</li></ul>
-        </div>
-      </div>
-      <div style="margin-top:1.25rem">
-        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem" id="selectedPlanNote">Bir paket seçin</div>
-        <button class="btn-save" id="applyPlanBtn" disabled onclick="applyPlan()">📤 Başvuruyu Gönder</button>
-      </div>
-
-      <!-- PLAY STORE INFO -->
-      <div class="card" style="margin-top:1.5rem">
-        <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.75rem">📦 Google Play Store Bilgisi</div>
-        <div class="manifest-box">
-          <strong>Uygulama ID:</strong> <code>com.cirolog.app</code><br>
-          <strong>Billing SKU (AI Modül):</strong> <code>ai_module_lifetime</code><br>
-          <strong>Subscription SKU:</strong> <code>ai_module_monthly</code><br>
-          <strong>Play Billing Lib:</strong> <code>6.x.x</code><br>
-          <span style="color:var(--muted);font-size:.78rem">Gerçek Play Billing entegrasyonu için Android Native veya Flutter/React Native gereklidir. Bu web versiyonu Firebase üzerinden lisans yönetimi yapar.</span>
-        </div>
-      </div>
-    </div><!-- /page-satin-al -->
-
-    <!-- ════ PROFİL ════ -->
-    <div class="page" id="page-profil">
-      <div class="page-header"><h1>👤 Profil Ayarları</h1><p>Ad, e-posta ve şifre güncelleme</p></div>
-      <div class="entry-form">
-        <h2>Hesap Bilgileri</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Ad Soyad</label><input type="text" id="profileName" placeholder="Ad Soyad"></div>
-          <div class="form-group"><label>İşletme Adı</label><input type="text" id="profileBusiness" placeholder="İşletmenizin adı"></div>
-        </div>
-        <div class="form-group"><label>E-Posta</label><input type="email" id="profileEmail" readonly style="opacity:.6;cursor:not-allowed"></div>
-        <button class="btn-save" onclick="saveProfile()">Profili Güncelle</button>
-      </div>
-      <div class="entry-form">
-        <h2>Şifre Değiştir</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Yeni Şifre</label><input type="password" id="profileNewPass" placeholder="En az 6 karakter"></div>
-          <div class="form-group"><label>Şifre Tekrar</label><input type="password" id="profileNewPass2" placeholder="Aynı şifreyi girin"></div>
-        </div>
-        <button class="btn-save" onclick="changePassword()">Şifreyi Değiştir</button>
-      </div>
-    </div>
-
-    <!-- ════ AYARLAR ════ -->
-    <div class="page" id="page-ayarlar">
-      <div class="page-header"><h1>⚙️ Ayarlar</h1><p>İşletme ve uygulama tercihleri</p></div>
-
-      <div class="settings-section">
-        <h3>Aylık Hedef</h3>
-        <div class="card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
-          <div class="amt-wrap" style="flex:1;min-width:200px">
-            <span class="cur">₺</span>
-            <input type="number" id="goalInput" placeholder="250000" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.85rem 1rem .85rem 2.5rem;color:var(--text);font-family:var(--font-display);font-size:1.1rem;font-weight:700;outline:none;transition:border-color .2s">
-          </div>
-          <button class="btn-save" onclick="saveGoal()">Kaydet</button>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <h3>🗓 Haftalık Kapalı Günler</h3>
-        <div class="card">
-          <div style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">İşletmenizin her hafta kapalı olduğu günleri seçin. Bu günler ortalama hesaplamalarından çıkarılır.</div>
-          <div class="day-checks" id="closedDayChecks"></div>
-          <button class="btn-save" style="margin-top:1rem" onclick="saveClosedDays()">Kapalı Günleri Kaydet</button>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <h3>📆 Özel Kapalı Dönemler</h3>
-        <div class="card">
-          <div style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">Ramazan, bayram, tadilat gibi belirli tarih aralıklarını kapalı olarak işaretleyin.</div>
-          <div class="form-row" style="margin-bottom:.75rem">
-            <div class="form-group"><label>Başlangıç</label><input type="date" id="periodFrom"></div>
-            <div class="form-group"><label>Bitiş</label><input type="date" id="periodTo"></div>
-          </div>
-          <div class="form-group"><label>Açıklama</label><input type="text" id="periodLabel" placeholder="Ramazan, Bayram, Tadilat..."></div>
-          <button class="btn-save" onclick="addClosedPeriod()">Dönemi Ekle</button>
-          <div class="period-list" id="periodList" style="margin-top:1rem"></div>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <h3>Görünüm</h3>
-        <div class="theme-grid">
-          <div class="theme-btn active" id="th-dark" onclick="setTheme('dark',this)">
-            <div class="th-preview" style="background:linear-gradient(135deg,#0a0a0f 50%,#c8f55a 50%)"></div>
-            <div class="th-name">🌙 Koyu Tema</div>
-            <div class="th-sub">DM Serif — Gece</div>
-          </div>
-          <div class="theme-btn" id="th-light" onclick="setTheme('light',this)">
-            <div class="th-preview" style="background:linear-gradient(135deg,#f0f2f8 50%,#4f46e5 50%)"></div>
-            <div class="th-name">☀️ Aydınlık Tema</div>
-            <div class="th-sub">Space Grotesk — Gündüz</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <h3>Hesap Bilgileri</h3>
-        <div class="setting-row"><div class="setting-info"><p>E-Posta</p><span id="settingEmail">—</span></div></div>
-        <div class="setting-row" style="margin-top:.5rem"><div class="setting-info"><p>Plan</p><span id="settingPlan">—</span></div></div>
-        <div class="setting-row" style="margin-top:.5rem"><div class="setting-info"><p>Üyelik Tarihi</p><span id="settingDate">—</span></div></div>
-      </div>
-    </div>
-
-    <!-- ════ LİSANS ════ -->
-    <div class="page" id="page-lisans">
-      <div class="page-header"><h1>🔑 Lisans & Paket</h1><p>Abonelik durumunuz ve paket seçimi</p></div>
-      <div class="license-card" style="margin-bottom:1rem">
-        <div class="license-status" id="licenseStatusCard">
-          <div class="ls-icon">🔑</div>
-          <div class="ls-info"><h4 id="licenseStatusTitle">Lisans Kontrolü</h4><p id="licenseStatusDesc">Yükleniyor...</p></div>
-        </div>
-        <div style="font-size:.82rem;color:var(--muted);line-height:1.7">
-          Lisansınız admin tarafından tanımlanır. Paket başvurusu yaparak admin onayını bekleyebilirsiniz.
-        </div>
-      </div>
-      <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:1rem">Paket Seç & Başvur</div>
-      <div class="plan-cards" id="planCards">
-        <div class="plan-card" onclick="selectPlan('baslangic',this)">
-          <h4>Başlangıç</h4>
-          <div class="price">Ücretsiz</div>
-          <ul><li>14 gün deneme</li><li>Temel raporlar</li><li>CSV dışa aktarım</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('pro',this)">
-          <h4>Pro</h4>
-          <div class="price">₺499/ay</div>
-          <ul><li>Sınırsız kayıt</li><li>Gelişmiş raporlar</li><li>PDF dışa aktarım</li><li>Yerel AI analiz</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('kurumsal',this)">
-          <h4>Kurumsal</h4>
-          <div class="price">₺999/ay</div>
-          <ul><li>Tüm Pro özellikleri</li><li>Öncelikli destek</li><li>Çoklu işletme</li><li>API erişimi</li></ul>
-        </div>
-      </div>
-      <div style="margin-top:1.25rem">
-        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem" id="selectedPlanNote">Bir paket seçin</div>
-        <button class="btn-save" id="applyPlanBtn" disabled onclick="applyPlan()">Başvuruyu Gönder</button>
-      </div>
-    </div>
-
-    <!-- ════ DIŞA AKTAR ════ -->
-    <div class="page" id="page-ihracat">
-      <div class="page-header"><h1>📄 Dışa Aktar</h1><p>Verilerinizi PDF veya tablo olarak indirin</p></div>
-      <div class="card" style="margin-bottom:1rem">
-        <div class="chart-title">Rapor Aralığı</div>
-        <div class="form-row" style="margin-top:.5rem">
-          <div class="form-group"><label>Başlangıç</label><input type="date" id="exportFrom"></div>
-          <div class="form-group"><label>Bitiş</label><input type="date" id="exportTo"></div>
-        </div>
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.25rem">
-          <button class="btn-save" onclick="exportPDF()">📄 PDF İndir</button>
-          <button class="btn-secondary" onclick="exportCSV()">📊 CSV İndir</button>
-          <button class="btn-secondary" onclick="shareReport()">📤 Paylaş</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="chart-title">Önizleme</div>
-        <div id="exportPreview" style="margin-top:.75rem"></div>
-      </div>
-    </div>
-
-  </div><!-- /main-content -->
-</div><!-- /screenApp -->
-
-<script type="module">
-import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
-         updatePassword, EmailAuthProvider, reauthenticateWithCredential }
-                             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc,
-         collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp }
-                             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-/* ── Firebase Config ── */
-const cfg={apiKey:'AIzaSyD2CPjkui-HSM9WG0eh0olu6uidA0RrP10',authDomain:'siparispanel-a4c6e.firebaseapp.com',
-  projectId:'siparispanel-a4c6e',storageBucket:'siparispanel-a4c6e.firebasestorage.app',
-  messagingSenderId:'584080774237',appId:'1:584080774237:web:17c6f845d44ea6fa9fe9b4'};
-const fbApp=initializeApp(cfg,'cirolog-app');
-const auth=getAuth(fbApp);
-const db=getFirestore(fbApp);
-const C={
-  users:'cirolog_users',
-  rec:(uid)=>`cirolog_records/${uid}/entries`,
-  settings:(uid)=>`cirolog_settings/${uid}`,
-  applications:'cirolog_applications'
-};
-
-/* ── State ── */
-let cu=null,cp=null,AR=[],SETTINGS={closedDays:[],closedPeriods:[]};
-let selectedPlan=null,calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
-
-const CLR=['#c8f55a','#7b6ff0','#4edb8f','#f5c842','#ff5e5e','#58c4f5','#f58c42','#e87af5'];
-const MON=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-const MSH=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
-const DSH=['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
-const DAYS=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
-
-/* ── TEMA ── */
-(function(){
-  const t=localStorage.getItem('cl_theme')||'dark';
-  document.documentElement.setAttribute('data-theme',t);
-  const el=document.getElementById('th-'+t);
-  if(el){document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
-})();
-window.setTheme=function(t,el){
-  document.documentElement.setAttribute('data-theme',t);
-  localStorage.setItem('cl_theme',t);
-  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  toast('Tema değiştirildi','s');
-};
-
-/* ── AUTH ── */
-onAuthStateChanged(auth,async(user)=>{
-  if(!user){ss('screenLogin');return;}
-  cu=user;
-  const snap=await getDoc(doc(db,C.users,user.uid));
-  if(!snap.exists()){toast('Profil bulunamadı','e');await signOut(auth);return;}
-  cp=snap.data();
-  if(!cp.approved){ss('screenPending');poll();return;}
-  ss('screenApp');await init();
-});
-function poll(){const t=setInterval(async()=>{const s=await getDoc(doc(db,C.users,cu.uid));if(s.data()?.approved){clearInterval(t);cp=s.data();ss('screenApp');init();}},10000);}
-function ss(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-
-window.doLogin=async function(){
-  const e=document.getElementById('loginEmail').value.trim();
-  const p=document.getElementById('loginPass').value;
-  if(!e||!p){toast('E-posta ve şifre girin','w');return;}
-  const btn=document.getElementById('loginBtn');btn.disabled=true;btn.textContent='⏳ Giriş yapılıyor...';
-  try{await signInWithEmailAndPassword(auth,e,p);}
-  catch(err){toast(errTR(err.code),'e');btn.disabled=false;btn.textContent='Giriş Yap';}
-};
-window.doLogout=async function(){await signOut(auth);AR=[];cu=null;cp=null;aiUnlocked=false;};
-
-/* ── INIT ── */
-async function init(){
-  const today=new Date();const ts=today.toISOString().split('T')[0];
-  const fn=(cp.name||'').split(' ')[0];
-  $('welcomeMsg',`Hoş geldin, ${fn} 👋`);
-  $('todayStr',today.toLocaleDateString('tr-TR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}));
-  $('quickDateLabel',today.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'}));
-  document.getElementById('entryDate').value=ts;
-  $('userName',cp.name||'');$('userBusiness',cp.businessName||'');
-  $('userAvatar',(cp.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase());
-  $('settingEmail',cp.email||cu.email||'');$('settingPlan',pLabel(cp.plan));
-  $('settingDate',cp.createdAt?.toDate?cp.createdAt.toDate().toLocaleDateString('tr-TR'):'—');
-  if(cp.monthlyGoal)document.getElementById('goalInput').value=cp.monthlyGoal;
-  // profil
-  if(document.getElementById('profileName'))document.getElementById('profileName').value=cp.name||'';
-  if(document.getElementById('profileBusiness'))document.getElementById('profileBusiness').value=cp.businessName||'';
-  if(document.getElementById('profileEmail'))document.getElementById('profileEmail').value=cp.email||cu.email||'';
-  // lisans
-  renderLicenseBadge();renderLicensePage();
-  // settings (kapalı günler)
-  await loadSettings();
-  await loadRecs();
-  renderDash();
-  buildClosedDayUI();
-  renderPeriodList();
-  renderCalendar();
-  renderExportPreview();
-  await checkLicenseStatus();
-}
-
-/* ── SETTINGS FIRESTORE ── */
-async function loadSettings(){
-  try{
-    const snap=await getDoc(doc(db,C.settings(cu.uid)));
-    if(snap.exists()) SETTINGS={closedDays:[],closedPeriods:[],...snap.data()};
-    else SETTINGS={closedDays:[],closedPeriods:[]};
-  }catch{SETTINGS={closedDays:[],closedPeriods:[]};}
-}
-async function saveSettings(){
-  await setDoc(doc(db,C.settings(cu.uid)),SETTINGS,{merge:true});
-}
-
-function buildClosedDayUI(){
-  const container=document.getElementById('closedDayChecks');if(!container)return;
-  container.innerHTML=DAYS.map((d,i)=>`
-    <label class="day-check ${SETTINGS.closedDays.includes(i)?'checked':''}" id="dck-${i}" onclick="toggleDayCheck(${i},this)">
-      <input type="checkbox" ${SETTINGS.closedDays.includes(i)?'checked':''} style="display:none"> ${d.slice(0,3)}
-    </label>`).join('');
-}
-window.toggleDayCheck=function(i,el){
-  const checked=SETTINGS.closedDays.includes(i);
-  if(checked)SETTINGS.closedDays=SETTINGS.closedDays.filter(d=>d!==i);
-  else SETTINGS.closedDays.push(i);
-  el.classList.toggle('checked',!checked);
-};
-window.saveClosedDays=async function(){
-  await saveSettings();toast('Kapalı günler kaydedildi ✓','s');renderDash();renderCalendar();
-};
-
-window.addClosedPeriod=async function(){
-  const from=document.getElementById('periodFrom').value;
-  const to=document.getElementById('periodTo').value;
-  const label=document.getElementById('periodLabel').value.trim();
-  if(!from||!to||from>to){toast('Geçerli tarih aralığı girin','w');return;}
-  SETTINGS.closedPeriods.push({from,to,label:label||'Kapalı Dönem'});
-  await saveSettings();
-  document.getElementById('periodFrom').value='';
-  document.getElementById('periodTo').value='';
-  document.getElementById('periodLabel').value='';
-  renderPeriodList();renderDash();renderCalendar();
-  toast('Kapalı dönem eklendi','s');
-};
-window.removePeriod=async function(i){
-  SETTINGS.closedPeriods.splice(i,1);await saveSettings();renderPeriodList();renderDash();renderCalendar();
-};
-function renderPeriodList(){
-  const el=document.getElementById('periodList');if(!el)return;
-  if(!SETTINGS.closedPeriods.length){el.innerHTML='<div style="color:var(--muted);font-size:.82rem;padding:.5rem 0">Özel kapalı dönem yok</div>';return;}
-  el.innerHTML=SETTINGS.closedPeriods.map((p,i)=>`
-    <div class="period-item">
-      <div><div class="period-info">${p.label}</div><div class="period-dates">${p.from} → ${p.to}</div></div>
-      <button class="icon-btn danger" onclick="removePeriod(${i})">🗑️</button>
-    </div>`).join('');
-}
-
-/* ── IS CLOSED DAY ── */
-function isClosedDay(dateStr){
-  const d=new Date(dateStr+'T00:00:00');
-  const wd=d.getDay();
-  if(SETTINGS.closedDays.includes(wd))return{closed:true,reason:'haftalık kapalı gün'};
-  for(const p of SETTINGS.closedPeriods){
-    if(dateStr>=p.from&&dateStr<=p.to)return{closed:true,reason:p.label||'kapalı dönem'};
-  }
-  return{closed:false,reason:null};
-}
-
-/* ── FIRESTORE CRUD ── */
-async function loadRecs(){
-  const q=query(collection(db,C.rec(cu.uid)),orderBy('date','desc'),limit(500));
-  const s=await getDocs(q);
-  AR=s.docs.map(d=>({id:d.id,...d.data()}));
-  renderRecords();
-}
-async function saveE(date,amount,note){
-  const ref=doc(db,C.rec(cu.uid),date);
-  const data={date,amount:Number(amount),note:note||'',updatedAt:serverTimestamp()};
-  await setDoc(ref,data,{merge:true});
-  const i=AR.findIndex(r=>r.id===date);
-  if(i>=0)AR[i]={id:date,...data};
-  else{AR.unshift({id:date,...data});AR.sort((a,b)=>b.date.localeCompare(a.date));}
-}
-
-window.quickSave=async function(){
-  const amount=parseFloat(document.getElementById('quickAmount').value);
-  if(!amount||amount<=0){document.getElementById('quickAmount').style.borderColor='var(--danger)';setTimeout(()=>document.getElementById('quickAmount').style.borderColor='',1500);return;}
-  const today=new Date().toISOString().split('T')[0];
-  const btn=document.getElementById('quickBtn');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
-  try{await saveE(today,amount,'');document.getElementById('quickAmount').value='';toast('Ciro kaydedildi ✓','s');renderDash();renderRecords();renderCalendar();}
-  catch(e){toast('Hata: '+e.message,'e');}
-  finally{btn.disabled=false;btn.textContent='Kaydet ↵';}
-};
-window.saveRecord=async function(){
-  const date=document.getElementById('entryDate').value;
-  const amount=parseFloat(document.getElementById('entryAmount').value);
-  const note=document.getElementById('entryNote').value;
-  if(!date||!amount||amount<=0){toast('Tarih ve ciro zorunlu','w');return;}
-  const btn=document.getElementById('saveBtn');btn.disabled=true;btn.textContent='⏳...';
-  try{await saveE(date,amount,note);document.getElementById('entryAmount').value='';document.getElementById('entryNote').value='';toast('Kaydedildi ✓','s');renderDash();renderRecords();}
-  catch(e){toast('Hata: '+e.message,'e');}
-  finally{btn.disabled=false;btn.textContent='💾 Kaydet';}
-};
-window.deleteRecord=async function(dateId){
-  if(!confirm('Bu kaydı silmek istiyor musunuz?'))return;
-  try{await deleteDoc(doc(db,C.rec(cu.uid),dateId));AR=AR.filter(r=>r.id!==dateId);renderRecords();renderDash();toast('Kayıt silindi','w');}
-  catch(e){toast('Silinemedi: '+e.message,'e');}
-};
-window.editRecord=function(dateId,amount,note){
-  document.getElementById('entryDate').value=dateId;
-  document.getElementById('entryAmount').value=amount;
-  document.getElementById('entryNote').value=note||'';
-  navTo('kayit',document.querySelector('[onclick*="kayit"]'));
-  setTimeout(()=>document.getElementById('entryAmount').focus(),300);
-};
-
-/* ── SMART AVERAGE: kapalı günleri dışlar ── */
-function smartAvg(recs){
-  // Sadece açık günlerdeki kayıtlar kullanılır
-  const open=recs.filter(r=>!isClosedDay(r.id).closed);
-  if(!open.length)return 0;
-  return Math.round(open.reduce((s,r)=>s+Number(r.amount),0)/open.length);
-}
-function countClosedInRange(fromDate,toDate){
-  let count=0;const cur=new Date(fromDate+'T00:00:00');const end=new Date(toDate+'T00:00:00');
-  while(cur<=end){const k=cur.toISOString().split('T')[0];if(isClosedDay(k).closed)count++;cur.setDate(cur.getDate()+1);}
-  return count;
-}
-
-/* ── RECORD RENDER with insight ── */
-function getRecordInsight(r){
-  // Geçen haftanın aynı günü
-  const d=new Date(r.date+'T00:00:00');
-  const prevWeek=new Date(d);prevWeek.setDate(d.getDate()-7);
-  const pwKey=prevWeek.toISOString().split('T')[0];
-  const pwR=AR.find(x=>x.id===pwKey);
-
-  // Bu ayın açık gün ortalaması
-  const monthRecs=AR.filter(x=>{const xd=new Date(x.date+'T00:00:00');return xd.getFullYear()===d.getFullYear()&&xd.getMonth()===d.getMonth()&&!isClosedDay(x.date).closed;});
-  const monthAvgVal=monthRecs.length?Math.round(monthRecs.reduce((s,x)=>s+Number(x.amount),0)/monthRecs.length):0;
-  const amt=Number(r.amount);
-
-  const parts=[];
-  if(pwR){
-    const pwAmt=Number(pwR.amount),diff=Math.round((amt-pwAmt)/pwAmt*100);
-    parts.push(`Geçen hft. aynı güne göre <span class="insight-badge ${diff>=0?'ib-up':'ib-dn'}">${diff>=0?'+':''}${diff}%</span>`);
-  }
-  if(monthAvgVal>0){
-    const diff2=Math.round((amt-monthAvgVal)/monthAvgVal*100);
-    parts.push(`Ay ort.na göre <span class="insight-badge ${diff2>=0?'ib-up':'ib-dn'}">${diff2>=0?'+':''}${diff2}%</span>`);
-  }
-  return parts.length?`<div class="rec-insight" style="color:var(--muted)">${parts.join(' · ')}</div>`:'';
-}
-
-function renderRecords(list){
-  const data=list||AR;const el=document.getElementById('recordList');
-  if(!data.length){el.innerHTML='<div style="color:var(--muted);padding:2rem;text-align:center">Henüz kayıt yok</div>';return;}
-  el.innerHTML=data.map(r=>{
-    const d=new Date(r.date+'T00:00:00');
-    const cl=isClosedDay(r.id);
-    const insight=getRecordInsight(r);
-    return`<div class="record-item ${cl.closed?'closed-day':''}">
-      <div class="rec-date"><div class="rec-day">${d.getDate()}</div><div class="rec-month">${MSH[d.getMonth()]}</div><div class="rec-wd">${DSH[d.getDay()]}</div></div>
-      <div class="rec-div"></div>
-      <div class="rec-info">
-        <div style="font-size:.875rem;font-weight:600">${d.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}</div>
-        ${r.note?`<div class="rec-note">📝 ${r.note}</div>`:''}
-        ${cl.closed?`<div style="font-size:.7rem;color:var(--warn)">⚠️ ${cl.reason}</div>`:''}
-        ${insight}
-      </div>
-      <div class="rec-amount">₺${Number(r.amount).toLocaleString('tr-TR')}</div>
-      <div class="rec-actions">
-        <div class="icon-btn" onclick="editRecord('${r.id}',${r.amount},'${(r.note||'').replace(/'/g,"\\'")}')">✏️</div>
-        <div class="icon-btn danger" onclick="deleteRecord('${r.id}')">🗑️</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-window.applyFilter=function(){const from=document.getElementById('filterFrom').value,to=document.getElementById('filterTo').value;if(!from&&!to)return;renderRecords(AR.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to)));};
-window.clearFilter=function(){document.getElementById('filterFrom').value='';document.getElementById('filterTo').value='';renderRecords();};
-window.exportCSV=function(){const from=document.getElementById('exportFrom')?.value||'',to=document.getElementById('exportTo')?.value||'';const data=AR.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to));const rows=['Tarih,Ciro,Not,KapalıMı',...data.map(r=>`${r.date},${r.amount},"${r.note||''}",${isClosedDay(r.id).closed}`)];const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(rows.join('\n'));a.download=`cirolog-${new Date().toISOString().split('T')[0]}.csv`;a.click();toast('CSV indirildi ✓','s');};
-
-/* ── DASHBOARD ── */
-function renderDash(){
-  const now=new Date();const today=now.toISOString().split('T')[0];
-  const y=now.getFullYear(),m=now.getMonth();
-  const tr=AR.find(r=>r.id===today);
-  // Bu hafta
-  const ws=new Date(now);ws.setDate(now.getDate()-6);const wsS=ws.toISOString().split('T')[0];
-  const wR=AR.filter(r=>r.date>=wsS&&r.date<=today);
-  const wS=wR.reduce((s,r)=>s+Number(r.amount),0);
-  const wAvg=smartAvg(wR);
-  // Bu ay
-  const mR=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y&&d.getMonth()===m;});
-  const mS=mR.reduce((s,r)=>s+Number(r.amount),0);
-  const mAvg=smartAvg(mR);
-  // Yıl
-  const yS=AR.filter(r=>new Date(r.date+'T00:00:00').getFullYear()===y).reduce((s,r)=>s+Number(r.amount),0);
-  $('statToday',tr?'₺'+fmt(tr.amount):'₺0');
-  const tn=document.getElementById('statTodayNote');
-  tn.textContent=tr?'✓ Bugün girildi':'— kayıt yok';tn.className='stat-delta '+(tr?'up':'neu');
-  $('statWeek','₺'+fmt(wS));$('statWeekNote',`${wR.filter(r=>!isClosedDay(r.id).closed).length} açık gün ort.: ₺${fmt(wAvg)}`);
-  $('statMonth','₺'+fmt(mS));$('statMonthNote',`${mR.filter(r=>!isClosedDay(r.id).closed).length} açık gün ort.: ₺${fmt(mAvg)}`);
-  $('statYear',yS>=1e6?'₺'+(yS/1e6).toFixed(2)+'M':'₺'+fmt(yS));
-  const goal=cp?.monthlyGoal||0;
-  if(goal>0){
-    const pct=Math.min(100,Math.round((mS/goal)*100));
-    const left=Math.max(0,goal-mS);
-    const remDays=new Date(y,m+1,0).getDate()-now.getDate();
-    // Kalan açık gün sayısı tahmini
-    const closedDaysPerWeek=SETTINGS.closedDays.length;
-    const remOpenDays=Math.round(remDays*(1-(closedDaysPerWeek/7)));
-    $('goalCur','₺'+fmt(mS));$('goalTarget','Hedef: ₺'+fmt(goal));
-    $('goalLeft','₺'+fmt(left)+' kaldı');$('goalPct',pct);
-    $('goalDaily','₺'+fmt(remOpenDays>0?Math.ceil(left/remOpenDays):0));
-    $('goalDays',`/ gün (${remOpenDays} açık gün kaldı)`);
-    setTimeout(()=>{const b=document.getElementById('goalBar');if(b)b.style.width=pct+'%';},200);
-  }
-  renderWeekChart();renderYearChart();renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m);
-}
-
-/* ── DASH INSIGHTS (Local AI) ── */
-function renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m){
-  const el=document.getElementById('dashInsights');if(!el)return;
-  if(AR.length<3){el.innerHTML='<div style="color:var(--muted);font-size:.875rem">Analiz için en az 3 kayıt gerekli.</div>';return;}
-  const insights=[];
-  // Kapali gün yorumu
-  const now=new Date();const totalDays=new Date(y,m+1,0).getDate();
-  const closedCount=countClosedInRange(`${y}-${String(m+1).padStart(2,'0')}-01`,`${y}-${String(m+1).padStart(2,'0')}-${String(totalDays).padStart(2,'0')}`);
-  const openDays=totalDays-closedCount;
-  if(closedCount>0&&mR.length>0){
-    insights.push({icon:'🏪',text:`Bu ay <strong>${totalDays} günden ${closedCount}ü kapalı</strong> olduğu için ${openDays} açık gün üzerinden hesaplanıyor. Açık gün ortalamanız <strong>₺${fmt(mAvg)}</strong>.`,badge:null});
-  }
-  // Haftalık trend
-  const prevWStart=new Date(now);prevWStart.setDate(now.getDate()-13);
-  const prevWEnd=new Date(now);prevWEnd.setDate(now.getDate()-7);
-  const pwR=AR.filter(r=>r.date>=prevWStart.toISOString().split('T')[0]&&r.date<=prevWEnd.toISOString().split('T')[0]);
-  if(pwR.length>0&&wR.length>0){
-    const pwS=pwR.reduce((s,r)=>s+Number(r.amount),0);
-    const weekChange=Math.round((wS-pwS)/pwS*100);
-    insights.push({icon:'📈',text:`Bu hafta geçen haftaya göre <strong>%${Math.abs(weekChange)} ${weekChange>=0?'artış':'düşüş'}</strong> var. Bu hafta: ₺${fmt(wS)} / Geçen hafta: ₺${fmt(pwS)}.`,badge:weekChange>=0?'ib-up':'ib-dn'});
-  }
-  // En iyi gün
-  const bestDay=AR.reduce((a,b)=>Number(a.amount)>Number(b.amount)?a:b,AR[0]);
-  const bd=new Date(bestDay.date+'T00:00:00');
-  insights.push({icon:'🏆',text:`Tüm zamanların en iyi günü: <strong>${bd.toLocaleDateString('tr-TR',{day:'numeric',month:'long'})} (${DAYS[bd.getDay()]})</strong> — ₺${fmt(bestDay.amount)}.`,badge:'ib-up'});
-  // Tahmin
-  if(AR.length>=7){
-    const last30=AR.slice(0,30);const l30avg=smartAvg(last30);
-    const goal=cp?.monthlyGoal||0;
-    if(goal>0&&mS>0){
-      const now2=new Date();const dLeft=new Date(y,m+1,0).getDate()-now2.getDate();
-      const closedLeft=countClosedInRange(new Date(now2.getTime()+86400000).toISOString().split('T')[0],`${y}-${String(m+1).padStart(2,'0')}-${String(new Date(y,m+1,0).getDate()).padStart(2,'0')}`);
-      const openLeft=dLeft-closedLeft;
-      const projected=mS+(l30avg*openLeft);
-      const projPct=Math.round((projected/goal)*100);
-      insights.push({icon:'🔮',text:`Mevcut açık gün ortalaması (₺${fmt(l30avg)}) ile devam ederse ay sonu tahmini: <strong>₺${fmt(Math.round(projected))}</strong> (Hedefin %${projPct}i).`,badge:projPct>=100?'ib-up':'ib-warn'});
-    }
-  }
-  // Haftanın en iyi günü
-  const dt=[0,0,0,0,0,0,0],dc=[0,0,0,0,0,0,0];
-  AR.filter(r=>!isClosedDay(r.id).closed).forEach(r=>{const wd=new Date(r.date+'T00:00:00').getDay();dt[wd]+=Number(r.amount);dc[wd]++;});
-  const avgs=dt.map((t,i)=>dc[i]>0?Math.round(t/dc[i]):0);
-  const bestWd=avgs.indexOf(Math.max(...avgs));
-  if(avgs[bestWd]>0)insights.push({icon:'📅',text:`En verimli gününüz <strong>${DAYS[bestWd]}</strong> — günlük ort. ₺${fmt(avgs[bestWd])}.`,badge:'ib-up'});
-  el.innerHTML=insights.map(i=>`<div class="insight-item"><div class="insight-icon">${i.icon}</div><div class="insight-text">${i.text}${i.badge?`<span class="insight-badge ${i.badge}">✓</span>`:''}</div></div>`).join('');
-}
-
-/* ── CHARTS ── */
-function bars(cid,vals,labels,h,colors){
-  const el=document.getElementById(cid);if(!el)return;
-  const max=Math.max(...vals,1);el.style.height=(h||200)+'px';
-  el.innerHTML=vals.map((v,i)=>`<div class="bar-col"><div class="bar-val">${v>0?'₺'+(v>=1000?(v/1000).toFixed(0)+'K':v):''}</div><div class="bar" style="height:${Math.max((v/max)*100,v>0?3:1)}%;background:${colors?colors[i%colors.length]:CLR[i%CLR.length]}" title="${labels[i]}: ₺${fmt(v)}"></div><div class="bar-label">${labels[i]}</div></div>`).join('');
-}
-function renderWeekChart(){
-  const now=new Date();const vals=[],labels=[];
-  for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);const k=d.toISOString().split('T')[0];const r=AR.find(x=>x.id===k);vals.push(r?Number(r.amount):0);labels.push(DSH[d.getDay()]);}
-  bars('weekChart',vals,labels,200,vals.map((v,i)=>{const d=new Date(now);d.setDate(now.getDate()-(6-i));return isClosedDay(d.toISOString().split('T')[0]).closed?'var(--border)':CLR[i%CLR.length];}));
-}
-function renderYearChart(){
-  const y=new Date().getFullYear(),m=new Date().getMonth(),vals=[],labels=[];
-  for(let i=0;i<=m;i++){const t=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y&&d.getMonth()===i;}).reduce((s,r)=>s+Number(r.amount),0);vals.push(t);labels.push(MSH[i]);}
-  bars('yearChart',vals,labels,160);
-}
-
-/* ── TAKVİM ── */
-window.calNav=function(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}else if(calMonth<0){calMonth=11;calYear--;}renderCalendar();};
-function renderCalendar(){
-  const el=document.getElementById('calGrid');const headEl=document.getElementById('calHead');const titleEl=document.getElementById('calTitle');
-  if(!el)return;
-  $('calTitle',`${MON[calMonth]} ${calYear}`);
-  headEl.innerHTML=DSH.map(d=>`<div class="cal-head">${d}</div>`).join('');
-  const firstDay=new Date(calYear,calMonth,1).getDay();
-  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
-  const prevDays=new Date(calYear,calMonth,0).getDate();
-  const today=new Date().toISOString().split('T')[0];
-  let html='';
-  for(let i=0;i<firstDay;i++){const d=prevDays-firstDay+1+i;html+=`<div class="cal-day other-month">${d}</div>`;}
-  for(let d=1;d<=daysInMonth;d++){
-    const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const rec=AR.find(r=>r.id===key);const cl=isClosedDay(key);
-    const cls=['cal-day',key===today?'today':'',cl.closed?'closed':'',rec?'has-data':''].filter(Boolean).join(' ');
-    html+=`<div class="${cls}" title="${cl.closed?cl.reason:rec?'₺'+fmt(rec.amount):''}">${d}${rec?`<div class="cal-amount">₺${fmt(rec.amount)>=1000?(Number(rec.amount)/1000).toFixed(0)+'K':fmt(rec.amount)}</div>`:''}${cl.closed&&!rec?`<div style="font-size:.55rem;color:var(--danger)">Kpalı</div>`:''}</div>`;
-  }
-  const remaining=42-firstDay-daysInMonth;
-  for(let i=1;i<=remaining;i++)html+=`<div class="cal-day other-month">${i}</div>`;
-  el.innerHTML=html;
-  // Summary
-  const monthRecs=AR.filter(r=>r.date.startsWith(`${calYear}-${String(calMonth+1).padStart(2,'0')}`));
-  const monthTotal=monthRecs.reduce((s,r)=>s+Number(r.amount),0);
-  const monthAvgVal=smartAvg(monthRecs);
-  const totalClosed=countClosedInRange(`${calYear}-${String(calMonth+1).padStart(2,'0')}-01`,`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`);
-  const sumEl=document.getElementById('calSummary');
-  if(sumEl)sumEl.innerHTML=[
-    {l:'Ay Toplam',v:'₺'+fmt(monthTotal)},{l:'Açık Gün Ort.',v:'₺'+fmt(monthAvgVal)},{l:'Kapalı Gün',v:totalClosed+' gün'}
-  ].map(x=>`<div style="text-align:center;background:var(--surface2);border-radius:var(--radius-sm);padding:.75rem"><div style="font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em">${x.l}</div><div style="font-family:var(--font-display);font-size:1.3rem;margin-top:.2rem">${x.v}</div></div>`).join('');
-}
-
-/* ── LOCAL AI ── */
-window.runLocalAI=async function(){
-  const btn=document.getElementById('aiBtn');const type=document.getElementById('aiType')?.value||'genel';
-  const range=document.getElementById('aiRange')?.value||'90';
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Analiz ediliyor...';
-  let filtered=AR;
-  if(range!=='all'){const cut=new Date();cut.setDate(cut.getDate()-parseInt(range));filtered=AR.filter(r=>r.date>=cut.toISOString().split('T')[0]);}
-  if(filtered.length<3){toast('En az 3 kayıt gerekli','w');btn.disabled=false;btn.textContent='🧠 Analizi Çalıştır';return;}
-  // Hesaplamalar
-  const sorted=[...filtered].sort((a,b)=>a.date.localeCompare(b.date));
-  const openRecs=sorted.filter(r=>!isClosedDay(r.id).closed);
-  const total=sorted.reduce((s,r)=>s+Number(r.amount),0);
-  const avg=openRecs.length?Math.round(total/openRecs.length):0;
-  const maxR=sorted.reduce((a,b)=>Number(a.amount)>Number(b.amount)?a:b);
-  const minR=sorted.reduce((a,b)=>Number(a.amount)<Number(b.amount)?a:b,sorted[0]);
-  // Aylık
-  const monthMap={};
-  sorted.forEach(r=>{const k=r.date.slice(0,7);monthMap[k]=(monthMap[k]||0)+Number(r.amount);});
-  const months=Object.entries(monthMap).sort();
-  // Haftalık gün ortalamaları
-  const dt=[0,0,0,0,0,0,0],dc=[0,0,0,0,0,0,0];
-  openRecs.forEach(r=>{const wd=new Date(r.date+'T00:00:00').getDay();dt[wd]+=Number(r.amount);dc[wd]++;});
-  const dayAvgs=dt.map((t,i)=>dc[i]?Math.round(t/dc[i]):null);
-  const bestDow=dayAvgs.indexOf(Math.max(...dayAvgs.filter(Boolean)));
-  const worstDow=dayAvgs.reduce((bi,v,i,a)=>v!==null&&(a[bi]===null||v<a[bi])?i:bi,0);
-  // Trend (son vs önceki dönem)
-  const half=Math.floor(sorted.length/2);
-  const firstHalf=sorted.slice(0,half),lastHalf=sorted.slice(half);
-  const firstAvg=smartAvg(firstHalf),lastAvg=smartAvg(lastHalf);
-  const trendPct=firstAvg>0?Math.round((lastAvg-firstAvg)/firstAvg*100):0;
-  // Tahmin
-  const last14=sorted.slice(-14);const l14avg=smartAvg(last14);
-  // Kapalı gün yorumu
-  const closedRecs=sorted.filter(r=>isClosedDay(r.id).closed).length;
-  const closedTotal=sorted.reduce((s,r)=>isClosedDay(r.id).closed?s+Number(r.amount):s,0);
-  let html='';
-
-  if(type==='genel'||type==='trend'){
-    html+=section('📊 Genel Performans',[
-      `<strong>${sorted.length} kayıt</strong> analiz edildi (${sorted[0].date} → ${sorted[sorted.length-1].date}).`,
-      `Toplam ciro: <strong>₺${fmt(total)}</strong>`,
-      `Açık gün günlük ort.: <strong>₺${fmt(avg)}</strong>`,
-      `En yüksek gün: <strong>${maxR.date} — ₺${fmt(maxR.amount)}</strong>`,
-      `En düşük gün: <strong>${minR.date} — ₺${fmt(minR.amount)}</strong>`,
-    ]);
-    html+=section('📈 Trend Analizi',[
-      `Dönem ikiye bölündüğünde: İlk yarı ort. ₺${fmt(firstAvg)} → Son yarı ort. ₺${fmt(lastAvg)}`,
-      `<strong>Trend: ${trendPct>=0?'Yükseliş':'Düşüş'} ${Math.abs(trendPct)}%</strong> ${badge(trendPct>=0?'ib-up':'ib-dn',trendPct>=0?'▲ İyileşiyor':'▼ Gerilemekte')}`,
-      `Son 14 gün ort.: ₺${fmt(l14avg)}`,
-    ]);
-  }
-  if(type==='gun'||type==='genel'){
-    html+=section('📅 Gün/Hafta Dağılımı',[
-      `En verimli gün: <strong>${DAYS[bestDow]}</strong> — ₺${fmt(dayAvgs[bestDow])} ort. ${badge('ib-up','★ En İyi')}`,
-      `En düşük gün: <strong>${DAYS[worstDow]}</strong> — ₺${fmt(dayAvgs[worstDow]||0)} ort. ${badge('ib-dn','↓ En Düşük')}`,
-      ...DAYS.map((d,i)=>dayAvgs[i]!==null?`${d}: ₺${fmt(dayAvgs[i])}`:null).filter(Boolean),
-    ]);
-  }
-  if(type==='tahmin'){
-    const projected30=l14avg*22; // ~22 açık gün
-    html+=section('🔮 30 Günlük Projeksiyon',[
-      `Son 14 günün açık gün ort.: <strong>₺${fmt(l14avg)}</strong>`,
-      `Mevcut hız ile 30 günlük tahmini ciro (22 açık gün): <strong>₺${fmt(Math.round(projected30))}</strong>`,
-      `Aylık hedef: ${cp?.monthlyGoal?'₺'+fmt(cp.monthlyGoal):'Belirlenmemiş'}`,
-      cp?.monthlyGoal&&projected30>=cp.monthlyGoal?`${badge('ib-up','✓ Hedefe Ulaşacak')} Mevcut hızla hedef aşılacak.`:cp?.monthlyGoal?`${badge('ib-dn','⚠ Hedef Riski')} Günlük ortalama ₺${fmt(Math.ceil((cp.monthlyGoal-projected30)/22))} artırılmalı.`:'',
-    ].filter(Boolean));
-    if(months.length>=2){
-      const mArr=months.slice(-6);html+=section('📉 Aylık Eğilim (Son 6 Ay)',mArr.map(([k,v],i,a)=>{const prev=i>0?a[i-1][1]:null;const p=prev?Math.round((v-prev)/prev*100):null;const [y2,mn]=k.split('-');const pBadge=p!==null?' '+badge(p>=0?'ib-up':'ib-dn',(p>=0?'+':'')+p+'%'):'';return'<strong>'+MON[parseInt(mn)-1]+' '+y2+':</strong> ₺'+fmt(v)+pBadge;}).filter(Boolean));
-    }
-  }
-  if(type==='kapali'){
-    html+=section('🏪 Kapalı Gün Etkisi',[
-      `Analiz döneminde <strong>${closedRecs} kapalı günde kayıt</strong> bulundu.`,
-      closedRecs>0?`Bu günlerdeki toplam ciro: ₺${fmt(closedTotal)} (muhtemelen kısmi açılış).`:'Kapalı günlerde kayıt yok — istatistikler doğru.',
-      `Haftalık kapalı: <strong>${SETTINGS.closedDays.map(i=>DAYS[i]).join(', ')||'Belirlenmemiş'}</strong>`,
-      SETTINGS.closedPeriods.length?`Özel kapalı dönem: ${SETTINGS.closedPeriods.map(p=>`${p.label} (${p.from}→${p.to})`).join(', ')}`:'Özel kapalı dönem yok.',
-      `Kapalı günler <em>dahil</em> ham ort.: ₺${fmt(Math.round(total/sorted.length))}`,
-      `Kapalı günler <em>hariç</em> gerçek ort.: ₺${fmt(avg)} ${badge('ib-up','✓ Doğru Oran')}`,
-    ]);
-  }
-  document.getElementById('aiResult').innerHTML=`<h3>🧠 Analiz Raporu — ${new Date().toLocaleString('tr-TR')}</h3>${html}`;
-  btn.disabled=false;btn.textContent='🧠 Analizi Çalıştır';
-};
-function section(title,items){return`<div style="margin-bottom:1.25rem"><div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem">${title}</div>${items.map(i=>`<div class="insight-item" style="padding:.5rem 0"><div class="insight-text">${i}</div></div>`).join('')}</div>`;}
-function badge(cls,txt){return`<span class="insight-badge ${cls}">${txt}</span>`;}
-
-/* ── RAPORLAR ── */
-function monthWeeks(y,m){const total=new Date(y,m+1,0).getDate(),wks=[[],[],[],[]];for(let d=1;d<=total;d++){const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;wks[Math.min(3,Math.floor((d-1)/7))].push(k);}return wks;}
-function recSum(days){return days.reduce((s,d)=>{const r=AR.find(x=>x.id===d);return s+(r?Number(r.amount):0);},0);}
-function recSmartAvg(days){const recs=days.map(d=>AR.find(x=>x.id===d)).filter(Boolean);return smartAvg(recs);}
-function chgPct(a,b){return b>0?Math.round((a-b)/b*100):null;}
-function chgHtml(pct){if(pct===null)return'';const c=pct>=0?'var(--success)':'var(--danger)';return`<span style="color:${c};font-size:.78rem">${pct>=0?'↑':'↓'} ${Math.abs(pct)}%</span>`;}
-function dayListHtml(items,top){if(!items.length)return'<div style="color:var(--muted);font-size:.83rem;padding:.5rem 0">Veri yok</div>';return items.slice(0,top||5).map((r,i)=>{const d=new Date(r.date+'T00:00:00');return`<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.83rem"><div><span style="color:var(--muted);margin-right:.35rem">${i+1}.</span>${d.getDate()} ${MSH[d.getMonth()]} — <span style="color:var(--muted)">${DSH[d.getDay()]}</span></div><strong style="color:var(--accent)">₺${fmt(r.amount)}</strong></div>`;}).join('');}
-
-function renderWeekTab(){
-  const now=new Date();const mon=new Date(now);mon.setDate(now.getDate()-((now.getDay()+6)%7));
-  const thisDays=[],prevDays=[];
-  for(let i=0;i<7;i++){const a=new Date(mon);a.setDate(mon.getDate()+i);thisDays.push(a.toISOString().split('T')[0]);const b=new Date(mon);b.setDate(mon.getDate()+i-7);prevDays.push(b.toISOString().split('T')[0]);}
-  const thisT=recSum(thisDays),prevT=recSum(prevDays),pct=chgPct(thisT,prevT);
-  $('rW_thisTotal','₺'+fmt(thisT));
-  document.getElementById('rW_thisDays').textContent=`${thisDays.filter(d=>AR.some(r=>r.id===d)).length} kayıtlı gün`;
-  $('rW_prevTotal','₺'+fmt(prevT));
-  document.getElementById('rW_change').innerHTML=chgHtml(pct)||(prevT===0?'<span style="color:var(--muted);font-size:.78rem">Geçen hafta veri yok</span>':'');
-  const vals7=[],labs7=[];
-  for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);const k=d.toISOString().split('T')[0];const r=AR.find(x=>x.id===k);vals7.push(r?Number(r.amount):0);labs7.push(DSH[d.getDay()]);}
-  const nonz=vals7.filter(v=>v>0);
-  const mx=nonz.length?Math.max(...nonz):0,mxi=nonz.length?vals7.indexOf(mx):-1;
-  const mn=nonz.length?Math.min(...nonz):0,mni=nonz.length?vals7.lastIndexOf(mn):-1;
-  $('rW_avg',recSmartAvg(thisDays)?'₺'+fmt(recSmartAvg(thisDays)):'₺0');
-  $('rW_max',mx?'₺'+fmt(mx):'—');$('rW_maxDay',mxi>=0?labs7[mxi]:'');
-  $('rW_min',mn?'₺'+fmt(mn):'—');$('rW_minDay',mni>=0?labs7[mni]:'');
-  bars('rWeekChart',vals7,labs7,190,vals7.map((_,i)=>{const d=new Date(now);d.setDate(now.getDate()-(6-i));return isClosedDay(d.toISOString().split('T')[0]).closed?'var(--border)':CLR[i%CLR.length];}));
-  const y=now.getFullYear(),m=now.getMonth();const wks=monthWeeks(y,m);const w4v=wks.map(w=>recSum(w));const maxW=Math.max(...w4v,1);
-  document.getElementById('rW_4wCards').innerHTML=wks.map((w,i)=>{const s=w4v[i],prev=i>0?w4v[i-1]:null,p=chgPct(s,prev);return`<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:.75rem;text-align:center"><div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;margin-bottom:.25rem">${i+1}.Hafta</div><div style="font-family:var(--font-display);font-size:1.1rem">₺${s>=1000?(s/1000).toFixed(1)+'K':fmt(s)}</div>${chgHtml(p)||'<span style="font-size:.65rem;color:var(--muted)">—</span>'}<div style="height:3px;background:var(--border);border-radius:99px;margin-top:.4rem"><div style="height:100%;background:var(--accent);border-radius:99px;width:${Math.round((s/maxW)*100)}%"></div></div></div>`;}).join('');
-  $('rW_4wTitle',`${MON[m]} ${y} — 4 Hafta`);
-  bars('rW_4wChart',w4v,['1.Hafta','2.Hafta','3.Hafta','4.Hafta'],130);
-}
-
-function initPickers(){
-  const years=[...new Set(AR.map(r=>new Date(r.date+'T00:00:00').getFullYear()))].sort((a,b)=>b-a);
-  const now=new Date();
-  if(!years.includes(now.getFullYear()))years.unshift(now.getFullYear());
-  ['mPickY','yPick1'].forEach(id=>{const s=document.getElementById(id);if(!s||s.options.length)return;years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;s.appendChild(o);});});
-  ['yPick2'].forEach(id=>{const s=document.getElementById(id);if(!s||s.options.length>1)return;years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;s.appendChild(o);});});
-  const ms=document.getElementById('mPickM');
-  if(ms&&!ms.options.length){MON.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;ms.appendChild(o);});ms.value=now.getMonth();}
-}
-window.renderMonthTab=function(){
-  const y=parseInt(document.getElementById('mPickY')?.value||new Date().getFullYear());
-  const m=parseInt(document.getElementById('mPickM')?.value??new Date().getMonth());
-  const days=new Date(y,m+1,0).getDate();const vals=[],labs=[];
-  for(let d=1;d<=days;d++){const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const r=AR.find(x=>x.id===k);vals.push(r?Number(r.amount):0);labs.push(String(d));}
-  const recs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y&&d.getMonth()===m;});
-  const total=recs.reduce((s,r)=>s+Number(r.amount),0);
-  const openRecs=recs.filter(r=>!isClosedDay(r.id).closed);
-  const openAvg=openRecs.length?Math.round(total/openRecs.length):0;
-  const pm=m===0?11:m-1,py=m===0?y-1:y;
-  const prevRecs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===py&&d.getMonth()===pm;});
-  const prevTotal=prevRecs.reduce((s,r)=>s+Number(r.amount),0);
-  const lyRecs=AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===y-1&&d.getMonth()===m;});
-  const lyTotal=lyRecs.reduce((s,r)=>s+Number(r.amount),0);
-  const closedInMonth=countClosedInRange(`${y}-${String(m+1).padStart(2,'0')}-01`,`${y}-${String(m+1).padStart(2,'0')}-${String(days).padStart(2,'0')}`);
-  $('rM_total','₺'+fmt(total));document.getElementById('rM_totalLabel').textContent=`${recs.length} günlük kayıt`;
-  $('rM_prev','₺'+fmt(prevTotal));document.getElementById('rM_change').innerHTML=chgHtml(chgPct(total,prevTotal))||'<span style="font-size:.78rem;color:var(--muted)">Önceki ay veri yok</span>';
-  $('rM_avg','₺'+fmt(openAvg));$('rM_days',openRecs.length);
-  const closedNote=document.getElementById('rM_closedNote');if(closedNote)closedNote.textContent=closedInMonth>0?`${closedInMonth} gün kapalı (hesaplamadan hariç)`:'';
-  const goal=cp?.monthlyGoal||0;$('rM_goal',goal>0?`%${Math.min(100,Math.round((total/goal)*100))}`:'—');
-  $('rM_lastYear',lyTotal?'₺'+fmt(lyTotal):'—');
-  $('rM_chartTitle',`${MON[m]} ${y} — Günlük`);
-  bars('rM_chart',vals,labs,180,vals.map((_,i)=>{const k=`${y}-${String(m+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`;return isClosedDay(k).closed?'var(--border)':CLR[0];}));
-  const wks=monthWeeks(y,m);
-  document.getElementById('rM_4weeks').innerHTML=wks.map((wk,i)=>{const ws=recSum(wk),wa=recSmartAvg(wk);const prev=i>0?recSum(wks[i-1]):null,p=chgPct(ws,prev);const start=wk[0]?.slice(5).replace('-','.')||'',end=wk[wk.length-1]?.slice(5).replace('-','.')||'';return`<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1rem"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem"><span style="font-size:.72rem;color:var(--muted);font-weight:700">${i+1}. HAFTA ${start}–${end}</span>${chgHtml(p)||''}</div><div style="font-family:var(--font-display);font-size:1.3rem">₺${fmt(ws)}</div><div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Açık gün ort: ₺${fmt(wa)}</div></div>`;}).join('');
-  const sortD=[...recs].sort((a,b)=>Number(b.amount)-Number(a.amount));
-  document.getElementById('rM_topDays').innerHTML=dayListHtml(sortD,5);
-  document.getElementById('rM_botDays').innerHTML=dayListHtml([...sortD].reverse(),5);
-};
-window.renderYearTab=function(){
-  const y=parseInt(document.getElementById('yPick1')?.value||new Date().getFullYear());
-  const y2v=document.getElementById('yPick2')?.value;const y2=y2v?parseInt(y2v):null;
-  const mData=(yr)=>Array.from({length:12},(_,mi)=>AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===yr&&d.getMonth()===mi;}).reduce((s,r)=>s+Number(r.amount),0));
-  const v1=mData(y),v2=y2?mData(y2):null;const total=v1.reduce((s,v)=>s+v,0);const nz=v1.filter(v=>v>0);
-  const bi=v1.indexOf(Math.max(...v1));const wiArr=v1.map((v,i)=>({v,i})).filter(x=>x.v>0);const wi=wiArr.length?wiArr.reduce((a,b)=>a.v<b.v?a:b).i:-1;
-  $('rY_total','₺'+fmt(total));$('rY_avg',nz.length?'₺'+fmt(Math.round(total/nz.length)):'₺0');
-  $('rY_best',bi>=0&&v1[bi]>0?`${MSH[bi]} — ₺${fmt(v1[bi])}`:'—');$('rY_worst',wi>=0?`${MSH[wi]} — ₺${fmt(v1[wi])}`:'—');
-  $('rY_chartTitle',y2?`${y} vs ${y2}`:y+' — Aylık Kırılım');
-  if(y2&&v2){const el=document.getElementById('rY_chart');const max=Math.max(...v1,...v2,1);el.style.height='200px';el.innerHTML=v1.map((v,i)=>`<div class="bar-col"><div class="bar-val" style="font-size:.6rem">${v>0?'₺'+(v/1000).toFixed(0)+'K':''}</div><div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:150px"><div style="flex:1;background:var(--accent);border-radius:3px 3px 0 0;height:${Math.max((v/max)*100,v>0?3:0.5)}%;transition:height .5s" title="${y}: ₺${fmt(v)}"></div><div style="flex:1;background:var(--accent2);border-radius:3px 3px 0 0;height:${Math.max(((v2[i]||0)/max)*100,(v2[i]||0)>0?3:0.5)}%;transition:height .5s;opacity:.75" title="${y2}: ₺${fmt(v2[i]||0)}"></div></div><div class="bar-label">${MSH[i]}</div></div>`).join('');}
-  else bars('rY_chart',v1,MSH,200);
-  const tbl=document.getElementById('rY_table');
-  tbl.innerHTML=`<thead><tr><th style="text-align:left;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">Ay</th><th style="text-align:right;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">${y}</th>${y2?`<th style="text-align:right;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">${y2}</th><th style="text-align:right;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">Fark</th>`:''}<th style="text-align:right;padding:.5rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">Pay</th></tr></thead><tbody>${v1.map((v,i)=>{const v2i=v2?v2[i]:null;const diff=v2i!=null?v-v2i:null;const dp=diff!=null&&v2i>0?Math.round((diff/v2i)*100):null;const share=total>0?Math.round((v/total)*100):0;const isBest=i===bi&&v>0;return`<tr style="${isBest?'background:color-mix(in srgb,var(--accent) 5%,var(--surface))':''}"><td style="padding:.45rem .6rem;font-size:.85rem;font-weight:${isBest?700:400};border-bottom:1px solid var(--border)">${MON[i]}</td><td style="text-align:right;padding:.45rem .6rem;font-size:.875rem;border-bottom:1px solid var(--border);${isBest?'color:var(--accent);font-weight:700':''}">${v>0?'₺'+fmt(v):'—'}</td>${y2?`<td style="text-align:right;padding:.45rem .6rem;font-size:.875rem;border-bottom:1px solid var(--border)">${v2i>0?'₺'+fmt(v2i):'—'}</td><td style="text-align:right;padding:.45rem .6rem;font-size:.82rem;border-bottom:1px solid var(--border);color:${dp>0?'var(--success)':dp<0?'var(--danger)':'var(--muted)'}">${dp!=null?(dp>=0?'+':'')+dp+'%':'—'}</td>`:''}<td style="text-align:right;padding:.45rem .6rem;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:.3rem;justify-content:flex-end"><div style="width:36px;height:4px;background:var(--border);border-radius:99px"><div style="height:100%;background:var(--accent);border-radius:99px;width:${share}%"></div></div><span style="font-size:.72rem;color:var(--muted)">${share}%</span></div></td></tr>`;}).join('')}</tbody>`;
-  const Q=[{l:'Q1',m:[0,1,2]},{l:'Q2',m:[3,4,5]},{l:'Q3',m:[6,7,8]},{l:'Q4',m:[9,10,11]}];
-  document.getElementById('rY_quarters').innerHTML=Q.map(q=>{const qs=q.m.reduce((s,mi)=>s+v1[mi],0);const qs2=v2?q.m.reduce((s,mi)=>s+(v2[mi]||0),0):null;const share=total>0?Math.round((qs/total)*100):0;return`<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1rem;text-align:center"><div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:.3rem">${q.l}</div><div style="font-family:var(--font-display);font-size:1.15rem">₺${qs>=1e6?(qs/1e6).toFixed(2)+'M':fmt(qs)}</div><div style="font-size:.72rem;color:var(--muted)">%${share}</div>${chgPct(qs,qs2)!==null?chgHtml(chgPct(qs,qs2)):''}</div>`;}).join('');
-};
-function renderDayTab(){
-  if(!AR.length)return;
-  const dt=[0,0,0,0,0,0,0],dc=[0,0,0,0,0,0,0];
-  AR.filter(r=>!isClosedDay(r.id).closed).forEach(r=>{const wd=new Date(r.date+'T00:00:00').getDay();dt[wd]+=Number(r.amount);dc[wd]++;});
-  const avgs=dt.map((t,i)=>dc[i]>0?Math.round(t/dc[i]):0);
-  const ord=[1,2,3,4,5,6,0];
-  bars('rD_dowChart',ord.map(i=>avgs[i]),ord.map(i=>DAYS[i].slice(0,3)),180,ord.map(i=>SETTINGS.closedDays.includes(i)?'var(--border)':CLR[i%CLR.length]));
-  const wdR=AR.filter(r=>![0,6].includes(new Date(r.date+'T00:00:00').getDay())&&!isClosedDay(r.id).closed);
-  const weR=AR.filter(r=>[0,6].includes(new Date(r.date+'T00:00:00').getDay())&&!isClosedDay(r.id).closed);
-  const wdA=wdR.length?Math.round(wdR.reduce((s,r)=>s+Number(r.amount),0)/wdR.length):0;
-  const weA=weR.length?Math.round(weR.reduce((s,r)=>s+Number(r.amount),0)/weR.length):0;
-  const mx2=Math.max(wdA,weA,1);
-  document.getElementById('rD_wdwe').innerHTML=[{l:'Hafta İçi (Pzt–Cum)',v:wdA,c:wdR.length},{l:'Hafta Sonu (Cmt–Paz)',v:weA,c:weR.length}].map(x=>`<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1.25rem;text-align:center"><div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:.5rem">${x.l}</div><div style="font-family:var(--font-display);font-size:1.6rem">₺${fmt(x.v)}</div><div style="font-size:.75rem;color:var(--muted);margin-top:.25rem">ort./gün · ${x.c} kayıt</div><div style="height:5px;background:var(--border);border-radius:99px;margin-top:.6rem"><div style="height:100%;background:var(--accent);border-radius:99px;width:${Math.round((x.v/mx2)*100)}%"></div></div></div>`).join('');
-  const sorted=[...AR].sort((a,b)=>Number(b.amount)-Number(a.amount));
-  document.getElementById('rD_top').innerHTML=dayListHtml(sorted,10);
-  document.getElementById('rD_bot').innerHTML=dayListHtml([...sorted].reverse(),10);
-}
-
-/* ── KARŞILAŞTIR ── */
-function renderCompare(){
-  const years=[...new Set(AR.map(r=>new Date(r.date+'T00:00:00').getFullYear()))].sort((a,b)=>b-a);
-  const now=new Date();if(!years.includes(now.getFullYear()))years.unshift(now.getFullYear());if(!years.includes(now.getFullYear()-1))years.push(now.getFullYear()-1);
-  ['cmpY1','cmpY2'].forEach((id,idx)=>{const s=document.getElementById(id);if(!s||s.options.length)return;years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;s.appendChild(o);});s.value=idx===0?now.getFullYear():now.getFullYear()-1;});
-  const y1=parseInt(document.getElementById('cmpY1')?.value||now.getFullYear());
-  const y2=parseInt(document.getElementById('cmpY2')?.value||now.getFullYear()-1);
-  const mData=(yr)=>Array.from({length:12},(_,mi)=>AR.filter(r=>{const d=new Date(r.date+'T00:00:00');return d.getFullYear()===yr&&d.getMonth()===mi;}).reduce((s,r)=>s+Number(r.amount),0));
-  const v1=mData(y1),v2=mData(y2);const t1=v1.reduce((s,v)=>s+v,0),t2=v2.reduce((s,v)=>s+v,0);
-  const d1=AR.filter(r=>new Date(r.date+'T00:00:00').getFullYear()===y1).length;
-  const d2=AR.filter(r=>new Date(r.date+'T00:00:00').getFullYear()===y2).length;
-  const diff=t1-t2,pct=t2>0?Math.round((diff/t2)*100):null;
-  $('cmpY1Label',y1+' Yılı Toplam');$('cmpY2Label',y2+' Yılı Toplam');
-  $('cmpThis',t1>0?'₺'+fmt(t1):'Veri yok');$('cmpThisDays',d1+' kayıtlı gün');
-  $('cmpLast',t2>0?'₺'+fmt(t2):'Veri yok');$('cmpLastDays',d2+' kayıtlı gün');
-  const dEl=document.getElementById('cmpDiff'),dlEl=document.getElementById('cmpDiffLabel');
-  if(t1>0&&t2>0){dEl.textContent=(diff>=0?'+':'')+`₺${fmt(Math.abs(diff))}`;dEl.style.color=diff>=0?'var(--success)':'var(--danger)';if(dlEl)dlEl.innerHTML=`<span style="color:${diff>=0?'var(--success)':'var(--danger)'}">${diff>=0?'↑':'↓'} ${pct!==null?Math.abs(pct)+'%':''}</span> değişim`;}
-  else{dEl.textContent='—';if(dlEl)dlEl.textContent='Yeterli veri yok';}
-  $('cmpChartTitle',`${y1} vs ${y2} — Aylık`);
-  const leg=document.getElementById('cmpLegend');if(leg)leg.innerHTML=`<span><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;margin-right:.3rem"></span>${y1}</span><span style="margin-left:1rem"><span style="display:inline-block;width:10px;height:10px;background:var(--accent2);border-radius:2px;margin-right:.3rem;opacity:.75"></span>${y2}</span>`;
-  const max=Math.max(...v1,...v2,1);const cEl=document.getElementById('cmpYearChart');
-  if(cEl){cEl.style.height='200px';cEl.innerHTML=v1.map((v,i)=>`<div class="bar-col"><div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:160px"><div style="flex:1;background:var(--accent);border-radius:3px 3px 0 0;height:${Math.max((v/max)*100,v>0?3:.5)}%;transition:height .5s" title="${y1} ${MON[i]}: ₺${fmt(v)}"></div><div style="flex:1;background:var(--accent2);border-radius:3px 3px 0 0;height:${Math.max(((v2[i]||0)/max)*100,(v2[i]||0)>0?3:.5)}%;transition:height .5s;opacity:.75" title="${y2} ${MON[i]}: ₺${fmt(v2[i]||0)}"></div></div><div class="bar-label">${MSH[i]}</div></div>`).join('');}
-  const tbl=document.getElementById('cmpTable');if(tbl){tbl.innerHTML=`<thead><tr><th style="text-align:left;padding:.4rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">Ay</th><th style="text-align:right;padding:.4rem .6rem;font-size:.7rem;color:var(--accent);border-bottom:1px solid var(--border)">${y1}</th><th style="text-align:right;padding:.4rem .6rem;font-size:.7rem;color:var(--accent2);border-bottom:1px solid var(--border)">${y2}</th><th style="text-align:right;padding:.4rem .6rem;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)">Fark%</th></tr></thead><tbody>${v1.map((v,i)=>{const v2i=v2[i]||0;const dp=v2i>0?Math.round((v-v2i)/v2i*100):null;const clr=dp>0?'var(--success)':dp<0?'var(--danger)':'var(--muted)';return`<tr><td style="padding:.4rem .6rem;font-size:.85rem;border-bottom:1px solid var(--border)">${MON[i]}</td><td style="text-align:right;padding:.4rem .6rem;font-size:.875rem;border-bottom:1px solid var(--border);font-weight:600;color:var(--accent)">${v>0?'₺'+fmt(v):'—'}</td><td style="text-align:right;padding:.4rem .6rem;font-size:.875rem;border-bottom:1px solid var(--border);color:var(--muted)">${v2i>0?'₺'+fmt(v2i):'—'}</td><td style="text-align:right;padding:.4rem .6rem;font-size:.82rem;border-bottom:1px solid var(--border);color:${clr}">${dp!==null?(dp>=0?'+':'')+dp+'%':'—'}</td></tr>`;}).join('')}</tbody>`;}
-  const today=now.toISOString().split('T')[0];const prevDay=today.replace(String(y1),String(y2));
-  const tR=AR.find(r=>r.id===today);const pR=AR.find(r=>r.id===prevDay);
-  const td=now.toLocaleDateString('tr-TR',{day:'numeric',month:'long'});
-  $('cmpTodayY1Label',y1+' · '+td);$('cmpTodayY2Label',y2+' · '+td);
-  const tyEl=document.getElementById('cmpTodayY1');const pyEl=document.getElementById('cmpTodayY2');
-  if(tyEl){tyEl.textContent=tR?'₺'+fmt(tR.amount):'—';tyEl.style.color=tR?'var(--accent)':'var(--muted)';}
-  if(pyEl){pyEl.textContent=pR?'₺'+fmt(pR.amount):'—';pyEl.style.color=pR?'var(--text)':'var(--muted)';}
-}
-
-/* ── PROFİL ── */
-window.saveProfile=async function(){
-  const name=document.getElementById('profileName').value.trim();
-  const biz=document.getElementById('profileBusiness').value.trim();
-  if(!name){toast('Ad girin','w');return;}
-  try{await updateDoc(doc(db,C.users,cu.uid),{name,businessName:biz});cp.name=name;cp.businessName=biz;
-    $('userName',name);$('userBusiness',biz);$('userAvatar',name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase());
-    toast('Profil güncellendi ✓','s');}
-  catch(e){toast('Hata: '+e.message,'e');}
-};
-window.changePassword=async function(){
-  const np=document.getElementById('profileNewPass').value;
-  const np2=document.getElementById('profileNewPass2').value;
-  if(!np||np.length<6){toast('En az 6 karakter girin','w');return;}
-  if(np!==np2){toast('Şifreler eşleşmiyor','w');return;}
-  try{await updatePassword(auth.currentUser,np);
-    document.getElementById('profileNewPass').value='';document.getElementById('profileNewPass2').value='';
-    toast('Şifre değiştirildi ✓','s');}
-  catch(e){
-    if(e.code==='auth/requires-recent-login')toast('Güvenlik için tekrar giriş yapın','w');
-    else toast('Hata: '+e.message,'e');
-  }
-};
-
-/* ── LİSANS ── */
-function getLicenseStatus(){
-  const now=new Date();
-  if(!cp.plan&&!cp.licenseExpiry)return{status:'none',label:'Lisans yok',desc:'Plan başvurusu yapın'};
-  if(cp.licenseExpiry==='unlimited')return{status:'unlimited',label:'Sınırsız Lisans',desc:'Tüm özellikler aktif'};
-  if(cp.licenseExpiry){
-    const exp=new Date(cp.licenseExpiry);const dLeft=Math.round((exp-now)/(86400000));
-    if(dLeft<0)return{status:'expired',label:'Lisans Süresi Doldu',desc:`${cp.licenseExpiry} tarihinde sona erdi`};
-    if(dLeft<=7)return{status:'warning',label:`${dLeft} gün kaldı`,desc:`Lisans: ${cp.licenseExpiry} tarihine kadar aktif`};
-    return{status:'active',label:`${pLabel(cp.plan)} — Aktif`,desc:`${cp.licenseExpiry} tarihine kadar geçerli · ${dLeft} gün kaldı`};
-  }
-  return{status:'active',label:`${pLabel(cp.plan)} — Aktif`,desc:'Tarih sınırı yok'};
-}
-function renderLicenseBadge(){
-  const ls=getLicenseStatus();const el=document.getElementById('licenseBadge');if(!el)return;
-  el.style.display='inline-flex';
-  el.className=`license-badge ${ls.status==='unlimited'?'lb-unlimited':ls.status==='warning'?'lb-expire':ls.status==='expired'?'lb-expired':'lb-active'}`;
-  el.textContent=ls.status==='unlimited'?'★ Sınırsız':ls.status==='expired'?'✕ Süresi Doldu':ls.status==='warning'?`⚠ ${ls.label}`:'✓ Aktif';
-}
-function renderLicensePage(){
-  const ls=getLicenseStatus();
-  const card=document.getElementById('licenseStatusCard');if(!card)return;
-  card.className=`license-status ${ls.status==='expired'?'expired':ls.status==='warning'?'warning':'active'}`;
-  card.innerHTML=`<div class="ls-icon">${ls.status==='unlimited'?'🌟':ls.status==='expired'?'🔴':ls.status==='warning'?'🟡':'🟢'}</div>
-    <div class="ls-info"><h4>${ls.label}</h4><p>${ls.desc}</p></div>`;
-}
-window.selectPlan=function(plan,el){
-  selectedPlan=plan;document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');
-  document.getElementById('selectedPlanNote').textContent=`"${pLabel(plan)}" paketi seçildi`;
-  document.getElementById('applyPlanBtn').disabled=false;
-};
-window.applyPlan=async function(){
-  if(!selectedPlan){toast('Paket seçin','w');return;}
-  const btn=document.getElementById('applyPlanBtn');btn.disabled=true;btn.textContent='⏳ Gönderiliyor...';
-  try{
-    await addDoc(collection(db,C.applications),{
-      uid:cu.uid,name:cp.name||'',email:cp.email||cu.email||'',plan:selectedPlan,
-      businessName:cp.businessName||'',appliedAt:serverTimestamp(),status:'pending'
-    });
-    toast(`"${pLabel(selectedPlan)}" başvurusu gönderildi! Admin onaylayacak.`,'s');
-  }catch(e){toast('Hata: '+e.message,'e');btn.disabled=false;btn.textContent='Başvuruyu Gönder';}
-};
-
-/* ── PDF / DIŞA AKTAR ── */
-function renderExportPreview(){
-  const el=document.getElementById('exportPreview');if(!el||!AR.length)return;
-  const now=new Date();
-  const startOfMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
-  const today=now.toISOString().split('T')[0];
-  document.getElementById('exportFrom').value=startOfMonth;
-  document.getElementById('exportTo').value=today;
-  const mRecs=AR.filter(r=>r.date>=startOfMonth&&r.date<=today);
-  const total=mRecs.reduce((s,r)=>s+Number(r.amount),0);
-  const openRecs=mRecs.filter(r=>!isClosedDay(r.id).closed);
-  const avg=openRecs.length?Math.round(total/openRecs.length):0;
-  el.innerHTML=`<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.75rem">
-    <div style="font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase">Bu Ay Özeti</div>
-    ${[{l:'Toplam Ciro',v:'₺'+fmt(total)},{l:'Kayıtlı Gün',v:mRecs.length},{l:'Açık Gün Ort.',v:'₺'+fmt(avg)},{l:'İşletme',v:cp.businessName||'—'}]
-    .map(x=>`<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.875rem"><span style="color:var(--muted)">${x.l}</span><strong>${x.v}</strong></div>`).join('')}
-  </div>
-  <div style="font-size:.78rem;color:var(--muted)">📄 PDF, tarayıcının Yazdır (Ctrl+P) → PDF kaydet özelliğini kullanır.</div>`;
-}
-window.exportPDF=function(){
-  const from=document.getElementById('exportFrom').value||'';
-  const to=document.getElementById('exportTo').value||'';
-  const data=AR.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to));
-  if(!data.length){toast('Seçili aralıkta veri yok','w');return;}
-  const w=window.open('','_blank');
-  const total=data.reduce((s,r)=>s+Number(r.amount),0);
-  const openRecs=data.filter(r=>!isClosedDay(r.id).closed);
-  const avg=openRecs.length?Math.round(total/openRecs.length):0;
-  w.document.write(`<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
-    <title>CiroLog Rapor — ${cp.businessName||''} — ${from} / ${to}</title>
-    <style>body{font-family:Arial,sans-serif;padding:2rem;color:#111;max-width:800px;margin:auto}
-    h1{font-size:1.6rem;border-bottom:2px solid #333;padding-bottom:.5rem}
-    .meta{display:flex;gap:2rem;margin:1rem 0;font-size:.85rem;color:#555}
-    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin:1.25rem 0}
-    .stat{background:#f5f5f8;border-radius:8px;padding:.75rem;text-align:center}
-    .stat-label{font-size:.65rem;text-transform:uppercase;color:#777;letter-spacing:.05em}
-    .stat-val{font-size:1.4rem;font-weight:700;margin-top:.25rem}
-    table{width:100%;border-collapse:collapse;margin-top:1rem}
-    th{background:#f0f0f5;text-align:left;padding:.5rem .75rem;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em}
-    td{padding:.45rem .75rem;border-bottom:1px solid #e0e0e8;font-size:.875rem}
-    tr:nth-child(even) td{background:#fafafa}
-    .closed-row td{color:#999;font-style:italic}
-    .amount{font-weight:700;color:#1a1a2e}
-    footer{margin-top:2rem;padding-top:1rem;border-top:1px solid #ddd;font-size:.75rem;color:#999;text-align:center}
-    @media print{.no-print{display:none}}</style>
-  </head><body>
-  <div class="no-print" style="margin-bottom:1.5rem"><button onclick="window.print()" style="background:#4f46e5;color:#fff;border:none;padding:.6rem 1.25rem;border-radius:6px;cursor:pointer;font-size:.9rem">🖨️ PDF Olarak Kaydet</button></div>
-  <h1>CiroLog — Ciro Raporu</h1>
-  <div class="meta"><span>📋 <strong>${cp.businessName||'İşletme'}</strong></span><span>👤 ${cp.name||''}</span><span>📅 ${from} → ${to}</span><span>🕒 ${new Date().toLocaleDateString('tr-TR')}</span></div>
-  <div class="stat-row">
-    <div class="stat"><div class="stat-label">Toplam Ciro</div><div class="stat-val">₺${fmt(total)}</div></div>
-    <div class="stat"><div class="stat-label">Kayıt Sayısı</div><div class="stat-val">${data.length}</div></div>
-    <div class="stat"><div class="stat-label">Açık Gün Ort.</div><div class="stat-val">₺${fmt(avg)}</div></div>
-    <div class="stat"><div class="stat-label">Plan</div><div class="stat-val" style="font-size:1rem">${pLabel(cp.plan)}</div></div>
-  </div>
-  <table><thead><tr><th>Tarih</th><th>Gün</th><th>Ciro</th><th>Not</th><th>Durum</th></tr></thead><tbody>
-  ${data.map(r=>{const d=new Date(r.date+'T00:00:00');const cl=isClosedDay(r.id);return`<tr class="${cl.closed?'closed-row':''}"><td>${d.toLocaleDateString('tr-TR')}</td><td>${DAYS[d.getDay()]}</td><td class="amount">₺${Number(r.amount).toLocaleString('tr-TR')}</td><td>${r.note||''}</td><td>${cl.closed?'⚠️ '+cl.reason:'✓'}</td></tr>`;}).join('')}
-  </tbody></table>
-  <footer>CiroLog v2 — Akıllı İş Zekası Platformu · Bu rapor ${new Date().toLocaleString('tr-TR')} tarihinde oluşturuldu.</footer>
-  </body></html>`);w.document.close();
-  toast('PDF penceresi açıldı — Ctrl+P ile kaydedin','s');
-};
-window.shareReport=async function(){
-  const from=document.getElementById('exportFrom').value||'';
-  const to=document.getElementById('exportTo').value||'';
-  const data=AR.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to));
-  const total=data.reduce((s,r)=>s+Number(r.amount),0);
-  const text=`📊 CiroLog Raporu — ${cp.businessName||'İşletme'}\n📅 ${from} → ${to}\n💰 Toplam: ₺${fmt(total)}\n📈 ${data.length} günlük kayıt\n\n#cirolog`;
-  if(navigator.share){await navigator.share({title:'CiroLog Raporu',text});return;}
-  await navigator.clipboard.writeText(text);toast('Rapor metni kopyalandı ✓','s');
-};
-
-/* ── IMPORT ── */
-let parsedRows=[];
-window.dragOver=function(e){e.preventDefault();document.getElementById('importDrop').classList.add('drag-over');};
-window.dragLeave=function(){document.getElementById('importDrop').classList.remove('drag-over');};
-window.dropFile=function(e){e.preventDefault();dragLeave();const f=e.dataTransfer.files[0];if(f)readFile(f);};
-window.fileSelected=function(i){if(i.files[0])readFile(i.files[0]);};
-function readFile(f){const r=new FileReader();r.onload=e=>{document.getElementById('importText').value=e.target.result;parseImport();};r.readAsText(f,'UTF-8');}
-window.parseImport=function(){
-  const raw=document.getElementById('importText').value;const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length);
-  if(!lines.length){document.getElementById('importPreviewWrap').style.display='none';return;}
-  parsedRows=lines.map((line,i)=>{
-    const norm=line.replace(/[;,\t]+/g,' ').replace(/\s+/g,' ').trim();const parts=norm.split(' ');
-    let dateStr=null,amount=null,error=null;
-    for(const p of parts){const d=parseDate(p);if(d&&!dateStr){dateStr=d;continue;}const n=parseFloat(p.replace(',','.'));if(!isNaN(n)&&n>0&&!amount)amount=Math.round(n);}
-    if(!dateStr)error='Tarih anlaşılamadı';else if(!amount)error='Ciro bulunamadı';
-    return{line:i+1,raw:line,date:dateStr,amount,error,exists:AR.some(r=>r.id===dateStr)};
-  });renderPreview();
-};
-function parseDate(str){
-  let m=str.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/);
-  if(m){const[,d,mo,y]=m;const dd=d.padStart(2,'0'),mm=mo.padStart(2,'0');const dt=new Date(`${y}-${mm}-${dd}T00:00:00`);if(!isNaN(dt)&&dt.getFullYear()>2000&&dt.getFullYear()<2100)return`${y}-${mm}-${dd}`;}
-  m=str.match(/^(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})$/);
-  if(m){const[,y,mo,d]=m;const dd=d.padStart(2,'0'),mm=mo.padStart(2,'0');const dt=new Date(`${y}-${mm}-${dd}T00:00:00`);if(!isNaN(dt)&&dt.getFullYear()>2000&&dt.getFullYear()<2100)return`${y}-${mm}-${dd}`;}
-  return null;
-}
-function renderPreview(){
-  const wrap=document.getElementById('importPreviewWrap');wrap.style.display='block';
-  const ok=parsedRows.filter(r=>!r.error),err=parsedRows.filter(r=>r.error);
-  const skip=ok.filter(r=>r.exists),neu=ok.filter(r=>!r.exists);
-  document.getElementById('importSummary').innerHTML=`<div class="is-item"><div class="is-num" style="color:var(--text)">${parsedRows.length}</div><div class="is-label">Toplam</div></div><div class="is-item"><div class="is-num" style="color:var(--success)">${neu.length}</div><div class="is-label">Yeni</div></div><div class="is-item"><div class="is-num" style="color:var(--warn)">${skip.length}</div><div class="is-label">Güncelle</div></div><div class="is-item"><div class="is-num" style="color:var(--danger)">${err.length}</div><div class="is-label">Hatalı</div></div>`;
-  document.getElementById('importHint').textContent=ok.length>0?`${ok.length} kayıt yüklenecek`:'Yüklenecek kayıt yok';
-  document.getElementById('importBtn').disabled=ok.length===0;
-  document.getElementById('importPreviewBody').innerHTML=parsedRows.map(r=>{
-    if(r.error)return`<tr style="color:var(--danger)"><td style="color:var(--muted)">${r.line}</td><td colspan="2" style="font-family:monospace">${r.raw}</td><td><span class="row-badge rb-err">✕ ${r.error}</span></td></tr>`;
-    const d=new Date(r.date+'T00:00:00');const label=`${d.getDate()} ${MSH[d.getMonth()]} ${d.getFullYear()} ${DSH[d.getDay()]}`;
-    const cl=isClosedDay(r.date);
-    return`<tr style="${cl.closed?'opacity:.6':''}"><td style="color:var(--muted)">${r.line}</td><td>${label}${cl.closed?` <small style="color:var(--warn)">(${cl.reason})</small>`:''}</td><td style="font-weight:700;color:var(--accent)">₺${r.amount.toLocaleString('tr-TR')}</td><td><span class="row-badge ${r.exists?'rb-skip':'rb-ok'}">${r.exists?'↺ Güncelle':'✓ Yeni'}</span></td></tr>`;
-  }).join('');
-}
-window.clearImport=function(){document.getElementById('importText').value='';document.getElementById('importFile').value='';document.getElementById('importPreviewWrap').style.display='none';parsedRows=[];};
-window.runImport=async function(){
-  const valid=parsedRows.filter(r=>!r.error);if(!valid.length)return;
-  const btn=document.getElementById('importBtn');btn.disabled=true;btn.textContent='⏳ Yükleniyor...';
-  const prog=document.getElementById('importProgress'),pF=document.getElementById('importProgressFill'),pT=document.getElementById('importProgressText');
-  prog.style.display='block';let done=0,errors=0;
-  for(const row of valid){try{await saveE(row.date,row.amount,'');done++;}catch{errors++;}
-    pF.style.width=Math.round(((done+errors)/valid.length)*100)+'%';pT.textContent=`${done+errors}/${valid.length} yüklendi...`;
-    await new Promise(res=>setTimeout(res,80));}
-  renderDash();renderRecords();prog.style.display='none';btn.textContent='✓ Tamamlandı';
-  if(errors===0){toast(`${done} kayıt yüklendi ✓`,'s');setTimeout(()=>clearImport(),1500);}
-  else{toast(`${done} yüklendi, ${errors} hata`,'w');btn.disabled=false;btn.textContent='↑ Tekrar Dene';}
-};
-
-/* ── NAV ── */
-window.navTo=function(page,el){
-  document.querySelectorAll('#sidebar .nav-item').forEach(b=>b.classList.remove('active'));
-  if(el)el.classList.add('active');
-  document.querySelectorAll('.main-content .page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.getElementById('sidebar')?.classList.remove('open');
-  document.getElementById('sidebarOverlay')?.classList.remove('show');
-  if(page==='raporlar')renderWeekTab();
-  if(page==='karsilastir')renderCompare();
-  if(page==='takvim')renderCalendar();
-  if(page==='ihracat')renderExportPreview();
-  if(page==='lisans'){renderLicenseBadge();renderLicensePage();}
-  if(page==='ayarlar'){buildClosedDayUI();renderPeriodList();}
-  if(page==='ai'){renderAiGate();}
-  if(page==='satin-al'){renderPurchaseStatus();renderLicensePage();}
-};
-window.switchTab=function(name,el){
-  document.querySelectorAll('#page-raporlar .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
-  ['haftalik','aylik','yillik','gunler'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
-  if(name==='haftalik')renderWeekTab();
-  if(name==='aylik'){initPickers();renderMonthTab();}
-  if(name==='yillik'){initPickers();renderYearTab();}
-  if(name==='gunler')renderDayTab();
-};
-window.toggleSidebar=function(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');};
-
-/* ── AYARLAR ── */
-window.saveGoal=async function(){
-  const g=parseFloat(document.getElementById('goalInput').value);if(!g||g<=0)return;
-  try{await updateDoc(doc(db,C.users,cu.uid),{monthlyGoal:g});cp.monthlyGoal=g;renderDash();toast('Hedef güncellendi ✓','s');}
-  catch(e){toast('Hata: '+e.message,'e');}
-};
-
-
-/* ══════════════════════════════════════════════════════
-   PLAY STORE / IN-APP PURCHASE SYSTEM
-   Web PWA uses Firebase for license management.
-   Native apps would use Google Play Billing Library 6.x
-══════════════════════════════════════════════════════ */
-
-/* Product IDs — mirror these in Google Play Console */
-const SKU = {
-  AI_LIFETIME : 'ai_module_lifetime',   // one-time product
-  AI_MONTHLY  : 'ai_module_monthly',    // subscription
-};
-
-let aiUnlocked = false;
-let selectedPricingType = 'one'; // 'one' | 'sub'
-
-/* ── checkLicenseStatus: called on every app open ── */
-async function checkLicenseStatus() {
-  if (!cu) return;
-  try {
-    const snap = await getDoc(doc(db, C.users, cu.uid));
-    if (!snap.exists()) return;
-    const data = snap.data();
-
-    // AI module check
-    const hasPurchase  = !!data.purchases?.ai_module;
-    const planIncludes = ['pro','kurumsal'].includes(data.plan);
-    const licOk        = data.licenseExpiry === 'unlimited' ||
-                         (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
-
-    aiUnlocked = hasPurchase || (planIncludes && licOk);
-    renderAiGate();
-    renderPurchaseStatus();
-  } catch(e) {
-    console.warn('License check error:', e.message);
-  }
-}
-
-/* ── renderAiGate: show/hide locked or unlocked AI view ── */
-function renderAiGate() {
-  const locked   = document.getElementById('aiLockedView');
-  const unlocked = document.getElementById('aiUnlockedView');
-  const badge    = document.getElementById('aiLockBadge');
-  if (locked)   locked.style.display   = aiUnlocked ? 'none' : 'block';
-  if (unlocked) unlocked.style.display = aiUnlocked ? 'block' : 'none';
-  if (badge)    badge.style.display    = aiUnlocked ? 'none' : 'inline';
-}
-
-/* ── renderPurchaseStatus: update Satın Al page state ── */
-function renderPurchaseStatus() {
-  const el = document.getElementById('purchaseCurrentStatus');
-  if (!el) return;
-
-  const ls = getLicenseStatus();
-  if (aiUnlocked) {
-    el.innerHTML = `<span class="purchase-status ps-owned">✓ AI Modülü Aktif</span>
-      <span style="font-size:.78rem;color:var(--muted);margin-left:.5rem">${ls.desc}</span>`;
-    const buySection   = document.getElementById('aiModuleBuySection');
-    const ownedSection = document.getElementById('aiModuleOwnedSection');
-    if (buySection)   buySection.style.display   = 'none';
-    if (ownedSection) ownedSection.style.display = 'block';
-  } else {
-    el.innerHTML = `<span class="purchase-status ps-not-owned">⚠ AI Modülü kilitli</span>
-      <span style="font-size:.78rem;color:var(--muted);margin-left:.5rem">Satın alarak anında aktive edin</span>`;
-  }
-}
-
-/* ── selectPricing ── */
-window.selectPricing = function(type, el) {
-  selectedPricingType = type;
-  document.querySelectorAll('.pricing-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  const btn = document.getElementById('buyAiBtn');
-  if (btn) btn.textContent = type === 'one'
-    ? '🔓 AI Modülünü Satın Al — ₺299'
-    : '🔓 Aylık Abonelik Başlat — ₺79/ay';
-};
-
-/* ── purchaseAiModule ──
-   In production (Android app):
-   → billingClient.launchBillingFlow() with appropriate SkuDetails
-   → Server-side receipt validation via Firebase Function
-   → On success: updateDoc(userRef, { purchases.ai_module: serverTimestamp() })
-
-   This web demo: simulates the flow with a confirm dialog,
-   then writes to Firebase directly (admin-bypass for demo).
-   Real Play Billing would use a Cloud Function webhook.
-── */
-window.purchaseAiModule = async function() {
-  const btn = document.getElementById('buyAiBtn');
-  if (!btn || !cu) return;
-
-  const price = selectedPricingType === 'one' ? '₺299 (tek seferlik)' : '₺79/ay';
-  const sku   = selectedPricingType === 'one' ? SKU.AI_LIFETIME : SKU.AI_MONTHLY;
-
-  /* In a real Play Store app, this triggers billingClient.launchBillingFlow()
-     Here we show a confirm to simulate the payment UI */
-  const confirmed = confirm(
-    `AI Analiz Modülü satın alınacak.
-
-Fiyat: ${price}
-Ürün: ${sku}
-
-Devam etmek istiyor musunuz?
-
-(Demo: Bu onay gerçek Google Play ödeme ekranını simüle eder)`
-  );
-
-  if (!confirmed) {
-    toast('Satın alma iptal edildi','w');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> İşleniyor...';
-
-  try {
-    /* ── DEMO ACTIVATION (Web PWA) ──
-       Production: Cloud Function validates Play receipt token
-       then calls this same updateDoc. */
-    await updateDoc(doc(db, C.users, cu.uid), {
-      'purchases.ai_module' : new Date().toISOString(),
-      'purchases.ai_sku'    : sku,
-      'purchases.ai_type'   : selectedPricingType,
-    });
-
-    // Update local state immediately (optimistic)
-    if (!cp.purchases) cp.purchases = {};
-    cp.purchases.ai_module = new Date().toISOString();
-    aiUnlocked = true;
-
-    renderAiGate();
-    renderPurchaseStatus();
-    renderLicenseBadge();
-
-    toast('🎉 AI Modülü aktifleştirildi! Hemen kullanabilirsiniz.','s');
-    setTimeout(() => navTo('ai', document.getElementById('navAiBtn')), 1200);
-  } catch(e) {
-    toast('Aktivasyon hatası: ' + e.message,'e');
-    btn.disabled = false;
-    btn.textContent = '🔓 AI Modülünü Satın Al';
-  }
-};
-
-/* ── restorePurchases ──
-   In Play Billing: BillingClient.queryPurchasesAsync()
-   Here: re-check Firebase ── */
-window.restorePurchases = async function() {
-  toast('Satın alımlar kontrol ediliyor...','');
-  await checkLicenseStatus();
-  toast(aiUnlocked ? '✓ Satın alımlar geri yüklendi' : 'Kayıtlı satın alım bulunamadı',
-        aiUnlocked ? 's' : 'w');
-};
-
-/* ══ GOOGLE PLAY MANIFEST NOTES (for native wrapper)
-   AndroidManifest.xml additions needed:
-   <uses-permission android:name="com.android.vending.BILLING" />
-
-   build.gradle (app):
-   implementation 'com.android.billingclient:billing-ktx:6.2.1'
-
-   Play Console:
-   - App type: Paid (₺XX one-time purchase)
-   - In-app products: ai_module_lifetime (managed product)
-   - Subscriptions: ai_module_monthly
-═══════════════════════════════════════════════════ */
-
-/* ── HELPERS ── */
-function fmt(n){return Number(n).toLocaleString('tr-TR');}
-function $(id,val){const e=document.getElementById(id);if(e)e.textContent=val;}
-function pLabel(p){const m={baslangic:'Başlangıç',pro:'Pro',kurumsal:'Kurumsal','14gun':'14 Gün Deneme'};return m[p]||p||'—';}
-function errTR(code){const m={'auth/invalid-credential':'E-posta veya şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Hatalı şifre','auth/too-many-requests':'Çok fazla deneme, bekleyin'};return m[code]||'Hata: '+code;}
-window.toast=function(msg,type='s'){const c=document.getElementById('toastC');const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=(type==='s'?'✓':type==='w'?'⚠️':'✕')+' '+msg;c.appendChild(t);setTimeout(()=>t.remove(),4500);};
-</script>
-</body>
-</html>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-fixed cursor-pointer active:scale-95 duration-200">palette</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a professional executive with a sharp gaze against a dark studio background with subtle green rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR6dRPxfcnz2_ieeVP3fM1zJ1YWE_zmqRoFGQF2Hs0hVgSr-ksB93UtDLYXkJsK2WFnwrDIRg6snvo_lg0HYvxkLNipPCarMnMVJ_8BuDo-1MqPAb1EV7RM7eBjSX4CSC0_S13C9v0x_1UFbNE60SKo7WlYMsAKKe9cJdP8ZTe7OM_Xbp0toAr5XuZechgMnHulgFUOcjSCC28gTaBGWB435vfllbROGLggdne0SiuZPtGNjDU9Jc4NKUdBCWm8T5g-Egb9nVw6p0"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Navigation Drawer (Desktop) -->
+<aside class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-[288px] bg-surface border-r border-outline-variant/30 z-40 pt-20">
+<div class="px-6 py-4 flex items-center gap-4 mb-8">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-weight="fill">analytics</span>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-sm leading-tight">CiroLog Executive</h3>
+<p class="text-xs text-on-surface-variant/60">Pro Plan Active • v2.0.4</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 font-['Space_Grotesk']">
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 bg-primary-fixed/10 text-primary-fixed border-l-4 border-primary-fixed font-bold transition-all duration-300 rounded-r-lg" href="#">
+<span class="material-symbols-outlined" data-weight="fill">history</span>
+<span class="text-sm">Activity Log</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Billing</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="text-sm font-medium">Security</span>
+</a>
+</nav>
+<div class="p-6 mt-auto border-t border-outline-variant/30">
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-2 h-2 rounded-full bg-primary-fixed shadow-[0_0_8px_rgba(var(--primary-fixed),0.5)]"></span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">System Status</span>
+</div>
+<p class="text-[11px] text-on-surface-variant">All nodes operational. Latency 14ms.</p>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="lg:pl-[288px] pt-24 pb-32 px-6 md:px-10 max-w-[1440px] mx-auto min-h-screen">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-lg">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-2">Performance Analytics</h1>
+<p class="text-on-surface-variant font-body-md max-w-xl">Real-time revenue monitoring and fiscal health metrics for your global operations.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-md py-sm bg-surface-container-high border border-outline-variant/30 rounded-lg flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="font-label-caps text-label-caps uppercase">Last 30 Days</span>
+</button>
+<button class="px-md py-sm bg-primary-fixed text-on-primary font-bold rounded-lg flex items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm">download</span>
+<span class="font-label-caps text-label-caps uppercase">Export PDF</span>
+</button>
+</div>
+</header>
+<!-- Upper Part: Standard Stats -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-lg">
+<div class="md:col-span-3 bg-surface-container border border-outline-variant/30 rounded-xl p-lg relative overflow-hidden">
+<div class="flex items-center justify-between mb-lg">
+<h3 class="font-h2 text-lg text-on-surface">Total Revenue Distribution</h3>
+<div class="flex gap-2">
+<span class="w-3 h-3 bg-primary-fixed rounded-full"></span>
+<span class="text-[10px] uppercase font-bold text-on-surface-variant/60">Gross Revenue ($)</span>
+</div>
+</div>
+<!-- Simple Bar Chart Visualization -->
+<div class="h-64 flex items-end justify-between gap-2 md:gap-4 pb-4">
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[30%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[45%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[60%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-primary-fixed rounded-t-sm h-[85%] shadow-[0_0_15px_rgba(var(--primary-fixed),0.2)]"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[70%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[50%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[40%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[55%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[75%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[90%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[65%] hover:bg-primary-fixed/20 transition-colors"></div>
+<div class="flex-1 bg-outline-variant/20 rounded-t-sm h-[45%] hover:bg-primary-fixed/20 transition-colors"></div>
+</div>
+<div class="flex justify-between mt-2 border-t border-outline-variant/20 pt-4">
+<span class="text-[10px] text-on-surface-variant/40 font-bold uppercase">Jan</span>
+<span class="text-[10px] text-on-surface-variant/40 font-bold uppercase">Apr</span>
+<span class="text-[10px] text-on-surface-variant/40 font-bold uppercase">Jul</span>
+<span class="text-[10px] text-on-surface-variant/40 font-bold uppercase">Oct</span>
+<span class="text-[10px] text-on-surface-variant/40 font-bold uppercase">Dec</span>
+</div>
+</div>
+<!-- Stats Column -->
+<div class="space-y-gutter">
+<div class="bg-surface-container border border-outline-variant/30 rounded-xl p-md">
+<p class="font-label-caps text-label-caps uppercase text-on-surface-variant/60 mb-1">Conversion Rate</p>
+<div class="flex items-end gap-2">
+<span class="text-h2 font-h2 text-on-surface">4.28%</span>
+<span class="text-[12px] text-primary-fixed font-bold mb-1">+1.2%</span>
+</div>
+</div>
+<div class="bg-surface-container border border-outline-variant/30 rounded-xl p-md">
+<p class="font-label-caps text-label-caps uppercase text-on-surface-variant/60 mb-1">Average Order</p>
+<div class="flex items-end gap-2">
+<span class="text-h2 font-h2 text-on-surface">$142.10</span>
+<span class="text-[12px] text-error font-bold mb-1">-2.4%</span>
+</div>
+</div>
+<div class="bg-surface-container border border-outline-variant/30 rounded-xl p-md">
+<p class="font-label-caps text-label-caps uppercase text-on-surface-variant/60 mb-1">User Retention</p>
+<div class="flex items-end gap-2">
+<span class="text-h2 font-h2 text-on-surface">78.4%</span>
+<span class="text-[12px] text-primary-fixed font-bold mb-1">+5.8%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Lower Part: The Locked Feature -->
+<section class="relative">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-3">
+<h2 class="font-h2 text-h2 text-on-surface">Advanced AI Diagnostics</h2>
+<span class="bg-primary-fixed/10 text-primary-fixed px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border border-primary-fixed/20">Enterprise Only</span>
+</div>
+</div>
+<!-- Blurred Content Container -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter relative overflow-hidden rounded-xl border border-outline-variant/30">
+<!-- Mockup Content: Smart Trend Analysis -->
+<div class="bg-surface-container p-lg blur-2xl select-none pointer-events-none opacity-40">
+<div class="flex items-center gap-3 mb-lg">
+<span class="material-symbols-outlined text-primary-fixed">query_stats</span>
+<h3 class="font-h2 text-lg text-on-surface">Smart Trend Analysis</h3>
+</div>
+<div class="space-y-4">
+<div class="h-4 bg-outline-variant/30 rounded w-3/4"></div>
+<div class="h-4 bg-outline-variant/30 rounded w-1/2"></div>
+<div class="h-40 bg-surface-container-high rounded-xl border border-outline-variant/20 flex items-center justify-center">
+<span class="text-on-surface-variant/30 italic">Generating complex data model...</span>
+</div>
+</div>
+</div>
+<!-- Mockup Content: Future Projection -->
+<div class="bg-surface-container p-lg blur-2xl select-none pointer-events-none opacity-40">
+<div class="flex items-center gap-3 mb-lg">
+<span class="material-symbols-outlined text-primary-fixed">auto_graph</span>
+<h3 class="font-h2 text-lg text-on-surface">Future Projection (Q4)</h3>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<div class="h-3 bg-outline-variant/30 rounded w-20"></div>
+<div class="h-3 bg-outline-variant/30 rounded w-12"></div>
+</div>
+<div class="flex justify-between items-center">
+<div class="h-3 bg-outline-variant/30 rounded w-24"></div>
+<div class="h-3 bg-outline-variant/30 rounded w-16"></div>
+</div>
+<div class="h-32 bg-surface-container-high rounded-xl border border-outline-variant/20 relative overflow-hidden">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-full h-[2px] bg-primary-fixed/20 rotate-12"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Lock Overlay Card -->
+<div class="absolute inset-0 z-10 flex items-center justify-center p-6 bg-surface-container-lowest/30 backdrop-blur-[2px]">
+<div class="max-w-md w-full bg-surface-container-high/90 backdrop-blur-2xl border border-primary-fixed/30 rounded-2xl p-xl shadow-2xl text-center transform hover:scale-[1.01] transition-transform duration-300">
+<div class="w-20 h-20 bg-primary-fixed/15 border border-primary-fixed/30 rounded-full flex items-center justify-center mx-auto mb-lg shadow-lg">
+<span class="material-symbols-outlined text-4xl text-primary-fixed" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<h2 class="font-h2 text-2xl text-on-surface mb-md">Unlock Predictive Power</h2>
+<p class="text-on-surface-variant font-body-md mb-xl leading-relaxed">
+                            Upgrade to <span class="text-primary-fixed font-bold">AI Module</span> to see your business future. Deep insights, automated trends and 30-day predictions.
+                        </p>
+<div class="space-y-3">
+<button class="w-full py-4 bg-primary-fixed text-on-primary font-black rounded-xl shadow-lg hover:shadow-primary-fixed/20 active:scale-95 transition-all uppercase tracking-widest text-sm">
+                                Unlock AI Power
+                            </button>
+<button class="w-full py-3 text-on-surface-variant/60 font-label-caps text-xs uppercase tracking-widest hover:text-on-surface transition-colors">
+                                View Pricing Plans
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-4 pb-safe bg-surface/90 backdrop-blur-lg border-t border-outline-variant/30 shadow-lg">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Space_Grotesk'] text-[10px] uppercase font-medium tracking-tighter">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed">
+<span class="material-symbols-outlined">description</span>
+<span class="font-['Space_Grotesk'] text-[10px] uppercase font-medium tracking-tighter">Reports</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary-fixed bg-primary-fixed/10 rounded-xl py-1 px-3 shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-['Space_Grotesk'] text-[10px] uppercase font-medium tracking-tighter">Analytics</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Space_Grotesk'] text-[10px] uppercase font-medium tracking-tighter">Settings</span>
+</div>
+</nav>
+</body></html>
