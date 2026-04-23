@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CiroLog v2 — Akıllı İş Zekası</title>
+<title>CiroLog — Akıllı İş Zekası</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lexend:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ══ TEMALAR ══ */
@@ -552,6 +552,27 @@ body { font-weight: 500; }
 /* ══ SCROLLBAR: thinner, accent on hover ══ */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); opacity: .5; }
+
+/* ══ FEATURE GATED NAV ITEMS ══ */
+.nav-item[title]{position:relative;}
+.nav-item[title]:not([title=""])::after{
+  content:attr(title);position:absolute;
+  left:calc(100% + .5rem);top:50%;transform:translateY(-50%);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:.3rem .6rem;font-size:.7rem;
+  color:var(--muted);white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .15s;z-index:300;
+}
+.nav-item[title]:not([title=""]):hover::after{opacity:1;}
+
+/* ══ PURCHASE STATUS ══ */
+.purchase-status{white-space:nowrap;}
+
+/* ══ SINGLE PRICE CARD ══ */
+#aiPriceDisplay{
+  font-size:2.25rem !important;
+  letter-spacing:-.04em;
+}
 </style>
 </head>
 <body>
@@ -580,6 +601,19 @@ body { font-weight: 500; }
       <h2 style="margin-bottom:.75rem">Onay Bekleniyor</h2>
       <p style="color:var(--muted);font-size:.9rem;line-height:1.65">Başvurunuz yönetici tarafından inceleniyor.<br>Onaylandığında bu sayfa otomatik açılacak.</p>
       <button class="btn btn-ghost" style="margin-top:1.5rem" onclick="doLogout()">Çıkış Yap</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ENGELLENDI ══ -->
+<div class="screen" id="screenBlocked">
+  <div class="auth-wrap">
+    <div class="auth-card" style="text-align:center;border-color:var(--danger)">
+      <div class="logo">Ciro<span>Log</span></div>
+      <div style="font-size:3rem;margin:1.5rem 0">🚫</div>
+      <h2 style="color:var(--danger);margin-bottom:.75rem">Hesap Askıya Alındı</h2>
+      <p style="color:var(--muted);font-size:.875rem;line-height:1.65">Hesabınız yönetici tarafından askıya alındı.<br>Destek için lütfen iletişime geçin.</p>
+      <button class="btn btn-ghost" style="margin-top:1.5rem" onclick="doLogout()">Giriş Sayfasına Dön</button>
     </div>
   </div>
 </div>
@@ -959,20 +993,12 @@ body { font-weight: 500; }
           <div class="pf-item"><div class="pf-icon">⚡</div><div class="pf-text"><strong>Anında Aktivasyon</strong><span>Ödeme onaylanınca hemen kullanıma açılır</span></div></div>
         </div>
         <div class="paywall-pricing">
-          <div class="pricing-options">
-            <div class="pricing-opt selected" id="po-one" onclick="selectPricing('one',this)">
-              <div class="po-label">Tek Seferlik</div>
-              <div class="po-price">₺299</div>
-              <div class="po-sub">Sınırsız kullanım</div>
-            </div>
-            <div class="pricing-opt" id="po-sub" onclick="selectPricing('sub',this)">
-              <div class="po-badge">POPÜLER</div>
-              <div class="po-label">Aylık</div>
-              <div class="po-price">₺79</div>
-              <div class="po-sub">/ay · İptal edilebilir</div>
-            </div>
-          </div>
           <div id="aiModuleBuySection">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.25rem;text-align:center;margin-bottom:1rem">
+              <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Tek Seferlik Ödeme</div>
+              <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--accent)" id="aiPriceDisplay">₺299</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Sınırsız kullanım · Anında aktivasyon</div>
+            </div>
             <button class="paywall-cta" id="buyAiBtn" onclick="purchaseAiModule()">
               🔓 AI Modülünü Satın Al
             </button>
@@ -1142,7 +1168,7 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
          updatePassword, EmailAuthProvider, reauthenticateWithCredential }
                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc,
-         collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp }
+         collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp, onSnapshot }
                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 /* ── Firebase Config ── */
@@ -1156,12 +1182,17 @@ const C={
   users:'cirolog_users',
   rec:(uid)=>`cirolog_records/${uid}/entries`,
   settings:(uid)=>`cirolog_settings/${uid}`,
-  applications:'cirolog_applications'
+  applications:'cirolog_applications',
+  appSettings:'cirolog_app_settings'  // global: { aiPrice, appPrice, features }
 };
 
 /* ── State ── */
 let cu=null,cp=null,AR=[],SETTINGS={closedDays:[],closedPeriods:[]};
 let selectedPlan=null,calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
+let aiUnlocked=false;
+let PERMS={ai:false,calendar:true,reports:true,export:true};  // feature flags from admin
+let APP_CFG={aiPrice:'299',appPrice:'0',currency:'₺'};       // prices from Firebase
+let userUnsub=null;  // onSnapshot unsubscribe handle
 
 const CLR=['#c8f55a','#7b6ff0','#4edb8f','#f5c842','#ff5e5e','#58c4f5','#f58c42','#e87af5'];
 const MON=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
@@ -1186,14 +1217,50 @@ window.setTheme=function(t,el){
 
 /* ── AUTH ── */
 onAuthStateChanged(auth,async(user)=>{
-  if(!user){ss('screenLogin');return;}
+  if(!user){
+    // Clean up live listener
+    if(userUnsub){userUnsub();userUnsub=null;}
+    ss('screenLogin');return;
+  }
   cu=user;
   const snap=await getDoc(doc(db,C.users,user.uid));
   if(!snap.exists()){toast('Profil bulunamadı','e');await signOut(auth);return;}
   cp=snap.data();
+
+  // ── BLOCK CHECK ──
+  if(cp.isBlocked){
+    ss('screenBlocked');
+    return;
+  }
+
   if(!cp.approved){ss('screenPending');poll();return;}
+
+  // ── LOAD GLOBAL APP CONFIG (prices etc.) ──
+  try{
+    const cfgSnap=await getDoc(doc(db,C.appSettings,'global'));
+    if(cfgSnap.exists()) APP_CFG={...APP_CFG,...cfgSnap.data()};
+  }catch{}
+
   ss('screenApp');await init();
+
+  // ── REAL-TIME LISTENER: react to admin changes without page reload ──
+  if(userUnsub){userUnsub();userUnsub=null;}
+  userUnsub=onSnapshot(doc(db,C.users,cu.uid),(snap)=>{
+    if(!snap.exists())return;
+    const data=snap.data();
+
+    // Blocked mid-session
+    if(data.isBlocked){
+      toast('Hesabınız yönetici tarafından askıya alındı.','e');
+      setTimeout(()=>doLogout(),2000);return;
+    }
+
+    cp={...cp,...data};
+    if(data.isBlocked){ss('screenBlocked');if(userUnsub){userUnsub();userUnsub=null;}return;}
+    applyPermissions(data);
+  });
 });
+
 function poll(){const t=setInterval(async()=>{const s=await getDoc(doc(db,C.users,cu.uid));if(s.data()?.approved){clearInterval(t);cp=s.data();ss('screenApp');init();}},10000);}
 function ss(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
@@ -1205,7 +1272,10 @@ window.doLogin=async function(){
   try{await signInWithEmailAndPassword(auth,e,p);}
   catch(err){toast(errTR(err.code),'e');btn.disabled=false;btn.textContent='Giriş Yap';}
 };
-window.doLogout=async function(){await signOut(auth);AR=[];cu=null;cp=null;aiUnlocked=false;};
+window.doLogout=async function(){
+  if(userUnsub){userUnsub();userUnsub=null;}
+  await signOut(auth);AR=[];cu=null;cp=null;aiUnlocked=false;
+};
 
 /* ── INIT ── */
 async function init(){
@@ -1224,8 +1294,8 @@ async function init(){
   if(document.getElementById('profileName'))document.getElementById('profileName').value=cp.name||'';
   if(document.getElementById('profileBusiness'))document.getElementById('profileBusiness').value=cp.businessName||'';
   if(document.getElementById('profileEmail'))document.getElementById('profileEmail').value=cp.email||cu.email||'';
-  // lisans
-  /* license badge removed */renderPurchaseStatus();
+  // apply permissions from user doc
+  applyPermissions(cp);
   // settings (kapalı günler)
   await loadSettings();
   await loadRecs();
@@ -1235,7 +1305,7 @@ async function init(){
   renderPeriodList();
   renderCalendar();
   renderExportPreview();
-  await checkLicenseStatus();
+  renderPurchaseStatus();
 }
 
 /* ── SETTINGS FIRESTORE ── */
@@ -1971,6 +2041,7 @@ window.runImport=async function(){
 
 /* ── NAV ── */
 window.navTo=function(page,el){
+  if(!checkFeatureAccess(page))return;
   document.querySelectorAll('#sidebar .nav-item').forEach(b=>b.classList.remove('active'));
   if(el)el.classList.add('active');
   document.querySelectorAll('.main-content .page').forEach(p=>p.classList.remove('active'));
@@ -2004,41 +2075,52 @@ window.saveGoal=async function(){
 
 
 /* ══════════════════════════════════════════════════════
-   PLAY STORE / IN-APP PURCHASE SYSTEM
-   Web PWA uses Firebase for license management.
-   Native apps would use Google Play Billing Library 6.x
+   PERMISSION SYSTEM
+   Admin panel writes to cirolog_users/{uid}:
+     isUnlocked: true/false        → AI module access
+     isBlocked: true/false         → full block
+     permissions: {ai,calendar,reports,export}  → feature flags
+     purchases.ai_module: ISO date → direct purchase
+     plan: 'baslangic'|'pro'|'kurumsal'
+     licenseExpiry: ISO date | 'unlimited'
 ══════════════════════════════════════════════════════ */
 
-/* Product IDs — mirror these in Google Play Console */
-const SKU = {
-  AI_LIFETIME : 'ai_module_lifetime',   // one-time product
-  AI_MONTHLY  : 'ai_module_monthly',    // subscription
-};
+const SKU = { AI_LIFETIME: 'ai_module_lifetime' }; // single purchase only
+let selectedPricingType = 'one';
 
-let aiUnlocked = false;
-let selectedPricingType = 'one'; // 'one' | 'sub'
+/* ── applyPermissions: called on init + every onSnapshot update ── */
+function applyPermissions(data) {
+  if (!data) return;
 
-/* ── checkLicenseStatus: called on every app open ── */
-async function checkLicenseStatus() {
-  if (!cu) return;
-  try {
-    // Re-fetch latest user data
-    const snap = await getDoc(doc(db, C.users, cu.uid));
-    if (!snap.exists()) return;
-    const data = snap.data(); cp = {...cp, ...data};
+  // ── AI unlock: isUnlocked flag OR direct purchase OR plan includes it ──
+  const hasDirect  = !!data.purchases?.ai_module;
+  const planOk     = ['pro','kurumsal'].includes(data.plan);
+  const licValid   = data.licenseExpiry === 'unlimited' ||
+                     (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
+  const adminFlag  = data.isUnlocked === true;
 
-    // AI module unlocked if: purchased directly OR pro/kurumsal plan with valid license
-    const hasDirect = !!data.purchases?.ai_module;
-    const planOk    = ['pro','kurumsal'].includes(data.plan);
-    const licValid  = data.licenseExpiry === 'unlimited' ||
-                      (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
-    aiUnlocked = hasDirect || (planOk && licValid);
-  } catch(e) {
-    console.warn('License check:', e.message);
-  }
+  aiUnlocked = adminFlag || hasDirect || (planOk && licValid);
+
+  // ── Feature flags from admin (permissions object or defaults) ──
+  const perms = data.permissions || {};
+  PERMS = {
+    ai       : aiUnlocked,
+    calendar : perms.calendar !== false,   // default ON
+    reports  : perms.reports  !== false,   // default ON
+    export   : perms.export   !== false,   // default ON
+  };
+
+  // Apply to UI
   renderAiGate();
-  renderPurchaseStatus();
   renderDashAiGate();
+  renderPurchaseStatus();
+  applyFeatureFlags();
+
+  // Sync price from Firebase app settings if available
+  const buyBtn = document.getElementById('buyAiBtn');
+  if (buyBtn && !aiUnlocked) {
+    buyBtn.textContent = `🔓 AI Modülünü Satın Al — ${APP_CFG.currency}${APP_CFG.aiPrice}`;
+  }
 }
 
 /* ── renderAiGate: show/hide locked or unlocked AI page view ── */
@@ -2049,6 +2131,54 @@ function renderAiGate() {
   if (locked)   locked.style.display   = aiUnlocked ? 'none' : 'block';
   if (unlocked) unlocked.style.display = aiUnlocked ? 'block' : 'none';
   if (badge)    badge.style.display    = aiUnlocked ? 'none' : 'inline';
+}
+
+/* ── applyFeatureFlags: show/hide nav items based on PERMS ── */
+function applyFeatureFlags() {
+  // Calendar nav
+  const calBtn = document.querySelector('[onclick*="takvim"]');
+  if (calBtn) {
+    if (!PERMS.calendar) {
+      calBtn.style.opacity = '.45';
+      calBtn.title = 'Bu özellik planınıza dahil değil';
+    } else {
+      calBtn.style.opacity = '';
+      calBtn.title = '';
+    }
+  }
+  // Reports nav
+  const repBtn = document.querySelector('[onclick*="raporlar"]');
+  if (repBtn) {
+    if (!PERMS.reports) {
+      repBtn.style.opacity = '.45';
+      repBtn.title = 'Bu özellik planınıza dahil değil';
+    } else {
+      repBtn.style.opacity = '';
+      repBtn.title = '';
+    }
+  }
+  // Export nav
+  const expBtn = document.querySelector('[onclick*="ihracat"]');
+  if (expBtn) {
+    if (!PERMS.export) {
+      expBtn.style.opacity = '.45';
+      expBtn.title = 'Bu özellik planınıza dahil değil';
+    } else {
+      expBtn.style.opacity = '';
+      expBtn.title = '';
+    }
+  }
+}
+
+/* Gated navTo: check feature permissions before showing page */
+function checkFeatureAccess(page) {
+  const gateMap = {takvim:'calendar', raporlar:'reports', ihracat:'export', ai:'ai'};
+  const key = gateMap[page];
+  if (key && PERMS[key] === false) {
+    toast('Bu özellik planınıza dahil değil','w');
+    return false;
+  }
+  return true;
 }
 
 /* ── renderDashAiGate: dashboard insight box gate ── */
@@ -2062,33 +2192,37 @@ function renderDashAiGate() {
 
 /* ── renderPurchaseStatus: update Satın Al page state ── */
 function renderPurchaseStatus() {
+  // Dynamic price from Firebase
+  const priceEl = document.getElementById('aiPriceDisplay');
+  if (priceEl) priceEl.textContent = APP_CFG.currency + APP_CFG.aiPrice;
+  const buyBtn = document.getElementById('buyAiBtn');
+  if (buyBtn && !aiUnlocked) {
+    buyBtn.textContent = `🔓 AI Modülünü Satın Al — ${APP_CFG.currency}${APP_CFG.aiPrice}`;
+  }
+
   const el = document.getElementById('purchaseCurrentStatus');
   if (!el) return;
 
-  const ls = getLicenseStatus();
   if (aiUnlocked) {
+    const src = cp?.isUnlocked ? 'Admin' : cp?.purchases?.ai_module ? 'Satın Alım' : 'Plan';
     el.innerHTML = `<span class="purchase-status ps-owned">✓ AI Modülü Aktif</span>
-      <span style="font-size:.78rem;color:var(--muted);margin-left:.5rem">${ls.desc}</span>`;
+      <span style="font-size:.75rem;color:var(--muted);margin-left:.5rem">Kaynak: ${src}</span>`;
     const buySection   = document.getElementById('aiModuleBuySection');
     const ownedSection = document.getElementById('aiModuleOwnedSection');
     if (buySection)   buySection.style.display   = 'none';
     if (ownedSection) ownedSection.style.display = 'block';
   } else {
     el.innerHTML = `<span class="purchase-status ps-not-owned">⚠ AI Modülü kilitli</span>
-      <span style="font-size:.78rem;color:var(--muted);margin-left:.5rem">Satın alarak anında aktive edin</span>`;
+      <span style="font-size:.75rem;color:var(--muted);margin-left:.5rem">Satın alarak anında aktive edin</span>`;
+    const buySection   = document.getElementById('aiModuleBuySection');
+    const ownedSection = document.getElementById('aiModuleOwnedSection');
+    if (buySection)   buySection.style.display   = 'block';
+    if (ownedSection) ownedSection.style.display = 'none';
   }
 }
 
-/* ── selectPricing ── */
-window.selectPricing = function(type, el) {
-  selectedPricingType = type;
-  document.querySelectorAll('.pricing-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  const btn = document.getElementById('buyAiBtn');
-  if (btn) btn.textContent = type === 'one'
-    ? '🔓 AI Modülünü Satın Al — ₺299'
-    : '🔓 Aylık Abonelik Başlat — ₺79/ay';
-};
+/* ── selectPricing — kept for compatibility (single plan now) ── */
+window.selectPricing = function(type, el) { selectedPricingType = type; };
 
 /* ── purchaseAiModule ──
    In production (Android app):
@@ -2104,8 +2238,7 @@ window.purchaseAiModule = async function() {
   const btn = document.getElementById('buyAiBtn');
   if (!btn || !cu) return;
 
-  const price = selectedPricingType === 'one' ? '₺299 (tek seferlik)' : '₺79/ay';
-  const sku   = selectedPricingType === 'one' ? SKU.AI_LIFETIME : SKU.AI_MONTHLY;
+  
 
   /* In a real Play Store app, this triggers billingClient.launchBillingFlow()
      Here we show a confirm to simulate the payment UI */
@@ -2176,7 +2309,7 @@ window.restorePurchases = async function() {
    Play Console:
    - App type: Paid (₺XX one-time purchase)
    - In-app products: ai_module_lifetime (managed product)
-   - Subscriptions: ai_module_monthly
+   - (subscription products removed — single purchase only)
 ═══════════════════════════════════════════════════ */
 
 /* ── HELPERS ── */
