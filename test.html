@@ -3,35 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CiroLog — Akıllı Ciro Takibi</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lexend:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>CiroLog v2 — Akıllı İş Zekası</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lexend:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ══ TEMALAR ══ */
 [data-theme="dark"]{
-  --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c27; --border:#2a2a3a;
-  --accent:#c8f55a; --accent2:#7b6ff0; --text:#f0f0f5; --muted:#6b6b85;
-  --danger:#ff5e5e; --success:#4edb8f; --warn:#f5c842; --sh:rgba(0,0,0,.45);
+  --bg:#080810; --surface:#111118; --surface2:#18181f; --border:#26263a;
+  --accent:#c8f55a; --accent2:#7b6ff0; --text:#f2f2f7; --muted:#60607a;
+  --danger:#ff4455; --success:#3dd68c; --warn:#f5c842; --sh:rgba(0,0,0,.6);
   --font-body:'Inter',sans-serif; --font-display:'Lexend',sans-serif;
-  --radius:8px; --radius-sm:6px; --sidebar-w:248px;
-  --nav-active-bg:rgba(200,245,90,.12);
-  --shadow-card:0 2px 8px rgba(0,0,0,.4),0 0 0 1px var(--border);
-  --shadow-deep:0 8px 32px rgba(0,0,0,.6);
+  --radius:10px; --radius-sm:7px; --sidebar-w:244px;
+  --nav-active-bg:rgba(200,245,90,.09);
+  --card-shadow:0 2px 12px rgba(0,0,0,.35);
 }
 [data-theme="light"]{
-  --bg:#f0f2f8; --surface:#ffffff; --surface2:#e8ebf4; --border:#d4d8e8;
-  --accent:#4f46e5; --accent2:#0ea5e9; --text:#1e1e3a; --muted:#8890b0;
-  --danger:#e53e3e; --success:#38a169; --warn:#d69e2e; --sh:rgba(30,30,80,.1);
+  --bg:#eef0f7; --surface:#ffffff; --surface2:#e4e7f2; --border:#ccd0e0;
+  --accent:#4338ca; --accent2:#0ea5e9; --text:#141428; --muted:#7880a0;
+  --danger:#dc2626; --success:#16a34a; --warn:#ca8a04; --sh:rgba(20,20,60,.12);
   --font-body:'Inter',sans-serif; --font-display:'Lexend',sans-serif;
-  --radius:6px; --radius-sm:4px; --sidebar-w:248px;
+  --radius:8px; --radius-sm:5px; --sidebar-w:244px;
   --nav-active-bg:#ede9fe;
-  --shadow-card:0 2px 8px rgba(30,30,80,.12),0 0 0 1px var(--border);
-  --shadow-deep:0 8px 32px rgba(30,30,80,.18);
+  --card-shadow:0 1px 6px rgba(20,20,60,.08);
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
 html{font-size:15px;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:500;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;-webkit-font-smoothing:antialiased;}
-h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
+h1,h2,h3{font-family:var(--font-display);}
 
 /* ══ SCREENS ══ */
 .screen{display:none;min-height:100vh;}
@@ -46,7 +44,7 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
   box-shadow:0 20px 60px var(--sh);position:relative;overflow:hidden;}
 .auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,var(--accent),var(--accent2));}
-.logo{font-family:var(--font-display);font-size:2.1rem;font-weight:800;margin-bottom:.25rem;letter-spacing:-.04em;}
+.logo{font-family:var(--font-display);font-size:2.25rem;margin-bottom:.25rem;}
 .logo span{color:var(--accent);}
 .auth-sub{color:var(--muted);font-size:.875rem;margin-bottom:2rem;}
 .fg{margin-bottom:1.1rem;}
@@ -66,91 +64,84 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
 
 /* ══ HEADER (mobile) ══ */
 .top-bar{
-  display:none;height:56px;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  align-items:center;padding:0;
+  display:none;height:56px;background:var(--surface);border-bottom:1px solid var(--border);
+  align-items:center;padding:0;justify-content:flex-start;
   position:sticky;top:0;z-index:200;
-  /* Use grid: hamburger left, logo center, right spacer */
-  display:none;
-  grid-template-columns:56px 1fr 56px;
-  align-items:center;
-}
-/* override: on mobile it becomes grid */
-@media(max-width:768px){
-  .top-bar{display:grid !important;}
 }
 .hamburger-btn{
-  background:none;border:none;color:var(--text);
-  font-size:1.25rem;cursor:pointer;
-  width:56px;height:56px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
+  background:none;border:none;color:var(--text);font-size:1.4rem;cursor:pointer;
+  padding:0 1rem;height:56px;line-height:56px;
+  flex-shrink:0;z-index:201;position:relative;
 }
 .top-bar-logo{
-  font-family:var(--font-display);font-weight:800;font-size:1.3rem;
-  text-align:center;letter-spacing:-.03em;
+  font-family:var(--font-display);font-size:1.4rem;
+  position:absolute;left:50%;transform:translateX(-50%);
+  pointer-events:none;
 }
 .top-bar-logo span{color:var(--accent);}
 
 /* ══ SIDEBAR ══ */
 .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:1.5rem 1rem 0;flex-shrink:0;transition:transform .3s;}
-.sidebar-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding-bottom:.5rem;}
+  display:flex;flex-direction:column;padding:0;flex-shrink:0;transition:transform .3s;}
+.sidebar-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:1.25rem .875rem .5rem;overflow-x:hidden;}
 .sidebar-footer{
-  position:sticky;bottom:0;background:var(--surface);
-  padding:.75rem 0;border-top:1px solid var(--border);
-  padding-bottom:max(.75rem,env(safe-area-inset-bottom));
+  background:var(--surface);
+  padding:.625rem .875rem;border-top:1px solid var(--border);
+  padding-bottom:max(.625rem,env(safe-area-inset-bottom));
+  flex-shrink:0;
 }
 .sidebar-logo{
-  font-family:var(--font-display);font-size:1.45rem;font-weight:800;
-  padding:.75rem .875rem 1.25rem;display:flex;align-items:center;gap:.4rem;
-  letter-spacing:-.03em;
+  font-family:var(--font-display);font-size:1.4rem;font-weight:900;
+  padding:0 0 1rem 0;
+  display:flex;align-items:center;gap:.4rem;letter-spacing:-.025em;
+  line-height:1.1;
+  overflow:visible;
 }
 .sidebar-logo span{color:var(--accent);}
 .sidebar-version{
   font-size:.55rem;font-weight:700;color:var(--muted);font-family:var(--font-body);
-  background:var(--surface2);padding:.15rem .4rem;border-radius:3px;
-  margin-left:.25rem;letter-spacing:.05em;
+  background:var(--surface2);border:1px solid var(--border);
+  padding:.1rem .35rem;border-radius:3px;margin-left:.15rem;letter-spacing:.04em;
 }
 .nav-cat{
-  font-size:.62rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;
-  padding:.5rem .875rem .25rem;margin-top:1rem;opacity:.7;
+  font-size:.6rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.16em;
+  padding:.2rem 0;margin-top:.875rem;margin-bottom:.1rem;
+  display:block;
 }
+.nav-cat:first-child{margin-top:0;}
 .nav-item{
-  display:flex;align-items:center;gap:.625rem;
-  padding:.6rem .875rem;border-radius:var(--radius-sm);
-  cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);
-  transition:background .12s,color .12s;margin-bottom:2px;
+  display:flex;align-items:center;gap:.65rem;
+  padding:.55rem .625rem;border-radius:var(--radius-sm);
+  cursor:pointer;font-size:.825rem;font-weight:600;color:var(--muted);
+  transition:background .12s,color .12s;margin-bottom:.02rem;
   border:none;background:transparent;width:100%;text-align:left;
-  font-family:var(--font-body);line-height:1.2;white-space:nowrap;
+  font-family:var(--font-body);line-height:1.25;
+  min-height:38px;white-space:nowrap;overflow:hidden;
 }
 .nav-item:hover{background:var(--surface2);color:var(--text);}
 .nav-item.active{
-  background:var(--nav-active-bg);color:var(--accent);
-  font-weight:700;border-left:3px solid var(--accent);
-  padding-left:calc(.875rem - 3px);
+  background:var(--nav-active-bg);color:var(--accent);font-weight:800;
+  border-left:2px solid var(--accent);padding-left:calc(.625rem - 2px);
 }
 .nav-icon{
-  font-size:.85rem;width:18px;min-width:18px;
-  text-align:center;display:flex;align-items:center;justify-content:center;
-  opacity:.75;flex-shrink:0;
+  font-size:.95rem;width:1.4rem;min-width:1.4rem;text-align:center;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.nav-item.active .nav-icon{opacity:1;}
-.nav-item:hover .nav-icon{opacity:1;}
 .sidebar-spacer{flex:1;}
 .user-pill{
-  display:flex;align-items:center;gap:.625rem;padding:.6rem .875rem;
+  display:flex;align-items:center;gap:.65rem;padding:.65rem .75rem;
   border-radius:var(--radius-sm);background:var(--surface2);
   border:1px solid var(--border);
 }
 .avatar{
-  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  width:34px;height:34px;border-radius:50%;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   display:flex;align-items:center;justify-content:center;
-  font-size:.75rem;font-weight:800;color:#000;font-family:var(--font-display);
+  font-size:.78rem;font-weight:800;flex-shrink:0;color:#000;
+  box-shadow:0 0 0 2px rgba(200,245,90,.2);
 }
-.user-info p{font-size:.82rem;font-weight:700;line-height:1.2;}
-.user-info span{font-size:.68rem;color:var(--muted);}
+.user-info p{font-size:.82rem;font-weight:800;line-height:1.2;}
+.user-info span{font-size:.68rem;color:var(--muted);line-height:1.3;}
 /* License badge */
 .license-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;
   padding:.2rem .5rem;border-radius:4px;margin-top:.2rem;}
@@ -164,20 +155,23 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
 .main-content{flex:1;overflow-y:auto;}
 .page{display:none;padding:2rem;}
 .page.active{display:block;}
-.page-header{margin-bottom:1.75rem;}
-.page-header h1{font-size:1.75rem;font-weight:800;letter-spacing:-.03em;}
-.page-header p{color:var(--muted);font-size:.875rem;margin-top:.3rem;}
+.page-header{margin-bottom:1.5rem;}
+.page-header h1{font-size:1.75rem;font-weight:800;letter-spacing:-.03em;line-height:1.15;}
+.page-header p{color:var(--muted);font-size:.825rem;margin-top:.3rem;font-weight:500;}
 
 /* ══ STAT CARDS ══ */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow-card,none);transition:box-shadow .2s,border-color .2s;}
-.stat-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;}
-.stat-value{font-family:var(--font-display);font-size:1.8rem;font-weight:800;letter-spacing:-.02em;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.1rem 1.25rem;box-shadow:var(--card-shadow);
+}
+.stat-label{font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;}
+.stat-value{font-family:var(--font-display);font-size:1.75rem;font-weight:800;letter-spacing:-.03em;}
 .stat-delta{font-size:.75rem;margin-top:.2rem;}
 .up{color:var(--success);} .dn{color:var(--danger);} .neu{color:var(--muted);}
 
 /* ══ CARDS ══ */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-card,none);margin-bottom:1rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;box-shadow:var(--card-shadow);margin-bottom:.875rem;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 .chart-title{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;}
 
@@ -193,7 +187,7 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
   padding:.85rem 1rem .85rem 2.5rem;color:var(--text);font-family:var(--font-display);font-size:1.1rem;font-weight:700;outline:none;transition:border-color .2s;}
 .qi-wrap input:focus{border-color:var(--accent);}
 .quick-btn{background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);
-  padding:.85rem 1.5rem;font-family:var(--font-display);font-weight:800;font-size:.875rem;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.01em;}
+  padding:.85rem 1.5rem;font-family:var(--font-body);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .quick-btn:hover{opacity:.9;transform:translateY(-1px);}
 .quick-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 
@@ -232,7 +226,7 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
 .icon-btn.danger:hover{color:var(--danger);border-color:var(--danger);}
 
 /* ══ FORMS ══ */
-.entry-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 1.75rem 1.75rem;margin-bottom:1.5rem;box-shadow:var(--shadow-card,none);}
+.entry-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;margin-bottom:1.5rem;}
 .entry-form h2{font-family:var(--font-display);font-size:1.1rem;margin-bottom:1.25rem;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 .form-group{margin-bottom:1.1rem;}
@@ -245,7 +239,7 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
 .amt-wrap .cur{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:700;}
 .amt-wrap input{padding-left:2.5rem!important;font-family:var(--font-display)!important;font-size:1.1rem!important;font-weight:700!important;}
 .btn-save{background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);
-  padding:.875rem 2rem;font-family:var(--font-display);font-weight:800;font-size:.875rem;letter-spacing:.01em;cursor:pointer;transition:all .2s;}
+  padding:.85rem 1.75rem;font-family:var(--font-display);font-weight:800;font-size:.875rem;cursor:pointer;transition:all .2s;letter-spacing:-.01em;}
 .btn-save:hover{opacity:.9;transform:translateY(-1px);}
 .btn-save:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 .btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);
@@ -332,10 +326,20 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
 
 /* Closed days checkboxes */
 .day-checks{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.5rem;}
-.day-check{display:flex;align-items:center;gap:.4rem;padding:.5rem .75rem;background:var(--surface2);
-  border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:.82rem;}
-.day-check input[type=checkbox]{accent-color:var(--accent);}
-.day-check.checked{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 8%,var(--surface2));}
+.day-check{
+  display:flex;align-items:center;justify-content:center;gap:.3rem;
+  padding:.55rem .5rem;background:var(--surface2);
+  border:2px solid var(--border);border-radius:var(--radius-sm);
+  cursor:pointer;font-size:.78rem;font-weight:700;
+  transition:all .15s;user-select:none;text-align:center;
+  color:var(--muted);
+}
+.day-check:hover{border-color:var(--accent);color:var(--text);}
+.day-check.checked{
+  border-color:var(--danger);
+  background:color-mix(in srgb,var(--danger) 10%,var(--surface2));
+  color:var(--danger);font-weight:800;
+}
 
 /* ══ CLOSED PERIODS ══ */
 .period-list{display:flex;flex-direction:column;gap:.5rem;}
@@ -394,26 +398,14 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
 @media(max-width:768px){
   #screenApp{flex-direction:column;}
   .top-bar{display:flex;}
-  .sidebar{
-    position:fixed;left:0;top:0;height:100vh;z-index:150;
-    transform:translateX(-100%);
-    box-shadow:none;
-  }
-  .sidebar.open{
-    transform:translateX(0);
-    box-shadow:4px 0 24px rgba(0,0,0,.5);
-  }
-  .sidebar-overlay.show{display:block;z-index:149;}
-  .main-content{padding-top:0;}
-  .page{padding:.875rem;padding-top:.875rem;}
+  .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:150;transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay.show{display:block;}
+  .page{padding:1rem;padding-top:1.25rem;}
   .two-col,.form-row,.plan-cards{grid-template-columns:1fr;}
   .stat-grid{grid-template-columns:1fr 1fr;}
   .day-checks{grid-template-columns:repeat(2,1fr);}
   .theme-grid{grid-template-columns:1fr;}
-  /* Nav items bigger tap target on mobile */
-  .nav-item{padding:.72rem .875rem;font-size:.875rem;}
-  .stat-value{font-size:1.5rem;}
-  .page-header h1{font-size:1.4rem;}
 }
 
 /* ══ PRINT / PDF ══ */
@@ -500,6 +492,66 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
   .main-content{padding-bottom:env(safe-area-inset-bottom);}
 }
 
+
+/* ══ FONT WEIGHT OVERRIDES — Inter ExtraBold everywhere it matters ══ */
+body { font-weight: 500; }
+.nav-cat { font-weight: 900; letter-spacing: .16em; line-height: 1.4; }
+.stat-value, .rec-amount, .compare-amount { font-weight: 800 !important; }
+.btn-save, .quick-btn, .paywall-cta { font-weight: 800 !important; letter-spacing: -.01em; }
+.page-header h1 { font-weight: 900; letter-spacing: -.04em; }
+.chart-title { font-weight: 900; letter-spacing: .12em; }
+.logo, .sidebar-logo { font-weight: 900 !important; }
+.tab.active { font-weight: 800; }
+.user-info p { font-weight: 900 !important; }
+
+/* ══ SIDEBAR: fix icon text alignment on all screens ══ */
+.nav-item .nav-icon {
+  font-style:normal;display:inline-flex;align-items:center;
+  justify-content:center;width:20px;min-width:20px;font-size:.95rem;flex-shrink:0;
+}
+/* sidebar scroll handled in main rule */
+
+/* ══ TOP-BAR: airtight z-index and no overlap ══ */
+.top-bar {
+  z-index: 200;
+  box-shadow: 0 1px 0 var(--border), 0 2px 8px rgba(0,0,0,.3);
+}
+.hamburger-btn {
+  min-width: 52px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; z-index: 210; flex-shrink: 0;
+}
+.top-bar-logo { font-weight: 900; font-size: 1.3rem; letter-spacing: -.03em; line-height:1.2; overflow:visible; }
+
+/* ══ MOBILE: full sidebar coverage, proper stacking ══ */
+@media(max-width: 768px) {
+  .sidebar { z-index: 160; box-shadow: 4px 0 24px rgba(0,0,0,.5); top:0; height:100dvh; }
+  .main-content { min-height:calc(100dvh - 52px); }
+  .sidebar-overlay { z-index: 155; }
+  .top-bar { height: 52px; min-height: 52px; }
+  .hamburger-btn { height: 52px; }
+  .main-content { padding-top: 0; }
+}
+
+/* ══ RECORD ACTIONS: always visible on touch ══ */
+@media(max-width: 768px) {
+  .rec-actions { opacity: 1 !important; }
+}
+
+/* ══ PLAN CARDS: responsive fix ══ */
+@media(max-width: 520px) {
+  .plan-cards { grid-template-columns: 1fr; }
+  .pricing-options { grid-template-columns: 1fr; }
+}
+
+/* ══ AUTH CARD: tighter on small screens ══ */
+@media(max-width: 480px) {
+  .auth-card { padding: 2rem 1.25rem; border-radius: var(--radius); }
+  .logo { font-size: 1.85rem; }
+}
+
+/* ══ SCROLLBAR: thinner, accent on hover ══ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); opacity: .5; }
 </style>
 </head>
 <body>
@@ -534,73 +586,48 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
 
 <!-- ══ ANA UYGULAMA ══ -->
 <div class="screen" id="screenApp">
-  <!-- Mobile header: grid layout - hamburger | logo | spacer -->
+  <!-- Mobile header: hamburger LEFT, logo CENTERED -->
   <div class="top-bar">
-    <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menü" style="grid-column:1">&#9776;</button>
-    <div class="top-bar-logo" style="grid-column:2">Ciro<span>Log</span></div>
-    <div style="grid-column:3"></div>
+    <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menü">☰</button>
+    <div class="top-bar-logo">Ciro<span>Log</span></div>
   </div>
 
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
   <nav class="sidebar" id="sidebar">
-    <!-- Scrollable nav -->
+    <!-- Scrollable section -->
     <div class="sidebar-scroll">
-      <div class="sidebar-logo">Ciro<span>Log</span><span class="sidebar-version">v3</span></div>
+      <div class="sidebar-logo">Ciro<span>Log</span><span class="sidebar-version">v2</span></div>
 
       <div class="nav-cat">Ana Menü</div>
-      <button class="nav-item active" onclick="navTo('dashboard',this)">
-        <span class="nav-icon">▣</span>Özet
-      </button>
-      <button class="nav-item" onclick="navTo('kayit',this)">
-        <span class="nav-icon">＋</span>Ciro Girişi
-      </button>
-      <button class="nav-item" onclick="navTo('import',this)">
-        <span class="nav-icon">↑</span>Toplu Yükle
-      </button>
+      <button class="nav-item active" onclick="navTo('dashboard',this)"><span class="nav-icon">📊</span> Özet</button>
+      <button class="nav-item" onclick="navTo('kayit',this)"><span class="nav-icon">✏️</span> Ciro Girişi</button>
+      <button class="nav-item" onclick="navTo('import',this)"><span class="nav-icon">📤</span> Toplu Yükle</button>
 
       <div class="nav-cat">Analiz</div>
-      <button class="nav-item" onclick="navTo('raporlar',this)">
-        <span class="nav-icon">◈</span>Raporlar
-      </button>
-      <button class="nav-item" onclick="navTo('karsilastir',this)">
-        <span class="nav-icon">⇄</span>Karşılaştır
-      </button>
-      <button class="nav-item" id="navAiBtn" onclick="navTo('ai',this)">
-        <span class="nav-icon">◆</span>AI Analiz
-        <span id="aiLockBadge" style="font-size:.55rem;font-weight:800;background:var(--warn);color:#000;padding:.1rem .35rem;border-radius:3px;margin-left:auto;display:none;flex-shrink:0">KİLİT</span>
-      </button>
-      <button class="nav-item" onclick="navTo('takvim',this)">
-        <span class="nav-icon">◫</span>Takvim
-      </button>
+      <button class="nav-item" onclick="navTo('raporlar',this)"><span class="nav-icon">📈</span> Raporlar</button>
+      <button class="nav-item" onclick="navTo('karsilastir',this)"><span class="nav-icon">⚖️</span> Karşılaştır</button>
+      <button class="nav-item" id="navAiBtn" onclick="navTo('ai',this)"><span class="nav-icon">🧠</span> Yerel AI Analiz <span id="aiLockBadge" style="font-size:.6rem;background:var(--warn);color:#000;padding:.05rem .3rem;border-radius:3px;margin-left:.3rem;display:none">KİLİTLİ</span></button>
+      <button class="nav-item" onclick="navTo('takvim',this)"><span class="nav-icon">📅</span> Takvim Görünümü</button>
 
       <div class="nav-cat">Hesap</div>
-      <button class="nav-item" onclick="navTo('profil',this)">
-        <span class="nav-icon">◉</span>Profil
-      </button>
-      <button class="nav-item" onclick="navTo('ayarlar',this)">
-        <span class="nav-icon">◎</span>Ayarlar
-      </button>
-      <button class="nav-item" onclick="navTo('satin-al',this)">
-        <span class="nav-icon">◐</span>Satın Al
-      </button>
-      <button class="nav-item" onclick="navTo('ihracat',this)">
-        <span class="nav-icon">↓</span>Dışa Aktar
-      </button>
+      <button class="nav-item" onclick="navTo('profil',this)"><span class="nav-icon">👤</span> Profil</button>
+      <button class="nav-item" onclick="navTo('ayarlar',this)"><span class="nav-icon">⚙️</span> Ayarlar</button>
+      <button class="nav-item" onclick="navTo('satin-al',this)"><span class="nav-icon">💳</span> Satın Al / Plan</button>
+      <button class="nav-item" onclick="navTo('ihracat',this)"><span class="nav-icon">📄</span> Dışa Aktar</button>
     </div><!-- /sidebar-scroll -->
 
-    <!-- STICKY FOOTER — safe-area aware -->
+    <!-- STICKY FOOTER — always visible, safe-area aware -->
     <div class="sidebar-footer">
       <div class="user-pill">
         <div class="avatar" id="userAvatar">?</div>
         <div class="user-info">
           <p id="userName">—</p>
           <span id="userBusiness">—</span>
+          <div id="licenseBadge" class="license-badge lb-active" style="display:none"></div>
         </div>
       </div>
-      <button class="nav-item" style="margin-top:.4rem;color:var(--danger)" onclick="doLogout()">
-        <span class="nav-icon">←</span>Çıkış Yap
-      </button>
+      <button class="nav-item" style="margin-top:.35rem;color:var(--danger);width:100%" onclick="doLogout()"><span class="nav-icon">🚪</span> Çıkış Yap</button>
     </div>
   </nav>
 
@@ -649,17 +676,18 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
         <div class="chart-title">Yıllık Performans</div>
         <div class="chart-wrap" id="yearChart" style="height:160px"></div>
       </div>
-      <!-- LOCAL AI quick insights — gated -->
-      <div id="dashAiCard" class="ai-insight-card">
-        <h3 style="display:flex;align-items:center;justify-content:space-between">
-          <span>Akıllı Analiz</span>
-          <span id="dashAiStatusBadge" style="font-size:.65rem;font-weight:700;padding:.2rem .6rem;border-radius:4px"></span>
-        </h3>
-        <div id="dashInsights"><div style="color:var(--muted);font-size:.875rem">Veriler yüklendikten sonra analizler burada görünecek...</div></div>
-        <!-- Locked CTA — shown when aiUnlocked=false -->
-        <div id="dashAiLockedCta" style="display:none;margin-top:.75rem;padding:.875rem;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);text-align:center">
-          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">Derin analiz için AI Modülü gerekli</div>
-          <button onclick="navTo('satin-al',document.querySelector('[onclick*=satin-al]'))" style="background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);padding:.55rem 1.25rem;font-weight:800;font-size:.82rem;cursor:pointer;font-family:var(--font-display)">Satın Al →</button>
+      <!-- LOCAL AI quick insights - gated -->
+      <div id="dashAiSection">
+        <div class="ai-insight-card" id="dashInsightCard">
+          <h3>🧠 Akıllı Analiz</h3>
+          <div id="dashInsights"><div style="color:var(--muted);font-size:.875rem">Yükleniyor...</div></div>
+        </div>
+        <div id="dashAiLocked" style="display:none">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap">
+            <div style="font-size:1.6rem">🔒</div>
+            <div style="flex:1"><div style="font-weight:800;font-size:.875rem;margin-bottom:.15rem">AI Analiz Kilitli</div><div style="font-size:.75rem;color:var(--muted)">Trend, tahmin ve detaylı analizler için AI modülünü satın alın.</div></div>
+            <button class="btn-save" style="padding:.6rem 1rem;font-size:.78rem;flex-shrink:0" onclick="navTo('satin-al',document.querySelector('[onclick*=satin]'))">Satın Al</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1084,41 +1112,6 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;}
     </div>
 
     <!-- ════ LİSANS ════ -->
-    <div class="page" id="page-lisans">
-      <div class="page-header"><h1>🔑 Lisans & Paket</h1><p>Abonelik durumunuz ve paket seçimi</p></div>
-      <div class="license-card" style="margin-bottom:1rem">
-        <div class="license-status" id="licenseStatusCard">
-          <div class="ls-icon">🔑</div>
-          <div class="ls-info"><h4 id="licenseStatusTitle">Lisans Kontrolü</h4><p id="licenseStatusDesc">Yükleniyor...</p></div>
-        </div>
-        <div style="font-size:.82rem;color:var(--muted);line-height:1.7">
-          Lisansınız admin tarafından tanımlanır. Paket başvurusu yaparak admin onayını bekleyebilirsiniz.
-        </div>
-      </div>
-      <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:1rem">Paket Seç & Başvur</div>
-      <div class="plan-cards" id="planCards">
-        <div class="plan-card" onclick="selectPlan('baslangic',this)">
-          <h4>Başlangıç</h4>
-          <div class="price">Ücretsiz</div>
-          <ul><li>14 gün deneme</li><li>Temel raporlar</li><li>CSV dışa aktarım</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('pro',this)">
-          <h4>Pro</h4>
-          <div class="price">₺499/ay</div>
-          <ul><li>Sınırsız kayıt</li><li>Gelişmiş raporlar</li><li>PDF dışa aktarım</li><li>Yerel AI analiz</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('kurumsal',this)">
-          <h4>Kurumsal</h4>
-          <div class="price">₺999/ay</div>
-          <ul><li>Tüm Pro özellikleri</li><li>Öncelikli destek</li><li>Çoklu işletme</li><li>API erişimi</li></ul>
-        </div>
-      </div>
-      <div style="margin-top:1.25rem">
-        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem" id="selectedPlanNote">Bir paket seçin</div>
-        <button class="btn-save" id="applyPlanBtn" disabled onclick="applyPlan()">Başvuruyu Gönder</button>
-      </div>
-    </div>
-
     <!-- ════ DIŞA AKTAR ════ -->
     <div class="page" id="page-ihracat">
       <div class="page-header"><h1>📄 Dışa Aktar</h1><p>Verilerinizi PDF veya tablo olarak indirin</p></div>
@@ -1232,11 +1225,12 @@ async function init(){
   if(document.getElementById('profileBusiness'))document.getElementById('profileBusiness').value=cp.businessName||'';
   if(document.getElementById('profileEmail'))document.getElementById('profileEmail').value=cp.email||cu.email||'';
   // lisans
-  renderLicenseBadge();renderLicensePage();
+  /* license badge removed */renderPurchaseStatus();
   // settings (kapalı günler)
   await loadSettings();
   await loadRecs();
   renderDash();
+  renderDashAiGate();
   buildClosedDayUI();
   renderPeriodList();
   renderCalendar();
@@ -1257,17 +1251,28 @@ async function saveSettings(){
 }
 
 function buildClosedDayUI(){
-  const container=document.getElementById('closedDayChecks');if(!container)return;
-  container.innerHTML=DAYS.map((d,i)=>`
-    <label class="day-check ${SETTINGS.closedDays.includes(i)?'checked':''}" id="dck-${i}" onclick="toggleDayCheck(${i},this)">
-      <input type="checkbox" ${SETTINGS.closedDays.includes(i)?'checked':''} style="display:none"> ${d.slice(0,3)}
-    </label>`).join('');
+  const container=document.getElementById('closedDayChecks');
+  if(!container)return;
+  container.innerHTML=DAYS.map((d,i)=>{
+    const isChecked=SETTINGS.closedDays.includes(i);
+    return`<div class="day-check ${isChecked?'checked':''}" id="dck-${i}" onclick="toggleDayCheck(${i})">
+      ${isChecked?'✓ ':''}<span>${d.slice(0,3)}</span>
+    </div>`;
+  }).join('');
 }
-window.toggleDayCheck=function(i,el){
-  const checked=SETTINGS.closedDays.includes(i);
-  if(checked)SETTINGS.closedDays=SETTINGS.closedDays.filter(d=>d!==i);
-  else SETTINGS.closedDays.push(i);
-  el.classList.toggle('checked',!checked);
+window.toggleDayCheck=function(i){
+  const idx=SETTINGS.closedDays.indexOf(i);
+  if(idx>=0){
+    SETTINGS.closedDays.splice(idx,1);
+  } else {
+    SETTINGS.closedDays.push(i);
+  }
+  // Re-render the single button
+  const el=document.getElementById('dck-'+i);
+  if(!el)return;
+  const isNowChecked=SETTINGS.closedDays.includes(i);
+  el.className='day-check'+(isNowChecked?' checked':'');
+  el.innerHTML=(isNowChecked?'✓ ':'')+'<span>'+DAYS[i].slice(0,3)+'</span>';
 };
 window.saveClosedDays=async function(){
   await saveSettings();toast('Kapalı günler kaydedildi ✓','s');renderDash();renderCalendar();
@@ -1460,16 +1465,8 @@ function renderDash(){
     $('goalDays',`/ gün (${remOpenDays} açık gün kaldı)`);
     setTimeout(()=>{const b=document.getElementById('goalBar');if(b)b.style.width=pct+'%';},200);
   }
-  renderWeekChart();renderYearChart();renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m);
-  // Dashboard AI gate
-  const dLockedCta = document.getElementById('dashAiLockedCta');
-  const dBadge = document.getElementById('dashAiStatusBadge');
-  if(dLockedCta) dLockedCta.style.display = aiUnlocked ? 'none' : 'block';
-  if(dBadge){
-    dBadge.textContent = aiUnlocked ? '✓ Aktif' : '🔒 Kilitli';
-    dBadge.style.background = aiUnlocked ? 'rgba(78,219,143,.12)' : 'rgba(245,200,66,.12)';
-    dBadge.style.color = aiUnlocked ? 'var(--success)' : 'var(--warn)';
-  }
+  renderWeekChart();renderYearChart();
+  if(aiUnlocked)renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m);
 }
 
 /* ── DASH INSIGHTS (Local AI) ── */
@@ -1828,14 +1825,8 @@ function getLicenseStatus(){
   }
   return{status:'active',label:`${pLabel(cp.plan)} — Aktif`,desc:'Tarih sınırı yok'};
 }
-function renderLicenseBadge(){/* no-op: badge removed from sidebar */}
-function renderLicensePage(){
-  const ls=getLicenseStatus();
-  const card=document.getElementById('licenseStatusCard');if(!card)return;
-  card.className=`license-status ${ls.status==='expired'?'expired':ls.status==='warning'?'warning':'active'}`;
-  card.innerHTML=`<div class="ls-icon">${ls.status==='unlimited'?'🌟':ls.status==='expired'?'🔴':ls.status==='warning'?'🟡':'🟢'}</div>
-    <div class="ls-info"><h4>${ls.label}</h4><p>${ls.desc}</p></div>`;
-}
+
+
 window.selectPlan=function(plan,el){
   selectedPlan=plan;document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');
   document.getElementById('selectedPlanNote').textContent=`"${pLabel(plan)}" paketi seçildi`;
@@ -1986,14 +1977,13 @@ window.navTo=function(page,el){
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById('sidebar')?.classList.remove('open');
   document.getElementById('sidebarOverlay')?.classList.remove('show');
-  document.body.style.overflow='';
   if(page==='raporlar')renderWeekTab();
   if(page==='karsilastir')renderCompare();
   if(page==='takvim')renderCalendar();
   if(page==='ihracat')renderExportPreview();
   if(page==='ayarlar'){buildClosedDayUI();renderPeriodList();}
   if(page==='ai'){renderAiGate();}
-  if(page==='satin-al'){renderPurchaseStatus();}
+  if(page==='satin-al'){renderPurchaseStatus();renderPurchaseStatus();}
 };
 window.switchTab=function(name,el){
   document.querySelectorAll('#page-raporlar .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
@@ -2003,13 +1993,7 @@ window.switchTab=function(name,el){
   if(name==='yillik'){initPickers();renderYearTab();}
   if(name==='gunler')renderDayTab();
 };
-window.toggleSidebar=function(){
-  const sb=document.getElementById('sidebar');
-  const ov=document.getElementById('sidebarOverlay');
-  const isOpen=sb.classList.toggle('open');
-  ov.classList.toggle('show',isOpen);
-  document.body.style.overflow=isOpen?'hidden':'';
-};
+window.toggleSidebar=function(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');};
 
 /* ── AYARLAR ── */
 window.saveGoal=async function(){
@@ -2038,26 +2022,26 @@ let selectedPricingType = 'one'; // 'one' | 'sub'
 async function checkLicenseStatus() {
   if (!cu) return;
   try {
+    // Re-fetch latest user data
     const snap = await getDoc(doc(db, C.users, cu.uid));
     if (!snap.exists()) return;
-    const data = snap.data();
+    const data = snap.data(); cp = {...cp, ...data};
 
-    // AI module check
-    const hasPurchase  = !!data.purchases?.ai_module;
-    const planIncludes = ['pro','kurumsal'].includes(data.plan);
-    const licOk        = data.licenseExpiry === 'unlimited' ||
-                         (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
-
-    aiUnlocked = hasPurchase || (planIncludes && licOk);
-    renderAiGate();
-    renderPurchaseStatus();
-    renderDash();
+    // AI module unlocked if: purchased directly OR pro/kurumsal plan with valid license
+    const hasDirect = !!data.purchases?.ai_module;
+    const planOk    = ['pro','kurumsal'].includes(data.plan);
+    const licValid  = data.licenseExpiry === 'unlimited' ||
+                      (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
+    aiUnlocked = hasDirect || (planOk && licValid);
   } catch(e) {
-    console.warn('License check error:', e.message);
+    console.warn('License check:', e.message);
   }
+  renderAiGate();
+  renderPurchaseStatus();
+  renderDashAiGate();
 }
 
-/* ── renderAiGate: show/hide locked or unlocked AI view ── */
+/* ── renderAiGate: show/hide locked or unlocked AI page view ── */
 function renderAiGate() {
   const locked   = document.getElementById('aiLockedView');
   const unlocked = document.getElementById('aiUnlockedView');
@@ -2065,6 +2049,15 @@ function renderAiGate() {
   if (locked)   locked.style.display   = aiUnlocked ? 'none' : 'block';
   if (unlocked) unlocked.style.display = aiUnlocked ? 'block' : 'none';
   if (badge)    badge.style.display    = aiUnlocked ? 'none' : 'inline';
+}
+
+/* ── renderDashAiGate: dashboard insight box gate ── */
+function renderDashAiGate() {
+  const insightCard = document.getElementById('dashInsightCard');
+  const lockedCard  = document.getElementById('dashAiLocked');
+  if (!insightCard || !lockedCard) return;
+  insightCard.style.display = aiUnlocked ? 'block' : 'none';
+  lockedCard.style.display  = aiUnlocked ? 'none'  : 'block';
 }
 
 /* ── renderPurchaseStatus: update Satın Al page state ── */
@@ -2152,7 +2145,7 @@ Devam etmek istiyor musunuz?
 
     renderAiGate();
     renderPurchaseStatus();
-    renderLicenseBadge();
+    renderDashAiGate();
 
     toast('🎉 AI Modülü aktifleştirildi! Hemen kullanabilirsiniz.','s');
     setTimeout(() => navTo('ai', document.getElementById('navAiBtn')), 1200);
