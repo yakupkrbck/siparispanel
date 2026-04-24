@@ -1,255 +1,614 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CiroLog — Kurulum & Admin Panel</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>CiroLog — Admin Paneli</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c27; --border:#2a2a3a;
-    --accent:#c8f55a; --accent2:#7b6ff0; --text:#f0f0f5; --muted:#6b6b85;
-    --danger:#ff5e5e; --success:#4edb8f; --warn:#f5c842;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+:root {
+  --bg: #06060a;
+  --surface: #0e0e16;
+  --surface2: #161620;
+  --surface3: #1e1e2e;
+  --border: #2a2a40;
+  --accent: #7c6ef0;
+  --accent2: #e06be0;
+  --cyan: #3dd9c8;
+  --warn: #f5a623;
+  --danger: #f04444;
+  --success: #34d280;
+  --text: #e8e8f0;
+  --muted: #5a5a78;
+  --muted2: #8888a8;
+  --radius: 10px;
+  --radius-sm: 7px;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --sh: rgba(0,0,0,.5);
+  --sidebar-w: 220px;
+}
 
-  /* ── AUTH ── */
-  #authWrap {
-    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem;
-    background: radial-gradient(ellipse 80% 60% at 50% -10%,#2a2065 0%,transparent 70%), var(--bg);
-  }
-  .auth-card { width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:3rem 2.5rem; animation:fadeUp .5s ease; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-  .logo { font-family:'DM Serif Display',serif; font-size:2rem; letter-spacing:-1px; margin-bottom:.25rem; }
-  .logo span { color:var(--accent); }
-  .sub { color:var(--muted); font-size:.875rem; margin-bottom:2rem; }
-  .fg { margin-bottom:1.1rem; }
-  .fg label { display:block; font-size:.75rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.4rem; }
-  .fg input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:.8rem 1rem; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.95rem; outline:none; transition:border-color .2s; }
-  .fg input:focus { border-color:var(--accent2); }
-  .btn { width:100%; padding:.85rem; border-radius:10px; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; transition:all .2s; }
-  .btn-p { background:var(--accent); color:#0a0a0f; }
-  .btn-p:hover { background:#d9ff6e; }
-  .btn-p:disabled { opacity:.5; cursor:not-allowed; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:14px; }
+body { background:var(--bg); color:var(--text); font-family:var(--font-body); min-height:100vh; overflow-x:hidden; }
 
-  /* ── ADMIN PANEL ── */
-  #adminWrap { display:none; min-height:100vh; }
-  .layout { display:flex; min-height:100vh; }
-  .sidebar { width:240px; background:var(--surface); border-right:1px solid var(--border); padding:1.5rem 1rem; display:flex; flex-direction:column; flex-shrink:0; }
-  .s-logo { font-family:'DM Serif Display',serif; font-size:1.4rem; padding:.5rem .75rem 1.5rem; letter-spacing:-1px; }
-  .s-logo span { color:var(--accent); }
-  .nav { display:flex; align-items:center; gap:.75rem; padding:.65rem .75rem; border-radius:10px; cursor:pointer; font-size:.875rem; color:var(--muted); transition:all .15s; margin-bottom:.2rem; border:none; background:transparent; width:100%; text-align:left; }
-  .nav:hover { background:var(--surface2); color:var(--text); }
-  .nav.active { background:rgba(200,245,90,.1); color:var(--accent); }
-  .spacer { flex:1; }
-  .user-pill { display:flex; align-items:center; gap:.75rem; padding:.75rem; border-radius:10px; background:var(--surface2); }
-  .avatar { width:32px; height:32px; border-radius:50%; background:var(--danger); display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0; }
-  .u-info p { font-size:.85rem; font-weight:600; }
-  .u-info span { font-size:.75rem; color:var(--muted); }
-  .logout-btn { display:flex; align-items:center; gap:.75rem; padding:.65rem .75rem; border-radius:10px; cursor:pointer; font-size:.875rem; color:var(--muted); transition:all .15s; margin-top:.5rem; border:none; background:transparent; width:100%; text-align:left; }
-  .logout-btn:hover { color:var(--danger); }
+/* ── SCANLINES ── */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(120,100,240,.018) 1px,rgba(120,100,240,.018) 2px);
+}
 
-  .main { flex:1; overflow-y:auto; padding:2rem; }
-  .page { display:none; }
-  .page.active { display:block; }
-  .ph { margin-bottom:2rem; }
-  .ph h1 { font-family:'DM Serif Display',serif; font-size:1.8rem; letter-spacing:-.5px; }
-  .ph p { color:var(--muted); font-size:.875rem; margin-top:.25rem; }
+/* ── SCREENS ── */
+.screen { display:none; min-height:100vh; }
+.screen.active { display:flex; flex-direction:column; }
 
-  .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.5rem; }
-  .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin-bottom:1.5rem; }
-  .sc { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.2rem; }
-  .sl { font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.4rem; }
-  .sv { font-family:'DM Serif Display',serif; font-size:1.8rem; }
+/* ── AUTH ── */
+.auth-wrap {
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(124,110,240,.12), transparent 60%),
+              radial-gradient(ellipse 40% 30% at 80% 80%, rgba(224,107,224,.08), transparent 50%),
+              var(--bg);
+}
+.auth-card {
+  width:100%; max-width:380px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:2.5rem 2rem;
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+  position:relative; overflow:hidden;
+}
+.auth-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--accent), var(--accent2), var(--cyan));
+}
+.auth-logo {
+  font-family:var(--font-display); font-size:1.75rem; font-weight:800;
+  letter-spacing:-.03em; margin-bottom:.25rem;
+}
+.auth-logo span { color:var(--accent); }
+.auth-badge {
+  display:inline-flex; align-items:center; gap:.35rem;
+  background:rgba(124,110,240,.12); border:1px solid rgba(124,110,240,.25);
+  color:var(--accent); font-size:.65rem; font-weight:700; font-family:var(--font-mono);
+  padding:.2rem .6rem; border-radius:4px; margin-bottom:1.5rem;
+  text-transform:uppercase; letter-spacing:.1em;
+}
+.auth-field { margin-bottom:.875rem; }
+.auth-field label { display:block; font-size:.7rem; font-weight:700; color:var(--muted2); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.35rem; }
+.auth-field input {
+  width:100%; background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:.75rem 1rem;
+  color:var(--text); font-family:var(--font-mono); font-size:.875rem;
+  outline:none; transition:border-color .2s, box-shadow .2s;
+}
+.auth-field input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(124,110,240,.15); }
+.auth-btn {
+  width:100%; padding:.875rem; border:none; border-radius:var(--radius-sm);
+  background:var(--accent); color:#fff; font-family:var(--font-display);
+  font-size:.9rem; font-weight:800; cursor:pointer; transition:all .2s;
+  letter-spacing:-.01em;
+}
+.auth-btn:hover { background:#8f80f3; transform:translateY(-1px); box-shadow:0 6px 20px rgba(124,110,240,.35); }
+.auth-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.auth-err { color:var(--danger); font-size:.78rem; margin-top:.5rem; display:none; }
 
-  table { width:100%; border-collapse:collapse; }
-  th { text-align:left; font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; padding:.75rem 1rem; border-bottom:1px solid var(--border); }
-  td { padding:.85rem 1rem; border-bottom:1px solid var(--border); font-size:.875rem; vertical-align:middle; }
-  tr:last-child td { border-bottom:none; }
-  tr:hover td { background:rgba(255,255,255,.02); }
+/* ── APP SHELL ── */
+#screenApp { flex-direction:row; }
 
-  .badge { display:inline-flex; align-items:center; gap:.3rem; padding:.2rem .65rem; border-radius:99px; font-size:.72rem; font-weight:700; }
-  .b-warn    { background:rgba(245,200,66,.15); color:var(--warn); }
-  .b-success { background:rgba(78,219,143,.15); color:var(--success); }
-  .b-muted   { background:var(--surface2); color:var(--muted); }
-  .b-danger  { background:rgba(255,94,94,.12); color:var(--danger); }
+/* ── SIDEBAR ── */
+.sidebar {
+  width:var(--sidebar-w); min-height:100vh; background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; padding:0;
+  flex-shrink:0; position:sticky; top:0; height:100vh; overflow:hidden;
+}
+.sidebar-scroll { flex:1; overflow-y:auto; min-height:0; padding:1.25rem .875rem; }
+.sidebar-brand {
+  font-family:var(--font-display); font-size:1.3rem; font-weight:800;
+  letter-spacing:-.03em; padding:0 0 1rem; display:flex; align-items:center; gap:.4rem;
+}
+.sidebar-brand span { color:var(--accent); }
+.admin-pill {
+  display:inline-flex; align-items:center; gap:.3rem;
+  background:rgba(124,110,240,.12); border:1px solid rgba(124,110,240,.2);
+  color:var(--accent); font-size:.58rem; font-weight:800; font-family:var(--font-mono);
+  padding:.15rem .5rem; border-radius:4px; margin-left:.2rem;
+  text-transform:uppercase; letter-spacing:.08em;
+}
+.nav-group-label {
+  font-size:.58rem; font-weight:800; color:var(--muted); text-transform:uppercase;
+  letter-spacing:.16em; padding:.15rem 0; margin-top:.875rem; margin-bottom:.1rem;
+}
+.nav-group-label:first-of-type { margin-top:0; }
+.nav-btn {
+  display:flex; align-items:center; gap:.6rem;
+  padding:.55rem .625rem; border-radius:var(--radius-sm);
+  cursor:pointer; font-size:.8rem; font-weight:600; color:var(--muted2);
+  transition:background .12s, color .12s; margin-bottom:.05rem;
+  border:none; background:transparent; width:100%; text-align:left;
+  font-family:var(--font-body); min-height:36px;
+}
+.nav-btn:hover { background:var(--surface2); color:var(--text); }
+.nav-btn.active { background:rgba(124,110,240,.1); color:var(--accent); font-weight:700; border-left:2px solid var(--accent); padding-left:calc(.625rem - 2px); }
+.nav-icon { width:18px; min-width:18px; text-align:center; font-size:.875rem; }
+.nav-badge { font-size:.58rem; background:var(--danger); color:#fff; padding:.1rem .4rem; border-radius:99px; margin-left:auto; font-weight:800; }
+.sidebar-footer {
+  border-top:1px solid var(--border); padding:.75rem .875rem;
+  padding-bottom:max(.75rem, env(safe-area-inset-bottom));
+  flex-shrink:0; background:var(--surface);
+}
+.admin-info { display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem; }
+.admin-avatar {
+  width:30px; height:30px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:.7rem; font-weight:800; color:#fff; flex-shrink:0;
+}
+.admin-name { font-size:.78rem; font-weight:700; }
+.admin-role { font-size:.65rem; color:var(--muted2); }
+.logout-btn {
+  display:flex; align-items:center; gap:.5rem; width:100%;
+  padding:.5rem .625rem; border-radius:var(--radius-sm);
+  background:rgba(240,68,68,.08); border:1px solid rgba(240,68,68,.15);
+  color:var(--danger); font-size:.78rem; font-weight:700;
+  cursor:pointer; font-family:var(--font-body); transition:all .15s;
+}
+.logout-btn:hover { background:rgba(240,68,68,.15); }
 
-  .ab { border-radius:8px; padding:.35rem .9rem; font-size:.8rem; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; border:1px solid; transition:all .15s; }
-  .ab-ok  { background:rgba(78,219,143,.12); color:var(--success); border-color:rgba(78,219,143,.3); }
-  .ab-ok:hover  { background:rgba(78,219,143,.25); }
-  .ab-no  { background:rgba(255,94,94,.1); color:var(--danger); border-color:rgba(255,94,94,.2); }
-  .ab-no:hover  { background:rgba(255,94,94,.2); }
-  .ab-del { background:transparent; color:var(--muted); border-color:var(--border); }
-  .ab-del:hover { color:var(--danger); border-color:var(--danger); }
+/* ── MAIN ── */
+.main-content { flex:1; overflow-y:auto; background:var(--bg); }
+.page { display:none; padding:1.75rem; min-height:100vh; }
+.page.active { display:block; }
+.page-header { margin-bottom:1.5rem; display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.page-header h1 { font-family:var(--font-display); font-size:1.6rem; font-weight:800; letter-spacing:-.04em; }
+.page-header p { color:var(--muted2); font-size:.8rem; margin-top:.2rem; }
+.header-actions { display:flex; gap:.5rem; flex-wrap:wrap; }
 
-  .search-bar { display:flex; gap:.75rem; margin-bottom:1.25rem; flex-wrap:wrap; }
-  .search-bar input, .search-bar select {
-    background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    padding:.6rem 1rem; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.875rem; outline:none;
-  }
-  .search-bar input { flex:1; min-width:200px; }
-  .search-bar input:focus { border-color:var(--accent2); }
+/* ── STAT CARDS ── */
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:.875rem; margin-bottom:1.5rem; }
+.kpi { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.25rem; position:relative; overflow:hidden; }
+.kpi::before { content:''; position:absolute; top:0; left:0; width:2px; height:100%; background:var(--kpi-color,var(--accent)); }
+.kpi-label { font-size:.65rem; font-weight:800; color:var(--muted2); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.4rem; }
+.kpi-value { font-family:var(--font-mono); font-size:1.75rem; font-weight:700; letter-spacing:-.03em; color:var(--kpi-color,var(--text)); }
+.kpi-sub { font-size:.7rem; color:var(--muted2); margin-top:.2rem; }
+.kpi-green { --kpi-color:var(--success); }
+.kpi-cyan { --kpi-color:var(--cyan); }
+.kpi-warn { --kpi-color:var(--warn); }
+.kpi-red { --kpi-color:var(--danger); }
+.kpi-purple { --kpi-color:var(--accent); }
 
-  .empty { color:var(--muted); text-align:center; padding:3rem; font-size:.9rem; }
+/* ── CARD ── */
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:.875rem; }
+.card-title { font-size:.7rem; font-weight:800; color:var(--muted2); text-transform:uppercase; letter-spacing:.1em; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
+.card-title .ct-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
 
-  .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:100; align-items:center; justify-content:center; }
-  .modal-bg.show { display:flex; }
-  .modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:2rem; max-width:480px; width:90%; animation:fadeUp .3s ease; }
-  .modal h2 { font-family:'DM Serif Display',serif; font-size:1.3rem; margin-bottom:1rem; }
-  .modal .close { float:right; cursor:pointer; color:var(--muted); font-size:1.2rem; background:none; border:none; }
+/* ── BUTTONS ── */
+.btn { border:none; border-radius:var(--radius-sm); cursor:pointer; font-family:var(--font-body); font-weight:700; transition:all .15s; display:inline-flex; align-items:center; gap:.4rem; white-space:nowrap; }
+.btn-sm { padding:.4rem .875rem; font-size:.75rem; }
+.btn-md { padding:.6rem 1.1rem; font-size:.8rem; }
+.btn-lg { padding:.8rem 1.5rem; font-size:.875rem; }
+.btn-accent { background:var(--accent); color:#fff; }
+.btn-accent:hover { background:#8f80f3; }
+.btn-success { background:rgba(52,210,128,.12); color:var(--success); border:1px solid rgba(52,210,128,.2); }
+.btn-success:hover { background:rgba(52,210,128,.22); }
+.btn-danger { background:rgba(240,68,68,.1); color:var(--danger); border:1px solid rgba(240,68,68,.2); }
+.btn-danger:hover { background:rgba(240,68,68,.2); }
+.btn-warn { background:rgba(245,166,35,.1); color:var(--warn); border:1px solid rgba(245,166,35,.2); }
+.btn-warn:hover { background:rgba(245,166,35,.2); }
+.btn-ghost { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.btn:disabled { opacity:.45; cursor:not-allowed; }
 
-  .detail-row { display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid var(--border); font-size:.875rem; }
-  .detail-row:last-child { border-bottom:none; }
-  .detail-row span:first-child { color:var(--muted); }
-  .detail-row span:last-child { font-weight:500; text-align:right; }
+/* ── USERS TABLE ── */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.8rem; }
+thead tr { border-bottom:1px solid var(--border); }
+th { text-align:left; font-size:.62rem; font-weight:800; color:var(--muted2); text-transform:uppercase; letter-spacing:.1em; padding:.625rem .75rem; }
+td { padding:.7rem .75rem; border-bottom:1px solid rgba(42,42,64,.5); vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(124,110,240,.03); }
+.u-name { font-weight:700; }
+.u-email { color:var(--muted2); font-family:var(--font-mono); font-size:.75rem; }
+.u-biz { font-size:.72rem; color:var(--muted2); }
 
-  .tab-bar { display:flex; gap:.4rem; background:var(--surface2); border-radius:10px; padding:4px; width:fit-content; margin-bottom:1.5rem; }
-  .tab { padding:.45rem .9rem; border-radius:7px; cursor:pointer; font-size:.85rem; font-weight:500; color:var(--muted); transition:all .15s; border:none; background:transparent; font-family:'DM Sans',sans-serif; }
-  .tab.active { background:var(--surface); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.3); }
+/* ── BADGES ── */
+.badge { display:inline-flex; align-items:center; gap:.25rem; padding:.18rem .55rem; border-radius:4px; font-size:.65rem; font-weight:800; font-family:var(--font-mono); }
+.badge-green { background:rgba(52,210,128,.1); color:var(--success); }
+.badge-red { background:rgba(240,68,68,.1); color:var(--danger); }
+.badge-yellow { background:rgba(245,166,35,.1); color:var(--warn); }
+.badge-purple { background:rgba(124,110,240,.1); color:var(--accent); }
+.badge-cyan { background:rgba(61,217,200,.1); color:var(--cyan); }
+.badge-gray { background:var(--surface2); color:var(--muted2); }
 
-  .toast-c { position:fixed; bottom:1.5rem; right:1.5rem; display:flex; flex-direction:column; gap:.5rem; z-index:999; }
-  .toast { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:.85rem 1.2rem; font-size:.875rem; display:flex; align-items:center; gap:.75rem; animation:slideIn .3s ease; box-shadow:0 8px 32px rgba(0,0,0,.4); }
-  .toast.s { border-left:3px solid var(--success); }
-  .toast.w { border-left:3px solid var(--warn); }
-  .toast.e { border-left:3px solid var(--danger); }
-  @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+/* ── TOGGLE ── */
+.tgl { position:relative; width:38px; height:21px; flex-shrink:0; }
+.tgl input { opacity:0; width:0; height:0; }
+.tgl-track { position:absolute; inset:0; border-radius:99px; background:var(--surface3); border:1px solid var(--border); cursor:pointer; transition:.25s; }
+.tgl-track::before { content:''; position:absolute; width:14px; height:14px; left:3px; top:3px; background:var(--muted); border-radius:50%; transition:.25s; }
+.tgl input:checked + .tgl-track { background:rgba(52,210,128,.15); border-color:var(--success); }
+.tgl input:checked + .tgl-track::before { transform:translateX(17px); background:var(--success); }
 
-  .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .6s linear infinite; }
-  @keyframes spin { to{transform:rotate(360deg)} }
+/* ── FORM ELEMENTS ── */
+.fg { margin-bottom:.875rem; }
+.fg label { display:block; font-size:.65rem; font-weight:800; color:var(--muted2); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.35rem; }
+.fg input, .fg select, .fg textarea {
+  width:100%; background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:.7rem .875rem;
+  color:var(--text); font-family:var(--font-body); font-size:.85rem;
+  outline:none; transition:border-color .2s;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--accent); }
+.fg select { cursor:pointer; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:.875rem; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:1000;
+  display:none; align-items:center; justify-content:center; padding:1rem;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:1.75rem; width:100%; max-width:520px;
+  box-shadow:0 24px 80px var(--sh); max-height:90vh; overflow-y:auto;
+  animation:modalIn .2s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)} }
+.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+.modal-header h3 { font-family:var(--font-display); font-size:1.1rem; font-weight:800; }
+.modal-close { background:none; border:none; color:var(--muted2); font-size:1.2rem; cursor:pointer; padding:.25rem; transition:color .15s; }
+.modal-close:hover { color:var(--text); }
+.modal-footer { display:flex; gap:.625rem; justify-content:flex-end; margin-top:1.25rem; }
+
+/* ── SEARCH BAR ── */
+.search-bar {
+  position:relative; margin-bottom:1rem;
+}
+.search-bar input {
+  width:100%; background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:.65rem 1rem .65rem 2.25rem;
+  color:var(--text); font-family:var(--font-body); font-size:.85rem;
+  outline:none; transition:border-color .2s;
+}
+.search-bar input:focus { border-color:var(--accent); }
+.search-bar::before { content:'🔍'; position:absolute; left:.75rem; top:50%; transform:translateY(-50%); font-size:.85rem; pointer-events:none; }
+
+/* ── PERMISSION GRID ── */
+.perm-grid { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-bottom:1rem; }
+.perm-item { display:flex; align-items:center; justify-content:space-between; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:.625rem .875rem; }
+.perm-label { font-size:.78rem; font-weight:600; }
+.perm-sub { font-size:.65rem; color:var(--muted2); margin-top:.1rem; }
+
+/* ── TOAST ── */
+.toast-c { position:fixed; bottom:1.25rem; right:1.25rem; display:flex; flex-direction:column; gap:.4rem; z-index:9998; }
+.toast { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:.7rem 1rem; font-size:.8rem; display:flex; align-items:center; gap:.6rem; animation:slideIn .25s ease; box-shadow:0 8px 30px var(--sh); font-family:var(--font-body); max-width:320px; }
+.toast.s { border-left:2px solid var(--success); }
+.toast.w { border-left:2px solid var(--warn); }
+.toast.e { border-left:2px solid var(--danger); }
+@keyframes slideIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+.spinner { display:inline-block; width:12px; height:12px; border:2px solid rgba(124,110,240,.2); border-top-color:var(--accent); border-radius:50%; animation:spin .5s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── PENDING APPLICATIONS ── */
+.app-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:.6rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+.app-info { flex:1; min-width:200px; }
+.app-name { font-weight:700; font-size:.875rem; }
+.app-meta { font-size:.72rem; color:var(--muted2); margin-top:.15rem; font-family:var(--font-mono); }
+.app-plan-badge { font-size:.68rem; font-weight:700; padding:.2rem .5rem; border-radius:4px; }
+
+/* ── CONFIG CARD ── */
+.cfg-row { display:flex; align-items:center; justify-content:space-between; padding:.875rem 1rem; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:.5rem; gap:1rem; flex-wrap:wrap; }
+.cfg-info p { font-size:.875rem; font-weight:600; }
+.cfg-info span { font-size:.72rem; color:var(--muted2); }
+.cfg-input { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:.4rem .75rem; color:var(--text); font-family:var(--font-mono); font-size:.875rem; outline:none; transition:border-color .2s; width:120px; }
+.cfg-input:focus { border-color:var(--accent); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+::-webkit-scrollbar-thumb:hover { background:var(--accent); }
+
+/* ── MOBILE ── */
+@media(max-width:768px) {
+  #screenApp { flex-direction:column; }
+  .sidebar { position:fixed; left:0; top:0; height:100dvh; z-index:150; transform:translateX(-100%); transition:transform .3s; }
+  .sidebar.open { transform:translateX(0); }
+  .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:149; }
+  .sidebar-overlay.show { display:block; }
+  .mobile-topbar { display:flex !important; height:52px; background:var(--surface); border-bottom:1px solid var(--border); align-items:center; padding:0 1rem; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .page { padding:1rem; }
+  .form-row { grid-template-columns:1fr; }
+  .perm-grid { grid-template-columns:1fr; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .modal { padding:1.25rem; }
+}
+.mobile-topbar { display:none; }
 </style>
 </head>
 <body>
-
 <div class="toast-c" id="toastC"></div>
 
-<!-- ── GİRİŞ ── -->
-<div id="authWrap">
-  <div class="auth-card">
-    <div class="logo">CiroLog <span style="font-size:1rem;font-family:'DM Sans',sans-serif;color:var(--muted)">Admin</span></div>
-    <div class="sub">Yönetici paneline giriş yapın</div>
-    <div class="fg"><label>E-Posta</label><input type="email" id="aEmail" placeholder="admin@cirolog.com"></div>
-    <div class="fg"><label>Şifre</label><input type="password" id="aPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="btn btn-p" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
-  </div>
-</div>
-
-<!-- ── ADMIN PANELİ ── -->
-<div id="adminWrap">
-  <div class="layout">
-    <nav class="sidebar">
-      <div class="s-logo">Ciro<span>Log</span> <span style="font-size:.7rem;color:var(--muted);font-family:'DM Sans',sans-serif">Admin</span></div>
-      <button class="nav active" onclick="go('bekleyen',this)">⏳ Bekleyen <span id="pendingBadge" style="background:var(--warn);color:#0a0a0f;font-size:.65rem;padding:1px 6px;border-radius:99px;margin-left:auto"></span></button>
-      <button class="nav" onclick="go('uyeler',this)">👥 Kullanıcılar</button>
-      <button class="nav" onclick="go('kayitlar',this)">📊 Ciro Kayıtları</button>
-      <button class="nav" onclick="go('ozet',this)">🏠 Platform Özeti</button>
-      <div style="margin:1rem .75rem 0;padding-top:1rem;border-top:1px solid var(--border)">
-        <a href="./index.html" style="font-size:.8rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.5rem;padding:.5rem 0">🌐 Landing Page</a>
-        <a href="./app.html"   style="font-size:.8rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.5rem;padding:.5rem 0">📱 Müşteri App</a>
-      </div>
-      <div class="spacer"></div>
-      <div class="user-pill">
-        <div class="avatar">AD</div>
-        <div class="u-info"><p id="adminName">Admin</p><span>Yönetici</span></div>
-      </div>
-      <button class="logout-btn" onclick="doLogout()">🚪 Çıkış Yap</button>
-    </nav>
-
-    <div class="main">
-
-      <!-- BEKLEYEN BAŞVURULAR -->
-      <div class="page active" id="p-bekleyen">
-        <div class="ph"><h1>Bekleyen Başvurular</h1><p>Onay bekleyen yeni üyelik talepleri</p></div>
-        <div class="card">
-          <div class="search-bar">
-            <input type="text" id="pendingSearch" placeholder="İsim, işletme veya e-posta ara..." oninput="filterPending()">
-          </div>
-          <table>
-            <thead><tr><th>Ad Soyad</th><th>İşletme</th><th>E-Posta</th><th>Telefon</th><th>Başvuru Tarihi</th><th>İşlem</th></tr></thead>
-            <tbody id="pendingBody"><tr><td colspan="6" class="empty">Yükleniyor...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- KULLANICILAR -->
-      <div class="page" id="p-uyeler">
-        <div class="ph"><h1>Kullanıcılar</h1><p>Sistemdeki tüm üyeler</p></div>
-        <div class="tab-bar">
-          <button class="tab active" onclick="filterUsers('all',this)">Tümü</button>
-          <button class="tab" onclick="filterUsers('approved',this)">Aktif</button>
-          <button class="tab" onclick="filterUsers('pending',this)">Onay Bekleyen</button>
-          <button class="tab" onclick="filterUsers('rejected',this)">Reddedilen</button>
-        </div>
-        <div class="card">
-          <div class="search-bar">
-            <input type="text" id="userSearch" placeholder="Kullanıcı ara..." oninput="filterUsers(currentUserTab)">
-          </div>
-          <table>
-            <thead><tr><th>Ad Soyad</th><th>İşletme</th><th>E-Posta</th><th>Telefon</th><th>Kayıt Tarihi</th><th>Durum</th><th>İşlem</th></tr></thead>
-            <tbody id="usersBody"><tr><td colspan="7" class="empty">Yükleniyor...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- CİRO KAYITLARI -->
-      <div class="page" id="p-kayitlar">
-        <div class="ph"><h1>Ciro Kayıtları</h1><p>Tüm kullanıcıların kayıtları</p></div>
-        <div class="card">
-          <div class="search-bar">
-            <select id="recordUserFilter" onchange="loadAllRecords()"><option value="">— Tüm Kullanıcılar —</option></select>
-            <input type="date" id="recordFrom">
-            <input type="date" id="recordTo">
-            <button onclick="loadAllRecords()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.6rem 1rem;font-size:.875rem;cursor:pointer;font-family:'DM Sans',sans-serif">Filtrele</button>
-          </div>
-          <table>
-            <thead><tr><th>Kullanıcı</th><th>İşletme</th><th>Tarih</th><th>Ciro</th><th>Not</th></tr></thead>
-            <tbody id="recordsBody"><tr><td colspan="5" class="empty">Yukarıdan kullanıcı veya tarih seçin</td></tr></tbody>
-          </table>
-          <div id="recordsTotal" style="padding:.75rem 1rem 0;font-size:.875rem;color:var(--muted);text-align:right"></div>
-        </div>
-      </div>
-
-      <!-- ÖZET -->
-      <div class="page" id="p-ozet">
-        <div class="ph"><h1>Platform Özeti</h1><p>Genel istatistikler</p></div>
-        <div class="stat-grid">
-          <div class="sc"><div class="sl">Toplam Üye</div><div class="sv" id="oToplam">—</div></div>
-          <div class="sc"><div class="sl">Aktif Üye</div><div class="sv" id="oAktif">—</div></div>
-          <div class="sc"><div class="sl">Bekleyen</div><div class="sv" style="color:var(--warn)" id="oBekleyen">—</div></div>
-          <div class="sc"><div class="sl">Bu Ay Kayıt</div><div class="sv" id="oKayit">—</div></div>
-        </div>
-        <div class="card">
-          <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:1rem">Son Başvurular</div>
-          <table>
-            <thead><tr><th>Ad</th><th>İşletme</th><th>Tarih</th><th>Durum</th></tr></thead>
-            <tbody id="recentBody"></tbody>
-          </table>
-        </div>
-      </div>
-
+<!-- ══ LOGIN ══ -->
+<div class="screen active" id="screenLogin">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">Ciro<span>Log</span></div>
+      <div class="auth-badge">⬡ Admin Paneli</div>
+      <div class="auth-field"><label>E-Posta</label><input type="email" id="loginEmail" placeholder="admin@cirolog.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="auth-field"><label>Şifre</label><input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="auth-err" id="loginErr"></div>
+      <button class="auth-btn" id="loginBtn" onclick="doLogin()" style="margin-top:.625rem">Giriş Yap →</button>
     </div>
   </div>
 </div>
 
-<!-- DETAY MODALİ -->
-<div class="modal-bg" id="detailModal">
+<!-- ══ APP ══ -->
+<div class="screen" id="screenApp">
+  <!-- Mobile topbar -->
+  <div class="mobile-topbar" id="mobileTopbar">
+    <button onclick="toggleSidebar()" style="background:none;border:none;color:var(--text);font-size:1.2rem;cursor:pointer">☰</button>
+    <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:800">Ciro<span style="color:var(--accent)">Log</span> <span style="font-size:.6rem;color:var(--muted2)">ADMIN</span></div>
+    <div style="width:32px"></div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-scroll">
+      <div class="sidebar-brand">Ciro<span>Log</span><span class="admin-pill">Admin</span></div>
+
+      <div class="nav-group-label">Genel Bakış</div>
+      <button class="nav-btn active" onclick="navTo('dashboard',this)"><span class="nav-icon">◈</span> Dashboard</button>
+
+      <div class="nav-group-label">Kullanıcılar</div>
+      <button class="nav-btn" onclick="navTo('users',this)"><span class="nav-icon">👥</span> Tüm Kullanıcılar</button>
+      <button class="nav-btn" onclick="navTo('applications',this)" id="navApplications"><span class="nav-icon">📨</span> Başvurular <span class="nav-badge" id="pendingBadge" style="display:none">0</span></button>
+
+      <div class="nav-group-label">Ayarlar</div>
+      <button class="nav-btn" onclick="navTo('config',this)"><span class="nav-icon">⚙️</span> Uygulama Ayarları</button>
+      <button class="nav-btn" onclick="navTo('features',this)"><span class="nav-icon">🧩</span> Özellik Yönetimi</button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="admin-info">
+        <div class="admin-avatar" id="adminAvatar">A</div>
+        <div><div class="admin-name" id="adminName">Admin</div><div class="admin-role">Süper Admin</div></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Çıkış Yap</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- ════ DASHBOARD ════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div><h1>Dashboard</h1><p id="dashDate">Yükleniyor...</p></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="refreshAll()">↺ Yenile</button>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi kpi-green"><div class="kpi-label">Aktif Kullanıcı</div><div class="kpi-value" id="kpiActive">—</div><div class="kpi-sub">Onaylı hesap</div></div>
+        <div class="kpi kpi-warn"><div class="kpi-label">Bekleyen Başvuru</div><div class="kpi-value" id="kpiPending">—</div><div class="kpi-sub">Onay bekliyor</div></div>
+        <div class="kpi kpi-cyan"><div class="kpi-label">AI Satın Alım</div><div class="kpi-value" id="kpiAiOwners">—</div><div class="kpi-sub">Modül sahibi</div></div>
+        <div class="kpi kpi-red"><div class="kpi-label">Bloke</div><div class="kpi-value" id="kpiBlocked">—</div><div class="kpi-sub">Askıya alınan</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.875rem">
+        <div class="card">
+          <div class="card-title"><span class="ct-dot"></span> Son Başvurular</div>
+          <div id="recentApps"><div style="color:var(--muted2);font-size:.8rem">Yükleniyor...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="ct-dot" style="background:var(--cyan)"></span> Son Kayıtlar</div>
+          <div id="recentUsers"><div style="color:var(--muted2);font-size:.8rem">Yükleniyor...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ USERS ════ -->
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <div><h1>Kullanıcılar</h1><p id="userCountLabel">Tüm kayıtlı hesaplar</p></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="loadUsers()">↺ Yenile</button>
+        </div>
+      </div>
+      <div class="search-bar"><input type="text" id="userSearch" placeholder="İsim, e-posta veya işletme ara..." oninput="filterUsers()"></div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Kullanıcı</th>
+              <th>Plan</th>
+              <th>Durum</th>
+              <th>AI Modül</th>
+              <th>Lisans</th>
+              <th>İşlem</th>
+            </tr></thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ APPLICATIONS ════ -->
+    <div class="page" id="page-applications">
+      <div class="page-header">
+        <div><h1>Başvurular</h1><p>Plan başvurularını onaylayın veya reddedin</p></div>
+        <button class="btn btn-ghost btn-sm" onclick="loadApplications()">↺ Yenile</button>
+      </div>
+      <div id="appsList"><div style="color:var(--muted2);font-size:.875rem;padding:1rem 0">Yükleniyor...</div></div>
+    </div>
+
+    <!-- ════ CONFIG ════ -->
+    <div class="page" id="page-config">
+      <div class="page-header">
+        <div><h1>Uygulama Ayarları</h1><p>Fiyat ve genel konfigürasyon</p></div>
+        <button class="btn btn-accent btn-sm" onclick="saveGlobalConfig()">💾 Kaydet</button>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-dot"></span> Fiyat Ayarları</div>
+        <div class="cfg-row"><div class="cfg-info"><p>AI Modül Fiyatı</p><span>Satın al sayfasında gösterilen fiyat</span></div><div style="display:flex;align-items:center;gap:.4rem"><span style="color:var(--muted2);font-size:.875rem">₺</span><input class="cfg-input" type="number" id="cfgAiPrice" placeholder="299"></div></div>
+        <div class="cfg-row"><div class="cfg-info"><p>Para Birimi Sembolü</p><span>Fiyat önüne gelecek sembol</span></div><input class="cfg-input" type="text" id="cfgCurrency" placeholder="₺" style="width:80px"></div>
+        <div class="cfg-row"><div class="cfg-info"><p>Uygulama Adı</p><span>Başlık ve meta bilgiler</span></div><input class="cfg-input" type="text" id="cfgAppName" placeholder="CiroLog" style="width:160px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-dot" style="background:var(--warn)"></span> Bakım Modu</div>
+        <div class="cfg-row">
+          <div class="cfg-info"><p>Bakım Modu</p><span>Aktifken tüm kullanıcılar uyarı görür</span></div>
+          <label class="tgl"><input type="checkbox" id="cfgMaintenance"><div class="tgl-track"></div></label>
+        </div>
+        <div class="cfg-row">
+          <div class="cfg-info"><p>Yeni Kayıt</p><span>Kapatınca yeni başvuru alınmaz</span></div>
+          <label class="tgl"><input type="checkbox" id="cfgNewReg" checked><div class="tgl-track"></div></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ FEATURES ════ -->
+    <div class="page" id="page-features">
+      <div class="page-header">
+        <div><h1>Özellik Yönetimi</h1><p>Plan bazlı özellik erişimlerini yönetin</p></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-dot" style="background:var(--cyan)"></span> Plan Özellikleri</div>
+        <div style="font-size:.78rem;color:var(--muted2);margin-bottom:1rem;line-height:1.6">Bu ayarlar kullanıcı bazında değil, plan bazında varsayılan erişimleri belirler. Bireysel kullanıcı izinleri Kullanıcı Detay modalından ayarlanır.</div>
+        <table style="font-size:.8rem">
+          <thead><tr><th>Özellik</th><th>Başlangıç</th><th>Pro</th><th>Kurumsal</th></tr></thead>
+          <tbody>
+            <tr><td><strong>AI Analiz</strong></td><td><span class="badge badge-red">✕</span></td><td><span class="badge badge-green">✓</span></td><td><span class="badge badge-green">✓</span></td></tr>
+            <tr><td><strong>Takvim</strong></td><td><span class="badge badge-green">✓</span></td><td><span class="badge badge-green">✓</span></td><td><span class="badge badge-green">✓</span></td></tr>
+            <tr><td><strong>Raporlar</strong></td><td><span class="badge badge-yellow">Temel</span></td><td><span class="badge badge-green">Tam</span></td><td><span class="badge badge-green">Tam</span></td></tr>
+            <tr><td><strong>PDF/CSV Export</strong></td><td><span class="badge badge-yellow">CSV</span></td><td><span class="badge badge-green">✓</span></td><td><span class="badge badge-green">✓</span></td></tr>
+            <tr><td><strong>Toplu Yükleme</strong></td><td><span class="badge badge-green">✓</span></td><td><span class="badge badge-green">✓</span></td><td><span class="badge badge-green">✓</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /screenApp -->
+
+<!-- ══ USER EDIT MODAL ══ -->
+<div class="modal-overlay" id="userModal">
   <div class="modal">
-    <button class="close" onclick="closeModal()">✕</button>
-    <h2 id="modalTitle">Kullanıcı Detayı</h2>
-    <div id="modalContent"></div>
-    <div style="display:flex;gap:.75rem;margin-top:1.5rem" id="modalActions"></div>
+    <div class="modal-header">
+      <h3 id="modalTitle">Kullanıcı Düzenle</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <!-- User info -->
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.25rem">
+      <div style="font-weight:700;font-size:.875rem" id="modalUserName">—</div>
+      <div style="font-size:.75rem;color:var(--muted2);font-family:var(--font-mono);margin-top:.15rem" id="modalUserEmail">—</div>
+      <div style="font-size:.72rem;color:var(--muted2);margin-top:.1rem" id="modalUserBiz">—</div>
+    </div>
+
+    <!-- Status -->
+    <div class="fg">
+      <label>Hesap Durumu</label>
+      <select id="modalStatus">
+        <option value="active">✓ Aktif</option>
+        <option value="pending">⏳ Onay Bekliyor</option>
+        <option value="blocked">🚫 Bloke</option>
+      </select>
+    </div>
+
+    <!-- Plan -->
+    <div class="fg">
+      <label>Plan</label>
+      <select id="modalPlan">
+        <option value="">— Plan yok —</option>
+        <option value="baslangic">Başlangıç</option>
+        <option value="pro">Pro</option>
+        <option value="kurumsal">Kurumsal</option>
+      </select>
+    </div>
+
+    <!-- License -->
+    <div class="fg">
+      <label>Lisans Bitiş Tarihi</label>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <input type="date" id="modalLicExpiry" style="flex:1">
+        <button class="btn btn-ghost btn-sm" onclick="setUnlimitedLicense()">Sınırsız</button>
+        <button class="btn btn-warn btn-sm" onclick="clearLicense()">Temizle</button>
+      </div>
+      <div style="font-size:.68rem;color:var(--muted2);margin-top:.3rem" id="modalLicNote"></div>
+    </div>
+
+    <!-- AI Module -->
+    <div class="card" style="margin-bottom:1rem;padding:.875rem 1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:.8rem;font-weight:700">🧠 AI Analiz Modülü</div>
+          <div style="font-size:.7rem;color:var(--muted2);margin-top:.1rem">Admin olarak direkt aç/kapat</div>
+        </div>
+        <label class="tgl"><input type="checkbox" id="modalAiUnlocked"><div class="tgl-track"></div></label>
+      </div>
+    </div>
+
+    <!-- Permissions -->
+    <div style="font-size:.65rem;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Özellik İzinleri</div>
+    <div class="perm-grid">
+      <div class="perm-item"><div><div class="perm-label">📅 Takvim</div></div><label class="tgl"><input type="checkbox" id="permCalendar" checked><div class="tgl-track"></div></label></div>
+      <div class="perm-item"><div><div class="perm-label">📈 Raporlar</div></div><label class="tgl"><input type="checkbox" id="permReports" checked><div class="tgl-track"></div></label></div>
+      <div class="perm-item"><div><div class="perm-label">📄 Dışa Aktar</div></div><label class="tgl"><input type="checkbox" id="permExport" checked><div class="tgl-track"></div></label></div>
+      <div class="perm-item"><div><div class="perm-label">📤 Toplu Yükle</div></div><label class="tgl"><input type="checkbox" id="permImport" checked><div class="tgl-track"></div></label></div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-md" onclick="closeModal()">İptal</button>
+      <button class="btn btn-accent btn-md" onclick="saveUser()" id="saveUserBtn">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APPROVE MODAL ══ -->
+<div class="modal-overlay" id="approveModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h3>Başvuru Onayla</h3>
+      <button class="modal-close" onclick="closeApproveModal()">✕</button>
+    </div>
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:.875rem;margin-bottom:1rem">
+      <div style="font-weight:700" id="approveUserName">—</div>
+      <div style="font-size:.75rem;color:var(--muted2);font-family:var(--font-mono);margin-top:.1rem" id="approveUserEmail">—</div>
+      <div style="margin-top:.35rem"><span class="badge badge-purple" id="approveUserPlan">—</span></div>
+    </div>
+    <div class="fg">
+      <label>Lisans Bitiş Tarihi</label>
+      <div style="display:flex;gap:.5rem">
+        <input type="date" id="approveLicDate" style="flex:1">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('approveLicDate').value=''">Sınırsız</button>
+      </div>
+    </div>
+    <div class="fg">
+      <label>AI Modül Erişimi</label>
+      <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .875rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)">
+        <label class="tgl"><input type="checkbox" id="approveAiAccess"><div class="tgl-track"></div></label>
+        <span style="font-size:.8rem;color:var(--muted2)">AI Modülü bu kullanıcıya aç</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-md" onclick="rejectApplication()">✕ Reddet</button>
+      <button class="btn btn-success btn-md" onclick="approveApplication()" id="approveBtn">✓ Onayla</button>
+    </div>
   </div>
 </div>
 
 <script type="module">
-import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword,
-         signOut, onAuthStateChanged }
-                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection,
-         query, where, orderBy, getDocs, serverTimestamp, limit }
-                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc,
+  collection, query, orderBy, where, getDocs, serverTimestamp, limit,
+  onSnapshot, writeBatch }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
+/* ── Firebase ── */
 const cfg = {
   apiKey:'AIzaSyD2CPjkui-HSM9WG0eh0olu6uidA0RrP10',
   authDomain:'siparispanel-a4c6e.firebaseapp.com',
@@ -258,363 +617,474 @@ const cfg = {
   messagingSenderId:'584080774237',
   appId:'1:584080774237:web:17c6f845d44ea6fa9fe9b4'
 };
-const app  = initializeApp(cfg, 'cirolog-admin');
-const auth = getAuth(app);
-const db   = getFirestore(app);
+const fbApp = initializeApp(cfg, 'cirolog-admin');
+const auth  = getAuth(fbApp);
+const db    = getFirestore(fbApp);
 
-// koleksiyon isimleri
 const C = {
-  users:    'cirolog_users',
-  pending:  'cirolog_pending',
-  records:  (uid) => `cirolog_records/${uid}/entries`,
-  settings: 'cirolog_settings'
+  users: 'cirolog_users',
+  applications: 'cirolog_applications',
+  appSettings: 'cirolog_app_settings'
 };
 
-// ── STATE ──
-let allPending = [];
-let allUsers   = [];
-window.currentUserTab = 'all';
-let currentAdminProfile = null;
+/* ── ADMIN UIDs — add your admin Firebase UIDs here ── */
+const ADMIN_UIDS = [
+  /* 'UID_BURAYA', */
+  'ADMIN_UID_PLACEHOLDER'
+];
 
-// ── AUTH STATE ──
+/* ── State ── */
+let cu = null, allUsers = [], allApps = [], editingUid = null, approvingAppId = null;
+
+/* ── AUTH ── */
 onAuthStateChanged(auth, async (user) => {
-  if (!user) { show('authWrap'); return; }
-  const snap = await getDoc(doc(db, C.users, user.uid));
-  if (!snap.exists() || snap.data().role !== 'admin') {
-    toast('Bu hesabın yönetici yetkisi yok', 'e');
-    await signOut(auth); show('authWrap'); return;
-  }
-  currentAdminProfile = snap.data();
-  document.getElementById('adminName').textContent = currentAdminProfile.name || 'Admin';
-  show('adminWrap');
-  await Promise.all([loadPending(), loadUsers()]);
-  loadStats();
+  if (!user) { ss('screenLogin'); return; }
+
+  /* Admin check — remove if you want any logged-in user to access */
+  // if (!ADMIN_UIDS.includes(user.uid) && ADMIN_UIDS[0] !== 'ADMIN_UID_PLACEHOLDER') {
+  //   toast('Bu sayfaya erişim yetkiniz yok','e');
+  //   await signOut(auth); return;
+  // }
+
+  cu = user;
+  $('adminAvatar', (user.email||'A').charAt(0).toUpperCase());
+  $('adminName', user.email||'Admin');
+  ss('screenApp');
+  await init();
 });
 
-function show(id) {
-  ['authWrap','setupWrap','adminWrap'].forEach(x => {
-    const el = document.getElementById(x);
-    if (el) el.style.display = 'none';
-  });
-  const target = document.getElementById(id);
-  if (target) target.style.display = id === 'adminWrap' ? 'block' : 'flex';
-}
+function ss(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-// ── GİRİŞ ──
 window.doLogin = async function() {
-  const e = document.getElementById('aEmail').value.trim();
-  const p = document.getElementById('aPass').value;
-  if (!e||!p) { toast('E-posta ve şifre gerekli','w'); return; }
+  const e = document.getElementById('loginEmail').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
   const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Giriş yapılıyor...';
-  try {
-    await signInWithEmailAndPassword(auth, e, p);
-  } catch(err) {
-    toast(errTR(err.code), 'e');
-    btn.disabled = false; btn.textContent = 'Giriş Yap';
+  if (!e||!p) { err.textContent='E-posta ve şifre girin'; err.style.display='block'; return; }
+  err.style.display = 'none';
+  btn.disabled = true; btn.textContent = '⏳...';
+  try { await signInWithEmailAndPassword(auth, e, p); }
+  catch(ex) {
+    err.textContent = ex.code==='auth/invalid-credential'?'E-posta veya şifre hatalı':'Giriş hatası: '+ex.code;
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Giriş Yap →';
   }
 };
+window.doLogout = async function() { await signOut(auth); cu=null; };
 
-window.doLogout = async function() {
-  await signOut(auth);
-  allPending = []; allUsers = [];
-};
-
-// ── NAV ──
-window.go = function(page, el) {
-  document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
-  if(el) el.classList.add('active');
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('p-'+page).classList.add('active');
-  if(page==='kayitlar') initRecordFilters();
-  if(page==='ozet') loadStats();
-};
-
-// ── BEKLEYEN BAŞVURULAR ──
-async function loadPending() {
-  const q = query(collection(db, C.pending), where('status','==','pending'), orderBy('createdAt','desc'));
-  const snap = await getDocs(q);
-  allPending = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
-  renderPending(allPending);
-  const cnt = allPending.length;
-  document.getElementById('pendingBadge').textContent = cnt > 0 ? cnt : '';
-  document.getElementById('oBekleyen').textContent = cnt;
+/* ── INIT ── */
+async function init() {
+  $('dashDate', new Date().toLocaleDateString('tr-TR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}));
+  await loadGlobalConfig();
+  await Promise.all([loadUsers(), loadApplications()]);
+  renderDashboard();
 }
 
-function renderPending(list) {
-  const tbody = document.getElementById('pendingBody');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Bekleyen başvuru yok 🎉</td></tr>'; return; }
-  tbody.innerHTML = list.map(p => {
-    const dt = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    return `<tr>
-      <td><strong>${p.name}</strong></td>
-      <td>${p.businessName}</td>
-      <td><a href="mailto:${p.email}" style="color:var(--accent2)">${p.email}</a></td>
-      <td>${p.phone||'—'}</td>
-      <td>${dt}</td>
-      <td style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="ab ab-ok"  onclick="openDetail('${p.docId}','pending')">👁 Detay</button>
-        <button class="ab ab-ok"  onclick="approveUser('${p.docId}','${p.uid}',this)">✓ Onayla</button>
-        <button class="ab ab-no"  onclick="rejectUser('${p.docId}','${p.uid}',this)">✕ Reddet</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
+window.refreshAll = function() { init(); toast('Veriler yenilendi','s'); };
 
-window.filterPending = function() {
-  const q = document.getElementById('pendingSearch').value.toLowerCase();
-  renderPending(q ? allPending.filter(p =>
-    (p.name+p.businessName+p.email).toLowerCase().includes(q)
-  ) : allPending);
-};
-
-window.approveUser = async function(pendingId, uid, btn) {
-  if (!uid || uid === 'example_uid') { toast('Bu örnek kayıt onaylanamaz','w'); return; }
+/* ── GLOBAL CONFIG ── */
+async function loadGlobalConfig() {
   try {
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
-    await updateDoc(doc(db, C.users, uid), { approved: true });
-    await updateDoc(doc(db, C.pending, pendingId), { status: 'approved', approvedAt: serverTimestamp() });
-    toast('Kullanıcı onaylandı ✓','s');
-    await loadPending(); await loadUsers(); loadStats();
-    closeModal();
-  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; btn.textContent='✓ Onayla'; }
-};
-
-window.rejectUser = async function(pendingId, uid, btn) {
-  if (!confirm('Bu başvuruyu reddetmek istediğinizden emin misiniz?')) return;
-  try {
-    if(btn){ btn.disabled=true; btn.innerHTML='<span class="spinner"></span>'; }
-    await updateDoc(doc(db, C.pending, pendingId), { status: 'rejected', rejectedAt: serverTimestamp() });
-    if (uid && uid !== 'example_uid') {
-      await updateDoc(doc(db, C.users, uid), { approved: false, rejected: true });
+    const snap = await getDoc(doc(db, C.appSettings, 'global'));
+    if (snap.exists()) {
+      const d = snap.data();
+      if (document.getElementById('cfgAiPrice')) document.getElementById('cfgAiPrice').value = d.aiPrice || '299';
+      if (document.getElementById('cfgCurrency')) document.getElementById('cfgCurrency').value = d.currency || '₺';
+      if (document.getElementById('cfgAppName')) document.getElementById('cfgAppName').value = d.appName || 'CiroLog';
+      if (document.getElementById('cfgMaintenance')) document.getElementById('cfgMaintenance').checked = !!d.maintenance;
+      if (document.getElementById('cfgNewReg')) document.getElementById('cfgNewReg').checked = d.newRegistration !== false;
     }
-    toast('Başvuru reddedildi','w');
-    await loadPending(); await loadUsers(); loadStats();
-    closeModal();
+  } catch(e) { console.warn('Config load:', e); }
+}
+
+window.saveGlobalConfig = async function() {
+  const data = {
+    aiPrice     : document.getElementById('cfgAiPrice').value || '299',
+    currency    : document.getElementById('cfgCurrency').value || '₺',
+    appName     : document.getElementById('cfgAppName').value || 'CiroLog',
+    maintenance : document.getElementById('cfgMaintenance').checked,
+    newRegistration: document.getElementById('cfgNewReg').checked,
+    updatedAt   : serverTimestamp(),
+  };
+  try {
+    await setDoc(doc(db, C.appSettings, 'global'), data, {merge:true});
+    toast('Ayarlar kaydedildi ✓','s');
   } catch(e) { toast('Hata: '+e.message,'e'); }
 };
 
-// ── KULLANICILAR ──
+/* ── LOAD USERS ── */
 async function loadUsers() {
-  const snap = await getDocs(collection(db, C.users));
-  allUsers = snap.docs.map(d => ({ uid: d.id, ...d.data() })).filter(u => u.role !== 'admin');
-  renderUsers(allUsers);
-  document.getElementById('oToplam').textContent = allUsers.length;
-  document.getElementById('oAktif').textContent  = allUsers.filter(u => u.approved && !u.rejected).length;
+  try {
+    const q = query(collection(db, C.users), orderBy('createdAt','desc'), limit(200));
+    const snap = await getDocs(q);
+    allUsers = snap.docs.map(d => ({uid:d.id, ...d.data()}));
+    renderUsersTable(allUsers);
+    $('userCountLabel', `${allUsers.length} kayıtlı kullanıcı`);
+  } catch(e) { toast('Kullanıcılar yüklenemedi: '+e.message,'e'); }
 }
 
-function renderUsers(list) {
-  const tbody = document.getElementById('usersBody');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">Kullanıcı bulunamadı</td></tr>'; return; }
-  tbody.innerHTML = list.map(u => {
-    const dt  = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    const badge = u.rejected
-      ? '<span class="badge b-danger">✕ Reddedildi</span>'
+function renderUsersTable(users) {
+  const tbody = document.getElementById('usersTableBody');
+  if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted2);padding:2rem">Kullanıcı bulunamadı</td></tr>'; return; }
+
+  tbody.innerHTML = users.map(u => {
+    const statusBadge = u.isBlocked
+      ? `<span class="badge badge-red">🚫 Bloke</span>`
       : u.approved
-        ? '<span class="badge b-success">✓ Aktif</span>'
-        : '<span class="badge b-warn">⏳ Bekliyor</span>';
-    const actions = u.approved && !u.rejected
-      ? `<button class="ab ab-no" onclick="suspendUser('${u.uid}',this)" style="font-size:.75rem">⏸ Askıya Al</button>`
-      : `<button class="ab ab-ok" onclick="reactivateUser('${u.uid}',this)" style="font-size:.75rem">▶ Aktif Et</button>`;
+        ? `<span class="badge badge-green">✓ Aktif</span>`
+        : `<span class="badge badge-yellow">⏳ Bekliyor</span>`;
+
+    const planBadge = u.plan
+      ? `<span class="badge badge-purple">${pLabel(u.plan)}</span>`
+      : `<span class="badge badge-gray">—</span>`;
+
+    const aiStatus = (u.isUnlocked || u.purchases?.ai_module)
+      ? `<span class="badge badge-cyan">✓ Aktif</span>`
+      : `<span class="badge badge-gray">Kilitli</span>`;
+
+    const licStatus = u.licenseExpiry === 'unlimited'
+      ? `<span class="badge badge-green">Sınırsız</span>`
+      : u.licenseExpiry
+        ? (() => { const d=new Date(u.licenseExpiry),now=new Date(); return d>now?`<span class="badge badge-green">${d.toLocaleDateString('tr-TR')}</span>`:`<span class="badge badge-red">Süresi Doldu</span>`; })()
+        : `<span class="badge badge-gray">—</span>`;
+
+    const created = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
+
     return `<tr>
-      <td><strong>${u.name||'—'}</strong></td>
-      <td>${u.businessName||'—'}</td>
-      <td><a href="mailto:${u.email}" style="color:var(--accent2)">${u.email||'—'}</a></td>
-      <td>${u.phone||'—'}</td>
-      <td>${dt}</td>
-      <td>${badge}</td>
-      <td style="display:flex;gap:.4rem;flex-wrap:wrap">
-        <button class="ab ab-ok" onclick="openDetail('${u.uid}','user')" style="font-size:.75rem">👁 Detay</button>
-        ${actions}
+      <td>
+        <div class="u-name">${esc(u.name||'—')}</div>
+        <div class="u-email">${esc(u.email||'')}</div>
+        <div class="u-biz">${esc(u.businessName||'')} · ${created}</div>
+      </td>
+      <td>${planBadge}</td>
+      <td>${statusBadge}</td>
+      <td>${aiStatus}</td>
+      <td>${licStatus}</td>
+      <td>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="openUserModal('${u.uid}')">✏️ Düzenle</button>
+          ${!u.isBlocked
+            ? `<button class="btn btn-danger btn-sm" onclick="blockUser('${u.uid}', true)">🚫</button>`
+            : `<button class="btn btn-success btn-sm" onclick="blockUser('${u.uid}', false)">✓</button>`}
+        </div>
       </td>
     </tr>`;
   }).join('');
 }
 
-window.filterUsers = function(tab, el) {
-  window.currentUserTab = tab;
-  if(el) { document.querySelectorAll('.tab-bar .tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+window.filterUsers = function() {
   const q = document.getElementById('userSearch').value.toLowerCase();
-  let filtered = allUsers;
-  if (tab==='approved')  filtered = filtered.filter(u => u.approved && !u.rejected);
-  if (tab==='pending')   filtered = filtered.filter(u => !u.approved && !u.rejected);
-  if (tab==='rejected')  filtered = filtered.filter(u => u.rejected);
-  if (q) filtered = filtered.filter(u => (u.name+u.businessName+u.email).toLowerCase().includes(q));
-  renderUsers(filtered);
+  if (!q) { renderUsersTable(allUsers); return; }
+  renderUsersTable(allUsers.filter(u =>
+    (u.name||'').toLowerCase().includes(q) ||
+    (u.email||'').toLowerCase().includes(q) ||
+    (u.businessName||'').toLowerCase().includes(q)
+  ));
 };
 
-window.suspendUser = async function(uid, btn) {
-  if (!confirm('Kullanıcıyı askıya almak istediğinizden emin misiniz?')) return;
+/* ── LOAD APPLICATIONS ── */
+async function loadApplications() {
   try {
-    btn.disabled=true;
-    await updateDoc(doc(db, C.users, uid), { approved: false, suspended: true });
-    toast('Kullanıcı askıya alındı','w');
-    await loadUsers();
-  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; }
-};
-
-window.reactivateUser = async function(uid, btn) {
-  try {
-    btn.disabled=true;
-    await updateDoc(doc(db, C.users, uid), { approved: true, rejected: false, suspended: false });
-    toast('Kullanıcı aktif edildi ✓','s');
-    await loadUsers();
-  } catch(e) { toast('Hata: '+e.message,'e'); btn.disabled=false; }
-};
-
-// ── CİRO KAYITLARI ──
-async function initRecordFilters() {
-  const sel = document.getElementById('recordUserFilter');
-  sel.innerHTML = '<option value="">— Tüm Kullanıcılar —</option>';
-  allUsers.filter(u => u.approved).forEach(u => {
-    const opt = document.createElement('option');
-    opt.value = u.uid; opt.textContent = `${u.name} — ${u.businessName}`;
-    sel.appendChild(opt);
-  });
+    const q = query(collection(db, C.applications), orderBy('appliedAt','desc'), limit(100));
+    const snap = await getDocs(q);
+    allApps = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    renderApplications();
+    const pending = allApps.filter(a=>a.status==='pending').length;
+    const badge = document.getElementById('pendingBadge');
+    if (badge) { badge.textContent=pending; badge.style.display=pending>0?'inline-flex':'none'; }
+    $('kpiPending', pending);
+  } catch(e) { console.warn('Apps:', e); }
 }
 
-window.loadAllRecords = async function() {
-  const uid  = document.getElementById('recordUserFilter').value;
-  const from = document.getElementById('recordFrom').value;
-  const to   = document.getElementById('recordTo').value;
-  const tbody = document.getElementById('recordsBody');
-  tbody.innerHTML = '<tr><td colspan="5" class="empty"><span class="spinner"></span> Yükleniyor...</td></tr>';
+function renderApplications() {
+  const el = document.getElementById('appsList');
+  const pending = allApps.filter(a=>a.status==='pending');
+  const done    = allApps.filter(a=>a.status!=='pending');
+  if (!allApps.length) { el.innerHTML='<div style="color:var(--muted2);padding:1rem 0">Başvuru yok</div>'; return; }
 
-  try {
-    let results = [];
-    const targetUsers = uid ? [allUsers.find(u=>u.uid===uid)] : allUsers.filter(u=>u.approved);
-
-    for (const u of targetUsers) {
-      if (!u) continue;
-      let q = query(collection(db, C.records(u.uid)), orderBy('date','desc'), limit(200));
-      const snap = await getDocs(q);
-      snap.docs.forEach(d => {
-        const r = d.data();
-        if (from && r.date < from) return;
-        if (to   && r.date > to)   return;
-        results.push({ ...r, userName: u.name, businessName: u.businessName });
-      });
-    }
-    results.sort((a,b) => b.date.localeCompare(a.date));
-
-    if (!results.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty">Kayıt bulunamadı</td></tr>';
-      document.getElementById('recordsTotal').textContent = '';
-      return;
-    }
-
-    const total = results.reduce((s,r) => s + Number(r.amount||0), 0);
-    tbody.innerHTML = results.map(r => `<tr>
-      <td><strong>${r.userName}</strong></td>
-      <td>${r.businessName}</td>
-      <td>${new Date(r.date+'T00:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',weekday:'short'})}</td>
-      <td style="color:var(--accent);font-weight:700">₺${Number(r.amount).toLocaleString('tr-TR')}</td>
-      <td style="color:var(--muted)">${r.note||'—'}</td>
-    </tr>`).join('');
-    document.getElementById('recordsTotal').textContent =
-      `${results.length} kayıt — Toplam: ₺${total.toLocaleString('tr-TR')}`;
-  } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty" style="color:var(--danger)">Hata: ${e.message}</td></tr>`;
+  let html = '';
+  if (pending.length) {
+    html += `<div style="font-size:.68rem;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem">Bekleyen (${pending.length})</div>`;
+    html += pending.map(a => renderAppCard(a)).join('');
   }
-};
-
-// ── ÖZET ──
-async function loadStats() {
-  const snap = await getDocs(query(collection(db, C.pending), orderBy('createdAt','desc'), limit(5)));
-  const recent = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
-  const tbody = document.getElementById('recentBody');
-  if (!recent.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Henüz başvuru yok</td></tr>'; return; }
-  tbody.innerHTML = recent.map(r => {
-    const dt = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    const badge = r.status==='approved' ? '<span class="badge b-success">✓ Onaylı</span>'
-                : r.status==='rejected' ? '<span class="badge b-danger">✕ Reddedildi</span>'
-                : '<span class="badge b-warn">⏳ Bekliyor</span>';
-    return `<tr><td>${r.name}</td><td>${r.businessName}</td><td>${dt}</td><td>${badge}</td></tr>`;
-  }).join('');
-
-  // bu ay kayıt sayısı
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  let monthCount = 0;
-  for (const u of allUsers.filter(u=>u.approved)) {
-    const q = query(collection(db, C.records(u.uid)), where('date','>=',monthStart));
-    const s = await getDocs(q);
-    monthCount += s.size;
+  if (done.length) {
+    html += `<div style="font-size:.68rem;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin:1.25rem 0 .75rem">İşlenmiş (${done.length})</div>`;
+    html += done.map(a => renderAppCard(a)).join('');
   }
-  document.getElementById('oKayit').textContent = monthCount;
+  el.innerHTML = html;
 }
 
-// ── DETAY MODALİ ──
-window.openDetail = async function(id, type) {
-  const modal = document.getElementById('detailModal');
-  const title = document.getElementById('modalTitle');
-  const content = document.getElementById('modalContent');
-  const actions = document.getElementById('modalActions');
-  content.innerHTML = '<div style="color:var(--muted);padding:1rem;text-align:center"><span class="spinner"></span> Yükleniyor...</div>';
-  actions.innerHTML = '';
-  modal.classList.add('show');
+function renderAppCard(a) {
+  const statusBadge = a.status==='pending'
+    ? `<span class="badge badge-yellow">⏳ Bekliyor</span>`
+    : a.status==='approved'
+      ? `<span class="badge badge-green">✓ Onaylandı</span>`
+      : `<span class="badge badge-red">✕ Reddedildi</span>`;
+  const date = a.appliedAt?.toDate ? a.appliedAt.toDate().toLocaleDateString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+  const actions = a.status==='pending'
+    ? `<button class="btn btn-success btn-sm" onclick="openApproveModal('${a.id}')">✓ Onayla</button>
+       <button class="btn btn-danger btn-sm" onclick="approvingAppId='${a.id}';rejectApplication()">✕ Reddet</button>`
+    : `<button class="btn btn-ghost btn-sm" onclick="deleteApplication('${a.id}')">🗑️</button>`;
+  return `<div class="app-card">
+    <div class="app-info">
+      <div class="app-name">${esc(a.name||'—')}</div>
+      <div class="app-meta">${esc(a.email||'')} · ${esc(a.businessName||'')} · ${date}</div>
+      <div style="margin-top:.35rem;display:flex;gap:.35rem;align-items:center">
+        ${statusBadge} <span class="badge badge-purple">${pLabel(a.plan)}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:.35rem;flex-wrap:wrap">${actions}</div>
+  </div>`;
+}
 
-  if (type === 'user') {
-    const snap = await getDoc(doc(db, C.users, id));
-    const u = snap.data();
-    title.textContent = u.name || 'Kullanıcı Detayı';
-    const dt = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    content.innerHTML = `
-      <div class="detail-row"><span>Ad Soyad</span><span>${u.name||'—'}</span></div>
-      <div class="detail-row"><span>İşletme</span><span>${u.businessName||'—'}</span></div>
-      <div class="detail-row"><span>E-Posta</span><span>${u.email||'—'}</span></div>
-      <div class="detail-row"><span>Telefon</span><span>${u.phone||'—'}</span></div>
-      <div class="detail-row"><span>Kayıt Tarihi</span><span>${dt}</span></div>
-      <div class="detail-row"><span>Durum</span><span>${u.approved?'✓ Aktif':'⏳ Bekliyor'}</span></div>
-    `;
-  } else if (type === 'pending') {
-    const p = allPending.find(x => x.docId === id);
-    if (!p) { content.innerHTML = '<p>Bulunamadı</p>'; return; }
-    title.textContent = p.name;
-    const dt = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleDateString('tr-TR') : '—';
-    content.innerHTML = `
-      <div class="detail-row"><span>Ad Soyad</span><span>${p.name}</span></div>
-      <div class="detail-row"><span>İşletme</span><span>${p.businessName}</span></div>
-      <div class="detail-row"><span>E-Posta</span><span>${p.email}</span></div>
-      <div class="detail-row"><span>Telefon</span><span>${p.phone||'—'}</span></div>
-      <div class="detail-row"><span>Başvuru Tarihi</span><span>${dt}</span></div>
-    `;
-    if (p.uid && p.uid !== 'example_uid') {
-      actions.innerHTML = `
-        <button class="ab ab-ok" style="flex:1;padding:.65rem" onclick="approveUser('${p.docId}','${p.uid}',this)">✓ Onayla</button>
-        <button class="ab ab-no" style="flex:1;padding:.65rem" onclick="rejectUser('${p.docId}','${p.uid}',this)">✕ Reddet</button>
-      `;
-    }
+/* ── USER MODAL ── */
+window.openUserModal = function(uid) {
+  const u = allUsers.find(x=>x.uid===uid);
+  if (!u) return;
+  editingUid = uid;
+  $('modalTitle', 'Kullanıcı Düzenle');
+  $('modalUserName', u.name||'—');
+  $('modalUserEmail', u.email||'');
+  $('modalUserBiz', u.businessName||'');
+  // status
+  const sel = document.getElementById('modalStatus');
+  sel.value = u.isBlocked ? 'blocked' : u.approved ? 'active' : 'pending';
+  // plan
+  document.getElementById('modalPlan').value = u.plan || '';
+  // license
+  const licExp = document.getElementById('modalLicExpiry');
+  const licNote = document.getElementById('modalLicNote');
+  if (u.licenseExpiry === 'unlimited') {
+    licExp.value = '';
+    licNote.textContent = '★ Sınırsız lisans tanımlı';
+    licNote.style.color = 'var(--success)';
+  } else if (u.licenseExpiry) {
+    licExp.value = u.licenseExpiry;
+    const d = new Date(u.licenseExpiry);
+    const ok = d > new Date();
+    licNote.textContent = ok ? '✓ Aktif' : '✕ Süresi dolmuş';
+    licNote.style.color = ok ? 'var(--success)' : 'var(--danger)';
+  } else {
+    licExp.value = '';
+    licNote.textContent = 'Lisans tanımlanmamış';
+    licNote.style.color = 'var(--muted2)';
   }
+  // AI
+  document.getElementById('modalAiUnlocked').checked = !!(u.isUnlocked || u.purchases?.ai_module);
+  // Permissions
+  const perms = u.permissions || {};
+  document.getElementById('permCalendar').checked = perms.calendar !== false;
+  document.getElementById('permReports').checked  = perms.reports  !== false;
+  document.getElementById('permExport').checked   = perms.export   !== false;
+  document.getElementById('permImport').checked   = perms.import   !== false;
+  document.getElementById('userModal').classList.add('open');
+};
+window.closeModal = function() { document.getElementById('userModal').classList.remove('open'); editingUid=null; };
+window.setUnlimitedLicense = function() {
+  document.getElementById('modalLicExpiry').value = '';
+  const n = document.getElementById('modalLicNote');
+  n.textContent = '★ Sınırsız lisans tanımlanacak'; n.style.color='var(--success)';
+};
+window.clearLicense = function() {
+  document.getElementById('modalLicExpiry').value = '';
+  const n = document.getElementById('modalLicNote');
+  n.textContent = 'Lisans kaldırılacak'; n.style.color='var(--warn)';
 };
 
-window.closeModal = function() {
-  document.getElementById('detailModal').classList.remove('show');
-};
-document.getElementById('detailModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('detailModal')) closeModal();
-});
+window.saveUser = async function() {
+  if (!editingUid) return;
+  const btn = document.getElementById('saveUserBtn');
+  btn.disabled=true; btn.textContent='⏳...';
 
-// ── YARDIMCILAR ──
-window.toast = function(msg, type='s') {
-  const c = document.getElementById('toastC');
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  const icon = type==='s'?'✓':type==='w'?'⚠️':'✕';
-  t.innerHTML = `${icon} ${msg}`;
-  c.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
-};
+  const status  = document.getElementById('modalStatus').value;
+  const plan    = document.getElementById('modalPlan').value;
+  const licExp  = document.getElementById('modalLicExpiry').value;
+  const aiOn    = document.getElementById('modalAiUnlocked').checked;
 
-function errTR(code) {
-  const m = {
-    'auth/invalid-credential':'E-posta veya şifre hatalı',
-    'auth/user-not-found':'Kullanıcı bulunamadı',
-    'auth/wrong-password':'Hatalı şifre',
-    'auth/too-many-requests':'Çok fazla deneme, bekleyin',
+  // Determine licenseExpiry
+  let licenseExpiry = null;
+  const licNote = document.getElementById('modalLicNote').textContent;
+  if (licNote.includes('Sınırsız')) licenseExpiry = 'unlimited';
+  else if (licExp) licenseExpiry = licExp;
+
+  const updateData = {
+    approved    : status === 'active',
+    isBlocked   : status === 'blocked',
+    isUnlocked  : aiOn,
+    plan        : plan || null,
+    updatedAt   : serverTimestamp(),
+    permissions : {
+      calendar : document.getElementById('permCalendar').checked,
+      reports  : document.getElementById('permReports').checked,
+      export   : document.getElementById('permExport').checked,
+      import   : document.getElementById('permImport').checked,
+    }
   };
-  return m[code] || 'Hata: '+code;
+  if (licenseExpiry !== null) updateData.licenseExpiry = licenseExpiry;
+  else updateData.licenseExpiry = null;
+
+  try {
+    await updateDoc(doc(db, C.users, editingUid), updateData);
+    // Update local cache
+    const idx = allUsers.findIndex(u=>u.uid===editingUid);
+    if (idx>=0) allUsers[idx] = {...allUsers[idx], ...updateData};
+    renderUsersTable(allUsers);
+    renderDashboard();
+    closeModal();
+    toast('Kullanıcı güncellendi ✓','s');
+  } catch(e) { toast('Hata: '+e.message,'e'); }
+  finally { btn.disabled=false; btn.textContent='💾 Kaydet'; }
+};
+
+/* ── QUICK BLOCK / UNBLOCK ── */
+window.blockUser = async function(uid, block) {
+  const msg = block ? 'Bu kullanıcı bloke edilecek. Emin misiniz?' : 'Kullanıcının engeli kaldırılacak. Onaylıyor musunuz?';
+  if (!confirm(msg)) return;
+  try {
+    await updateDoc(doc(db, C.users, uid), {isBlocked:block, approved:!block, updatedAt:serverTimestamp()});
+    const idx = allUsers.findIndex(u=>u.uid===uid);
+    if (idx>=0) { allUsers[idx].isBlocked=block; allUsers[idx].approved=!block; }
+    renderUsersTable(allUsers);
+    renderDashboard();
+    toast(block ? '🚫 Kullanıcı bloke edildi' : '✓ Engel kaldırıldı', block?'w':'s');
+  } catch(e) { toast('Hata: '+e.message,'e'); }
+};
+
+/* ── APPROVE MODAL ── */
+window.openApproveModal = function(appId) {
+  const a = allApps.find(x=>x.id===appId);
+  if (!a) return;
+  approvingAppId = appId;
+  $('approveUserName', a.name||'—');
+  $('approveUserEmail', a.email||'');
+  $('approveUserPlan', pLabel(a.plan));
+  // Default license: 1 year
+  const def = new Date(); def.setFullYear(def.getFullYear()+1);
+  document.getElementById('approveLicDate').value = def.toISOString().split('T')[0];
+  document.getElementById('approveAiAccess').checked = ['pro','kurumsal'].includes(a.plan);
+  document.getElementById('approveModal').classList.add('open');
+};
+window.closeApproveModal = function() { document.getElementById('approveModal').classList.remove('open'); approvingAppId=null; };
+
+window.approveApplication = async function() {
+  if (!approvingAppId) return;
+  const a = allApps.find(x=>x.id===approvingAppId);
+  if (!a) return;
+  const btn = document.getElementById('approveBtn');
+  btn.disabled=true; btn.textContent='⏳...';
+
+  const licDate = document.getElementById('approveLicDate').value;
+  const aiOn    = document.getElementById('approveAiAccess').checked;
+
+  try {
+    // 1. Update user doc
+    await updateDoc(doc(db, C.users, a.uid), {
+      approved       : true,
+      isBlocked      : false,
+      plan           : a.plan || 'baslangic',
+      licenseExpiry  : licDate || 'unlimited',
+      isUnlocked     : aiOn,
+      updatedAt      : serverTimestamp(),
+    });
+    // 2. Mark application as approved
+    await updateDoc(doc(db, C.applications, approvingAppId), {
+      status: 'approved', processedAt: serverTimestamp()
+    });
+    // 3. Update local state
+    const idx = allApps.findIndex(x=>x.id===approvingAppId);
+    if (idx>=0) allApps[idx].status='approved';
+    const uIdx = allUsers.findIndex(u=>u.uid===a.uid);
+    if (uIdx>=0) { allUsers[uIdx].approved=true; allUsers[uIdx].isBlocked=false; allUsers[uIdx].plan=a.plan; }
+    renderApplications(); renderUsersTable(allUsers); renderDashboard();
+    closeApproveModal();
+    toast(`${a.name||a.email} onaylandı ✓`,'s');
+  } catch(e) { toast('Hata: '+e.message,'e'); }
+  finally { btn.disabled=false; btn.textContent='✓ Onayla'; }
+};
+
+window.rejectApplication = async function() {
+  if (!approvingAppId) return;
+  if (!confirm('Bu başvuruyu reddetmek istiyor musunuz?')) return;
+  try {
+    await updateDoc(doc(db, C.applications, approvingAppId), {
+      status:'rejected', processedAt:serverTimestamp()
+    });
+    const idx = allApps.findIndex(x=>x.id===approvingAppId);
+    if (idx>=0) allApps[idx].status='rejected';
+    renderApplications(); renderDashboard();
+    closeApproveModal();
+    toast('Başvuru reddedildi','w');
+  } catch(e) { toast('Hata: '+e.message,'e'); }
+};
+
+window.deleteApplication = async function(appId) {
+  if (!confirm('Bu kaydı silmek istiyor musunuz?')) return;
+  try {
+    await deleteDoc(doc(db, C.applications, appId));
+    allApps = allApps.filter(a=>a.id!==appId);
+    renderApplications(); renderDashboard();
+    toast('Silindi','w');
+  } catch(e) { toast('Hata: '+e.message,'e'); }
+};
+
+/* ── DASHBOARD RENDER ── */
+function renderDashboard() {
+  const active  = allUsers.filter(u=>u.approved&&!u.isBlocked).length;
+  const blocked = allUsers.filter(u=>u.isBlocked).length;
+  const aiOwners= allUsers.filter(u=>u.isUnlocked||u.purchases?.ai_module).length;
+  const pending = allApps.filter(a=>a.status==='pending').length;
+  $('kpiActive',  active);
+  $('kpiBlocked', blocked);
+  $('kpiAiOwners',aiOwners);
+  $('kpiPending', pending);
+
+  // Recent apps
+  const ra = document.getElementById('recentApps');
+  const recentA = allApps.slice(0,5);
+  ra.innerHTML = recentA.length ? recentA.map(a=>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.78rem">
+      <div><div style="font-weight:600">${esc(a.name||a.email||'—')}</div><div style="color:var(--muted2);font-size:.7rem">${pLabel(a.plan)}</div></div>
+      <span class="badge ${a.status==='pending'?'badge-yellow':a.status==='approved'?'badge-green':'badge-red'}">${a.status==='pending'?'Bekliyor':a.status==='approved'?'Onaylı':'Reddedildi'}</span>
+    </div>`
+  ).join('') : '<div style="color:var(--muted2);font-size:.78rem">Başvuru yok</div>';
+
+  // Recent users
+  const ru = document.getElementById('recentUsers');
+  const recentU = allUsers.slice(0,5);
+  ru.innerHTML = recentU.length ? recentU.map(u=>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.78rem">
+      <div><div style="font-weight:600">${esc(u.name||'—')}</div><div style="color:var(--muted2);font-size:.7rem;font-family:var(--font-mono)">${esc(u.email||'')}</div></div>
+      <span class="badge ${u.isBlocked?'badge-red':u.approved?'badge-green':'badge-yellow'}">${u.isBlocked?'Bloke':u.approved?'Aktif':'Bekliyor'}</span>
+    </div>`
+  ).join('') : '<div style="color:var(--muted2);font-size:.78rem">Kullanıcı yok</div>';
 }
+
+/* ── NAV ── */
+window.navTo = function(page, el) {
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.main-content .page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('sidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay')?.classList.remove('show');
+};
+window.toggleSidebar = function() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+};
+
+/* ── HELPERS ── */
+function $(id, val) { const e=document.getElementById(id); if(e) e.textContent=val; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function pLabel(p) {
+  return {baslangic:'Başlangıç', pro:'Pro', kurumsal:'Kurumsal', '14gun':'14 Gün'}[p] || p || '—';
+}
+window.toast = function(msg, type='s') {
+  const c=document.getElementById('toastC');
+  const t=document.createElement('div'); t.className=`toast ${type}`;
+  t.innerHTML=(type==='s'?'✓':type==='w'?'⚠':'✕')+' '+esc(msg);
+  c.appendChild(t); setTimeout(()=>t.remove(), 4500);
+};
 </script>
 </body>
 </html>
