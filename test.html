@@ -361,13 +361,7 @@ h1,h2,h3{font-family:var(--font-display);}
 .ls-icon{font-size:2rem;}
 .ls-info h4{font-size:1rem;font-weight:700;margin-bottom:.2rem;}
 .ls-info p{font-size:.82rem;color:var(--muted);}
-.plan-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.875rem;margin-top:1rem;}
-.plan-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all .2s;text-align:center;}
-.plan-card:hover,.plan-card.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface));}
-.plan-card h4{font-size:1rem;font-weight:700;margin-bottom:.4rem;}
-.plan-card .price{font-family:var(--font-display);font-size:1.4rem;color:var(--accent);}
-.plan-card ul{list-style:none;font-size:.78rem;color:var(--muted);margin-top:.5rem;text-align:left;}
-.plan-card ul li::before{content:'✓ ';color:var(--success);}
+/* plan-cards removed */
 
 /* ══ THEME GRID ══ */
 .theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-top:.75rem;}
@@ -406,7 +400,7 @@ h1,h2,h3{font-family:var(--font-display);}
   .sidebar.open{transform:translateX(0);}
   .sidebar-overlay.show{display:block;}
   .page{padding:1rem;padding-top:1.25rem;}
-  .two-col,.form-row,.plan-cards{grid-template-columns:1fr;}
+  .two-col,.form-row{grid-template-columns:1fr;}
   .stat-grid{grid-template-columns:1fr 1fr;}
   .day-checks{grid-template-columns:repeat(2,1fr);}
   .theme-grid{grid-template-columns:1fr;}
@@ -543,7 +537,7 @@ body { font-weight: 500; }
 
 /* ══ PLAN CARDS: responsive fix ══ */
 @media(max-width: 520px) {
-  .plan-cards { grid-template-columns: 1fr; }
+
   .pricing-options { grid-template-columns: 1fr; }
 }
 
@@ -576,6 +570,121 @@ body { font-weight: 500; }
 #aiPriceDisplay{
   font-size:2.25rem !important;
   letter-spacing:-.04em;
+}
+
+/* ══ PRO GATE — locked feature overlay ══ */
+.pro-gate-wrap {
+  position: relative;
+}
+.pro-gate-blur {
+  filter: grayscale(0.85) blur(1.5px);
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+  transition: filter .3s, opacity .3s;
+}
+.pro-gate-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.pro-gate-toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 8px 40px var(--sh);
+  max-width: 320px;
+  width: 90%;
+  pointer-events: all;
+}
+.pro-gate-toast .pgt-icon { font-size: 2rem; margin-bottom: .5rem; }
+.pro-gate-toast h4 {
+  font-family: var(--font-display);
+  font-size: 1rem; font-weight: 800;
+  margin-bottom: .3rem; letter-spacing: -.02em;
+}
+.pro-gate-toast p { font-size: .78rem; color: var(--muted); line-height: 1.55; margin-bottom: .875rem; }
+.pro-gate-btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  background: var(--accent); color: #000;
+  border: none; border-radius: var(--radius-sm);
+  padding: .6rem 1.25rem;
+  font-family: var(--font-display); font-size: .82rem; font-weight: 800;
+  cursor: pointer; transition: all .2s; width: 100%;
+  justify-content: center;
+}
+.pro-gate-btn:hover { opacity: .9; transform: translateY(-1px); }
+
+/* Nav item locked state */
+.nav-item-locked {
+  opacity: 0.45 !important;
+  filter: grayscale(1);
+  position: relative;
+}
+
+/* Plan badge in sidebar */
+.plan-chip {
+  display: inline-flex; align-items: center; gap: .25rem;
+  font-size: .6rem; font-weight: 800; font-family: var(--font-display);
+  padding: .15rem .5rem; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-top: .15rem;
+}
+.plan-chip-free {
+  background: rgba(136,136,160,.12);
+  color: var(--muted);
+  border: 1px solid rgba(136,136,160,.2);
+}
+.plan-chip-pro {
+  background: rgba(200,245,90,.12);
+  color: var(--accent);
+  border: 1px solid rgba(200,245,90,.25);
+}
+
+/* Pro upgrade CTA — sticky bottom bar */
+.pro-upgrade-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: .75rem 1.25rem;
+  padding-bottom: max(.75rem, env(safe-area-inset-bottom));
+  display: flex; align-items: center; justify-content: space-between;
+  gap: .875rem; flex-wrap: wrap;
+  z-index: 90;
+  backdrop-filter: blur(10px);
+  transition: transform .3s;
+}
+.pro-upgrade-bar.hidden { transform: translateY(100%); }
+.pub-left { display: flex; align-items: center; gap: .75rem; }
+.pub-icon { font-size: 1.5rem; }
+.pub-title { font-family: var(--font-display); font-size: .9rem; font-weight: 800; letter-spacing: -.02em; }
+.pub-sub { font-size: .7rem; color: var(--muted); margin-top: .05rem; }
+.pub-btn {
+  background: var(--accent); color: #000;
+  border: none; border-radius: var(--radius-sm);
+  padding: .7rem 1.5rem;
+  font-family: var(--font-display); font-size: .85rem; font-weight: 800;
+  cursor: pointer; transition: all .2s; white-space: nowrap; flex-shrink: 0;
+}
+.pub-btn:hover { opacity: .9; transform: translateY(-1px); }
+
+/* Padding for sticky bar */
+.main-content { padding-bottom: 80px; }
+@media(max-width: 768px) { .main-content { padding-bottom: 85px; } }
+
+/* Pro feature badge on nav */
+.pro-tag {
+  font-size: .55rem; font-weight: 800; font-family: var(--font-display);
+  background: rgba(200,245,90,.12); color: var(--accent);
+  border: 1px solid rgba(200,245,90,.2);
+  padding: .1rem .3rem; border-radius: 3px;
+  margin-left: auto; letter-spacing: .04em; text-transform: uppercase;
 }
 </style>
 </head>
@@ -643,10 +752,10 @@ body { font-weight: 500; }
       <button class="nav-item" onclick="navTo('import',this)"><span class="nav-icon">📤</span> Toplu Yükle</button>
 
       <div class="nav-cat">Analiz</div>
-      <button class="nav-item" onclick="navTo('raporlar',this)"><span class="nav-icon">📈</span> Raporlar</button>
+      <button class="nav-item" onclick="navTo('raporlar',this)"><span class="nav-icon">📈</span> Raporlar <span class="pro-tag">PRO</span></button>
       <button class="nav-item" onclick="navTo('karsilastir',this)"><span class="nav-icon">⚖️</span> Karşılaştır</button>
       <button class="nav-item" id="navAiBtn" onclick="navTo('ai',this)"><span class="nav-icon">🧠</span> Yerel AI Analiz <span id="aiLockBadge" style="font-size:.6rem;background:var(--warn);color:#000;padding:.05rem .3rem;border-radius:3px;margin-left:.3rem;display:none">KİLİTLİ</span></button>
-      <button class="nav-item" onclick="navTo('takvim',this)"><span class="nav-icon">📅</span> Takvim Görünümü</button>
+      <button class="nav-item" onclick="navTo('takvim',this)"><span class="nav-icon">📅</span> Takvim <span class="pro-tag">PRO</span></button>
 
       <div class="nav-cat">Hesap</div>
       <button class="nav-item" onclick="navTo('profil',this)"><span class="nav-icon">👤</span> Profil</button>
@@ -662,6 +771,7 @@ body { font-weight: 500; }
         <div class="user-info">
           <p id="userName">—</p>
           <span id="userBusiness">—</span>
+        <div id="planChip" class="plan-chip plan-chip-free">Free</div>
           <div id="licenseBadge" class="license-badge lb-active" style="display:none"></div>
         </div>
       </div>
@@ -798,6 +908,30 @@ body { font-weight: 500; }
     <!-- ════ RAPORLAR ════ -->
     <div class="page" id="page-raporlar">
       <div class="page-header"><h1>Raporlar</h1><p>Detaylı satış analizleri</p></div>
+      <!-- PRO GATE -->
+      <div id="raporlarGate" style="display:none">
+        <div class="pro-gate-wrap" style="min-height:400px">
+          <div class="pro-gate-blur">
+            <div style="height:400px;background:var(--surface);border-radius:var(--radius);overflow:hidden;padding:1.5rem">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+                <div style="background:var(--surface2);border-radius:var(--radius-sm);height:90px"></div>
+                <div style="background:var(--surface2);border-radius:var(--radius-sm);height:90px"></div>
+              </div>
+              <div style="background:var(--surface2);border-radius:var(--radius-sm);height:180px"></div>
+            </div>
+          </div>
+          <div class="pro-gate-overlay" onclick="goToPurchase()">
+            <div class="pro-gate-toast">
+              <div class="pgt-icon">🔒</div>
+              <h4>Pro Özellik</h4>
+              <p>Detaylı raporlar, aylık/yıllık karşılaştırma ve gün analizi Pro planına dahildir.</p>
+              <button class="pro-gate-btn">⚡ Pro'ya Geç</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- CONTENT (visible when pro) -->
+      <div id="raporlarContent">
       <div class="tabs">
         <button class="tab active" onclick="switchTab('haftalik',this)">📅 Haftalık</button>
         <button class="tab" onclick="switchTab('aylik',this)">🗓 Aylık</button>
@@ -864,6 +998,7 @@ body { font-weight: 500; }
       </div>
     </div>
 
+      </div><!-- /raporlarContent -->
     <!-- ════ KARŞILAŞTIR ════ -->
     <div class="page" id="page-karsilastir">
       <div class="page-header"><h1>Karşılaştırma</h1><p>Yıl bazlı detaylı kıyas</p></div>
@@ -962,6 +1097,26 @@ body { font-weight: 500; }
     <!-- ════ TAKVİM ════ -->
     <div class="page" id="page-takvim">
       <div class="page-header"><h1>📅 Takvim Görünümü</h1><p>Aylık ciro takvimi</p></div>
+      <!-- PRO GATE -->
+      <div id="takvimGate" style="display:none">
+        <div class="pro-gate-wrap" style="min-height:360px">
+          <div class="pro-gate-blur">
+            <div style="height:360px;background:var(--surface);border-radius:var(--radius);padding:1.25rem;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;align-content:start">
+              ${Array.from({length:35},(_,i)=>`<div style="background:var(--surface2);border-radius:6px;height:40px;opacity:${0.3+Math.random()*.5}"></div>`).join('')}
+            </div>
+          </div>
+          <div class="pro-gate-overlay" onclick="goToPurchase()">
+            <div class="pro-gate-toast">
+              <div class="pgt-icon">📅</div>
+              <h4>Pro Özellik</h4>
+              <p>Takvim görünümü ve kapalı gün analizi Pro planına dahildir.</p>
+              <button class="pro-gate-btn">⚡ Pro'ya Geç</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- CONTENT -->
+      <div id="takvimContent">
       <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap">
         <button class="btn-secondary" onclick="calNav(-1)">←</button>
         <div style="font-family:var(--font-display);font-size:1.2rem;flex:1;text-align:center" id="calTitle">—</div>
@@ -979,92 +1134,70 @@ body { font-weight: 500; }
 
     <!-- ════ SATIN AL / PRICING ════ -->
     <div class="page" id="page-satin-al">
-      <div class="page-header"><h1>💳 Satın Al</h1><p>Plan ve ek özellikler</p></div>
+      <div class="page-header"><h1>⚡ Pro'ya Geç</h1><p>Tüm özelliklerin kilidini aç</p></div>
 
-      <!-- Current status -->
-      <div class="card" style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
-        <div style="flex:1">
-          <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.35rem">Mevcut Durum</div>
-          <div id="purchaseCurrentStatus" style="font-size:.9rem">Yükleniyor...</div>
+      <!-- Current plan status -->
+      <div id="purchaseCurrentStatus" style="margin-bottom:1.25rem"></div>
+
+      <!-- FREE vs PRO comparison -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:1.5rem">
+        <!-- FREE -->
+        <div class="card" style="border:2px solid var(--border);position:relative">
+          <div style="font-size:.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Mevcut Plan</div>
+          <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;margin-bottom:.875rem">Free</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.8rem">
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> Ciro girişi</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> Özet dashboard</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> CSV dışa aktarım</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted)">✕</span> <span style="color:var(--muted)">Raporlar</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted)">✕</span> <span style="color:var(--muted)">Takvim</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted)">✕</span> <span style="color:var(--muted)">AI Analiz</span></div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted)">✕</span> <span style="color:var(--muted)">PDF dışa aktarım</span></div>
+          </div>
         </div>
-        <button class="btn-secondary" onclick="restorePurchases()" style="white-space:nowrap">↺ Satın Alımları Geri Yükle</button>
+        <!-- PRO -->
+        <div class="card" style="border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 4%,var(--surface));position:relative">
+          <div style="font-size:.65rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">⚡ Pro Plan</div>
+          <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;margin-bottom:.875rem;color:var(--accent)">Pro</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.8rem">
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> Ciro girişi</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> Özet dashboard</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> CSV dışa aktarım</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> Tüm Raporlar</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> Takvim Görünümü</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> AI Analiz Modülü</div>
+            <div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--success)">✓</span> PDF dışa aktarım</div>
+          </div>
+        </div>
       </div>
 
-      <!-- AI MODULE PAYWALL CARD -->
-      <div class="paywall-card" style="margin-bottom:1.5rem">
-        <div class="paywall-hero">
-          <div class="paywall-hero-icon">🧠</div>
-          <h2>AI Analiz Modülü</h2>
-          <p>İşletmenizi veriyle yönetin. Yapay zeka destekli tahminler ve derinlemesine analizlerle bir adım önde olun.</p>
-        </div>
-        <div class="paywall-features">
-          <div class="pf-item"><div class="pf-icon">🔮</div><div class="pf-text"><strong>30 Günlük Projeksiyon</strong><span>Mevcut verilerinizle ay sonu ciro tahmini yapın</span></div></div>
-          <div class="pf-item"><div class="pf-icon">📈</div><div class="pf-text"><strong>Trend Analizi</strong><span>Yükselen ve düşen dönemleri erken tespit edin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">📅</div><div class="pf-text"><strong>Gün/Hafta Dağılımı</strong><span>En verimli gün ve saatleri keşfedin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">🏪</div><div class="pf-text"><strong>Kapalı Gün Zekası</strong><span>Tatil etkisini hesaplamalara dahil edin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">⚡</div><div class="pf-text"><strong>Anında Aktivasyon</strong><span>Ödeme onaylanınca hemen kullanıma açılır</span></div></div>
-        </div>
-        <div class="paywall-pricing">
-          <div id="aiModuleBuySection">
-            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.25rem;text-align:center;margin-bottom:1rem">
-              <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Tek Seferlik Ödeme</div>
-              <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--accent)" id="aiPriceDisplay">₺299</div>
-              <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Sınırsız kullanım · Anında aktivasyon</div>
-            </div>
-            <button class="paywall-cta" id="buyAiBtn" onclick="purchaseAiModule()">
-              🔓 AI Modülünü Satın Al
-            </button>
-          </div>
-          <div id="aiModuleOwnedSection" style="display:none">
-            <div style="text-align:center;padding:.75rem;background:rgba(78,219,143,.08);border:1px solid rgba(78,219,143,.2);border-radius:var(--radius-sm)">
-              <span style="color:var(--success);font-weight:700">✓ AI Modülü Aktif</span>
-              <div style="font-size:.75rem;color:var(--muted);margin-top:.25rem">Satın alındı — sınırsız kullanım</div>
-            </div>
-          </div>
-          <div class="paywall-note">
-            🔒 Güvenli ödeme · Google Play Billing<br>
+      <!-- BUY SECTION -->
+      <div id="aiModuleBuySection">
+        <div class="card" style="border:1px solid rgba(200,245,90,.25);background:color-mix(in srgb,var(--accent) 4%,var(--surface));text-align:center;padding:1.75rem">
+          <div style="font-size:.65rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem">Tek Seferlik Ödeme</div>
+          <div style="font-family:var(--font-display);font-size:2.25rem;font-weight:900;letter-spacing:-.04em;color:var(--accent)" id="aiPriceDisplay">₺299</div>
+          <div style="font-size:.75rem;color:var(--muted);margin:.4rem 0 1.25rem">Sınırsız kullanım · Tüm Pro özellikler · Anında aktivasyon</div>
+          <button class="paywall-cta" id="buyAiBtn" onclick="purchaseAiModule()" style="max-width:380px;margin:0 auto">
+            ⚡ Pro'ya Geç — Hemen Satın Al
+          </button>
+          <div class="paywall-note" style="margin-top:.875rem">
+            🔒 Güvenli ödeme · Firebase ile doğrulama<br>
             <button class="paywall-restore" onclick="restorePurchases()">Önceki satın alımı geri yükle</button>
           </div>
         </div>
       </div>
 
-      <!-- APP PLAN SECTION -->
-      <div style="font-family:var(--font-display);font-size:1.2rem;margin-bottom:1rem">📱 Uygulama Planı</div>
-      <div class="plan-cards" id="planCards">
-        <div class="plan-card" onclick="selectPlan('baslangic',this)">
-          <h4>Başlangıç</h4>
-          <div class="price">Ücretsiz</div>
-          <ul><li>14 gün deneme</li><li>Temel raporlar</li><li>CSV dışa aktarım</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('pro',this)">
-          <h4>Pro</h4>
-          <div class="price">₺499/ay</div>
-          <ul><li>Sınırsız kayıt</li><li>Gelişmiş raporlar</li><li>PDF dışa aktarım</li><li>AI Modülü dahil</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('kurumsal',this)">
-          <h4>Kurumsal</h4>
-          <div class="price">₺999/ay</div>
-          <ul><li>Tüm Pro özellikleri</li><li>Öncelikli destek</li><li>Çoklu işletme</li></ul>
-        </div>
-      </div>
-      <div style="margin-top:1.25rem">
-        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem" id="selectedPlanNote">Bir paket seçin</div>
-        <button class="btn-save" id="applyPlanBtn" disabled onclick="applyPlan()">📤 Başvuruyu Gönder</button>
-      </div>
-
-      <!-- PLAY STORE INFO -->
-      <div class="card" style="margin-top:1.5rem">
-        <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.75rem">📦 Google Play Store Bilgisi</div>
-        <div class="manifest-box">
-          <strong>Uygulama ID:</strong> <code>com.cirolog.app</code><br>
-          <strong>Billing SKU (AI Modül):</strong> <code>ai_module_lifetime</code><br>
-          <strong>Subscription SKU:</strong> <code>ai_module_monthly</code><br>
-          <strong>Play Billing Lib:</strong> <code>6.x.x</code><br>
-          <span style="color:var(--muted);font-size:.78rem">Gerçek Play Billing entegrasyonu için Android Native veya Flutter/React Native gereklidir. Bu web versiyonu Firebase üzerinden lisans yönetimi yapar.</span>
+      <!-- ALREADY PRO SECTION -->
+      <div id="aiModuleOwnedSection" style="display:none">
+        <div class="card" style="border:1px solid rgba(78,219,143,.25);background:rgba(78,219,143,.04);text-align:center;padding:1.75rem">
+          <div style="font-size:2.5rem;margin-bottom:.75rem">🎉</div>
+          <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:800;color:var(--success);margin-bottom:.35rem">Pro Plan Aktif</div>
+          <div style="font-size:.8rem;color:var(--muted)">Tüm özellikler kullanımınıza açık.</div>
         </div>
       </div>
     </div><!-- /page-satin-al -->
 
+      </div><!-- /takvimContent -->
     <!-- ════ PROFİL ════ -->
     <div class="page" id="page-profil">
       <div class="page-header"><h1>👤 Profil Ayarları</h1><p>Ad, e-posta ve şifre güncelleme</p></div>
@@ -1174,6 +1307,18 @@ body { font-weight: 500; }
   </div><!-- /main-content -->
 </div><!-- /screenApp -->
 
+<!-- ══ PRO UPGRADE STICKY BAR ══ -->
+<div class="pro-upgrade-bar hidden" id="proUpgradeBar">
+  <div class="pub-left">
+    <div class="pub-icon">⚡</div>
+    <div>
+      <div class="pub-title">Pro'ya Geç</div>
+      <div class="pub-sub">Raporlar, Takvim ve AI Analiz açılsın</div>
+    </div>
+  </div>
+  <button class="pub-btn" onclick="goToPurchase()">Satın Al — <span id="pubPrice">₺299</span></button>
+</div>
+
 <script type="module">
 import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
@@ -1201,10 +1346,9 @@ const C={
 /* ── State ── */
 let cu=null,cp=null,AR=[],SETTINGS={closedDays:[],closedPeriods:[]};
 let selectedPlan=null,calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
-let aiUnlocked=false;
-let PERMS={ai:false,calendar:true,reports:true,export:true};  // feature flags from admin
-let APP_CFG={aiPrice:'299',appPrice:'0',currency:'₺'};       // prices from Firebase
-let userUnsub=null;  // onSnapshot unsubscribe handle
+let isPro=false;        // Single source of truth: free vs pro
+let APP_CFG={aiPrice:'299',currency:'₺'};
+let userUnsub=null;
 
 const CLR=['#c8f55a','#7b6ff0','#4edb8f','#f5c842','#ff5e5e','#58c4f5','#f58c42','#e87af5'];
 const MON=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
@@ -1286,7 +1430,7 @@ window.doLogin=async function(){
 };
 window.doLogout=async function(){
   if(userUnsub){userUnsub();userUnsub=null;}
-  await signOut(auth);AR=[];cu=null;cp=null;aiUnlocked=false;
+  await signOut(auth);AR=[];cu=null;cp=null;isPro=false;
 };
 
 /* ── INIT ── */
@@ -1299,7 +1443,7 @@ async function init(){
   document.getElementById('entryDate').value=ts;
   $('userName',cp.name||'');$('userBusiness',cp.businessName||'');
   $('userAvatar',(cp.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase());
-  $('settingEmail',cp.email||cu.email||'');$('settingPlan',pLabel(cp.plan));
+  $('settingEmail',cp.email||cu.email||'');$('settingPlan', isPro ? '⚡ Pro' : 'Free');
   $('settingDate',cp.createdAt?.toDate?cp.createdAt.toDate().toLocaleDateString('tr-TR'):'—');
   if(cp.monthlyGoal)document.getElementById('goalInput').value=cp.monthlyGoal;
   // profil
@@ -1312,7 +1456,6 @@ async function init(){
   await loadSettings();
   await loadRecs();
   renderDash();
-  renderDashAiGate();
   buildClosedDayUI();
   renderPeriodList();
   renderCalendar();
@@ -1548,7 +1691,7 @@ function renderDash(){
     setTimeout(()=>{const b=document.getElementById('goalBar');if(b)b.style.width=pct+'%';},200);
   }
   renderWeekChart();renderYearChart();
-  if(aiUnlocked)renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m);
+  if(isPro)renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m);
 }
 
 /* ── DASH INSIGHTS (Local AI) ── */
@@ -1909,22 +2052,9 @@ function getLicenseStatus(){
 }
 
 
-window.selectPlan=function(plan,el){
-  selectedPlan=plan;document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');
-  document.getElementById('selectedPlanNote').textContent=`"${pLabel(plan)}" paketi seçildi`;
-  document.getElementById('applyPlanBtn').disabled=false;
-};
-window.applyPlan=async function(){
-  if(!selectedPlan){toast('Paket seçin','w');return;}
-  const btn=document.getElementById('applyPlanBtn');btn.disabled=true;btn.textContent='⏳ Gönderiliyor...';
-  try{
-    await addDoc(collection(db,C.applications),{
-      uid:cu.uid,name:cp.name||'',email:cp.email||cu.email||'',plan:selectedPlan,
-      businessName:cp.businessName||'',appliedAt:serverTimestamp(),status:'pending'
-    });
-    toast(`"${pLabel(selectedPlan)}" başvurusu gönderildi! Admin onaylayacak.`,'s');
-  }catch(e){toast('Hata: '+e.message,'e');btn.disabled=false;btn.textContent='Başvuruyu Gönder';}
-};
+/* selectPlan removed */
+
+/* applyPlan removed */
 
 /* ── PDF / DIŞA AKTAR ── */
 function renderExportPreview(){
@@ -2100,137 +2230,101 @@ window.saveGoal=async function(){
 const SKU = { AI_LIFETIME: 'ai_module_lifetime' }; // single purchase only
 let selectedPricingType = 'one';
 
-/* ── applyPermissions: called on init + every onSnapshot update ── */
+/* ── applyPermissions: single isPro flag controls everything ── */
 function applyPermissions(data) {
   if (!data) return;
 
-  // ── AI unlock: isUnlocked flag OR direct purchase OR plan includes it ──
-  const hasDirect  = !!data.purchases?.ai_module;
-  const planOk     = ['pro','kurumsal'].includes(data.plan);
-  const licValid   = data.licenseExpiry === 'unlimited' ||
-                     (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
-  const adminFlag  = data.isUnlocked === true;
+  // PRO = admin unlocked OR purchased OR pro/kurumsal plan with valid license
+  const adminFlag = data.isUnlocked === true;
+  const purchased = !!data.purchases?.ai_module;
+  const planOk    = ['pro','kurumsal'].includes(data.plan);
+  const licValid  = data.licenseExpiry === 'unlimited' ||
+                    (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
 
-  aiUnlocked = adminFlag || hasDirect || (planOk && licValid);
+  isPro = adminFlag || purchased || (planOk && licValid);
 
-  // ── Feature flags from admin (permissions object or defaults) ──
-  const perms = data.permissions || {};
-  PERMS = {
-    ai       : aiUnlocked,
-    calendar : perms.calendar !== false,   // default ON
-    reports  : perms.reports  !== false,   // default ON
-    export   : perms.export   !== false,   // default ON
-  };
-
-  // Apply to UI
-  renderAiGate();
-  renderDashAiGate();
+  renderAllGates();
   renderPurchaseStatus();
-  applyFeatureFlags();
-
-  // Sync price from Firebase app settings if available
-  const buyBtn = document.getElementById('buyAiBtn');
-  if (buyBtn && !aiUnlocked) {
-    buyBtn.textContent = `🔓 AI Modülünü Satın Al — ${APP_CFG.currency}${APP_CFG.aiPrice}`;
-  }
 }
 
-/* ── renderAiGate: show/hide locked or unlocked AI page view ── */
-function renderAiGate() {
-  const locked   = document.getElementById('aiLockedView');
-  const unlocked = document.getElementById('aiUnlockedView');
-  const badge    = document.getElementById('aiLockBadge');
-  if (locked)   locked.style.display   = aiUnlocked ? 'none' : 'block';
-  if (unlocked) unlocked.style.display = aiUnlocked ? 'block' : 'none';
-  if (badge)    badge.style.display    = aiUnlocked ? 'none' : 'inline';
-}
-
-/* ── applyFeatureFlags: show/hide nav items based on PERMS ── */
-function applyFeatureFlags() {
-  // Calendar nav
-  const calBtn = document.querySelector('[onclick*="takvim"]');
-  if (calBtn) {
-    if (!PERMS.calendar) {
-      calBtn.style.opacity = '.45';
-      calBtn.title = 'Bu özellik planınıza dahil değil';
+/* ── renderAllGates: single function that updates ALL pro-gated UI ── */
+function renderAllGates() {
+  // 1. Nav items — dim locked ones
+  const proPages = ['raporlar','takvim','ai'];
+  proPages.forEach(page => {
+    const btn = document.querySelector(`[onclick*="${page}"]`);
+    if (!btn) return;
+    if (!isPro) {
+      btn.classList.add('nav-item-locked');
+      btn.title = 'Bu özellikler satın alınmalıdır';
     } else {
-      calBtn.style.opacity = '';
-      calBtn.title = '';
+      btn.classList.remove('nav-item-locked');
+      btn.title = '';
     }
-  }
-  // Reports nav
-  const repBtn = document.querySelector('[onclick*="raporlar"]');
-  if (repBtn) {
-    if (!PERMS.reports) {
-      repBtn.style.opacity = '.45';
-      repBtn.title = 'Bu özellik planınıza dahil değil';
-    } else {
-      repBtn.style.opacity = '';
-      repBtn.title = '';
-    }
-  }
-  // Export nav
-  const expBtn = document.querySelector('[onclick*="ihracat"]');
-  if (expBtn) {
-    if (!PERMS.export) {
-      expBtn.style.opacity = '.45';
-      expBtn.title = 'Bu özellik planınıza dahil değil';
-    } else {
-      expBtn.style.opacity = '';
-      expBtn.title = '';
-    }
-  }
-}
+  });
 
-/* Gated navTo: check feature permissions before showing page */
-function checkFeatureAccess(page) {
-  const gateMap = {takvim:'calendar', raporlar:'reports', ihracat:'export', ai:'ai'};
-  const key = gateMap[page];
-  if (key && PERMS[key] === false) {
-    toast('Bu özellik planınıza dahil değil','w');
-    return false;
+  // 2. AI Analiz page gate
+  const aiLocked   = document.getElementById('aiLockedView');
+  const isPro = document.getElementById('aiModuleOwnedSection');
+  const aiLockBadge= document.getElementById('aiLockBadge');
+  if (aiLocked)    aiLocked.style.display   = isPro ? 'none'  : 'block';
+  if (isPro)  isPro.style.display = isPro ? 'block' : 'none';
+  if (aiLockBadge) aiLockBadge.style.display= isPro ? 'none'  : 'inline';
+
+  // 3. Raporlar page gate
+  const rGate    = document.getElementById('raporlarGate');
+  const rContent = document.getElementById('raporlarContent');
+  if (rGate)    rGate.style.display    = isPro ? 'none'  : 'block';
+  if (rContent) rContent.style.display = isPro ? 'block' : 'none';
+
+  // 4. Takvim page gate
+  const tGate    = document.getElementById('takvimGate');
+  const tContent = document.getElementById('takvimContent');
+  if (tGate)    tGate.style.display    = isPro ? 'none'  : 'block';
+  if (tContent) tContent.style.display = isPro ? 'block' : 'none';
+
+  // 5. Dashboard AI insight
+  const dashCard   = document.getElementById('dashInsightCard');
+  const dashLocked = document.getElementById('dashAiLocked');
+  if (dashCard)   dashCard.style.display   = isPro ? 'block' : 'none';
+  if (dashLocked) dashLocked.style.display = isPro ? 'none'  : 'block';
+
+  // 6. Pro upgrade sticky bar
+  const bar = document.getElementById('proUpgradeBar');
+  if (bar) bar.classList.toggle('hidden', isPro);
+
+  // 7. Plan chip in sidebar
+  const chip = document.getElementById('planChip');
+  if (chip) {
+    chip.textContent = isPro ? '⚡ Pro' : 'Free';
+    chip.className = isPro ? 'plan-chip plan-chip-pro' : 'plan-chip plan-chip-free';
   }
-  return true;
-}
 
-/* ── renderDashAiGate: dashboard insight box gate ── */
-function renderDashAiGate() {
-  const insightCard = document.getElementById('dashInsightCard');
-  const lockedCard  = document.getElementById('dashAiLocked');
-  if (!insightCard || !lockedCard) return;
-  insightCard.style.display = aiUnlocked ? 'block' : 'none';
-  lockedCard.style.display  = aiUnlocked ? 'none'  : 'block';
-}
-
-/* ── renderPurchaseStatus: update Satın Al page state ── */
-function renderPurchaseStatus() {
-  // Dynamic price from Firebase
+  // 8. Sync price display
   const priceEl = document.getElementById('aiPriceDisplay');
   if (priceEl) priceEl.textContent = APP_CFG.currency + APP_CFG.aiPrice;
+  const pubPrice = document.getElementById('pubPrice');
+  if (pubPrice) pubPrice.textContent = APP_CFG.currency + APP_CFG.aiPrice;
   const buyBtn = document.getElementById('buyAiBtn');
-  if (buyBtn && !aiUnlocked) {
-    buyBtn.textContent = `🔓 AI Modülünü Satın Al — ${APP_CFG.currency}${APP_CFG.aiPrice}`;
-  }
+  if (buyBtn) buyBtn.textContent = `⚡ Pro'ya Geç — Hemen Satın Al`;
+}
 
+/* ── renderAiGate / renderDashAiGate: handled by renderAllGates ── */
+function renderAiGate(){renderAllGates();}
+function renderDashAiGate(){renderAllGates();}
+
+/* ── renderPurchaseStatus ── */
+function renderPurchaseStatus() {
   const el = document.getElementById('purchaseCurrentStatus');
-  if (!el) return;
-
-  if (aiUnlocked) {
-    const src = cp?.isUnlocked ? 'Admin' : cp?.purchases?.ai_module ? 'Satın Alım' : 'Plan';
-    el.innerHTML = `<span class="purchase-status ps-owned">✓ AI Modülü Aktif</span>
-      <span style="font-size:.75rem;color:var(--muted);margin-left:.5rem">Kaynak: ${src}</span>`;
-    const buySection   = document.getElementById('aiModuleBuySection');
-    const ownedSection = document.getElementById('aiModuleOwnedSection');
-    if (buySection)   buySection.style.display   = 'none';
-    if (ownedSection) ownedSection.style.display = 'block';
-  } else {
-    el.innerHTML = `<span class="purchase-status ps-not-owned">⚠ AI Modülü kilitli</span>
-      <span style="font-size:.75rem;color:var(--muted);margin-left:.5rem">Satın alarak anında aktive edin</span>`;
-    const buySection   = document.getElementById('aiModuleBuySection');
-    const ownedSection = document.getElementById('aiModuleOwnedSection');
-    if (buySection)   buySection.style.display   = 'block';
-    if (ownedSection) ownedSection.style.display = 'none';
+  if (el) {
+    el.innerHTML = isPro
+      ? `<div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(78,219,143,.08);border:1px solid rgba(78,219,143,.2);border-radius:var(--radius-sm);padding:.55rem 1rem;font-size:.85rem;font-weight:700;color:var(--success)">⚡ Pro Plan Aktif</div>`
+      : `<div style="display:inline-flex;align-items:center;gap:.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.55rem 1rem;font-size:.85rem;font-weight:700;color:var(--muted)">Free Plan — Pro özellikleri kilitli 🔒</div>`;
   }
+  const buySection   = document.getElementById('aiModuleBuySection');
+  const ownedSection = document.getElementById('aiModuleOwnedSection');
+  if (buySection)   buySection.style.display   = isPro ? 'none'  : 'block';
+  if (ownedSection) ownedSection.style.display = isPro ? 'block' : 'none';
 }
 
 /* ── selectPricing — kept for compatibility (single plan now) ── */
@@ -2286,14 +2380,14 @@ Devam etmek istiyor musunuz?
     // Update local state immediately (optimistic)
     if (!cp.purchases) cp.purchases = {};
     cp.purchases.ai_module = new Date().toISOString();
-    aiUnlocked = true;
+    isPro = true;
 
     renderAiGate();
     renderPurchaseStatus();
     renderDashAiGate();
 
     toast('🎉 AI Modülü aktifleştirildi! Hemen kullanabilirsiniz.','s');
-    setTimeout(() => navTo('ai', document.getElementById('navAiBtn')), 1200);
+    setTimeout(() => { navTo('dashboard', document.querySelector('[onclick*="dashboard"]')); renderAllGates(); }, 1200);
   } catch(e) {
     toast('Aktivasyon hatası: ' + e.message,'e');
     btn.disabled = false;
@@ -2307,8 +2401,8 @@ Devam etmek istiyor musunuz?
 window.restorePurchases = async function() {
   toast('Satın alımlar kontrol ediliyor...','');
   await checkLicenseStatus();
-  toast(aiUnlocked ? '✓ Satın alımlar geri yüklendi' : 'Kayıtlı satın alım bulunamadı',
-        aiUnlocked ? 's' : 'w');
+  toast(isPro ? '✓ Satın alımlar geri yüklendi' : 'Kayıtlı satın alım bulunamadı',
+        isPro ? 's' : 'w');
 };
 
 /* ══ GOOGLE PLAY MANIFEST NOTES (for native wrapper)
@@ -2323,6 +2417,12 @@ window.restorePurchases = async function() {
    - In-app products: ai_module_lifetime (managed product)
    - (subscription products removed — single purchase only)
 ═══════════════════════════════════════════════════ */
+
+/* ── goToPurchase: navigate to purchase page ── */
+window.goToPurchase = function() {
+  const btn = document.querySelector('[onclick*="satin-al"]');
+  navTo('satin-al', btn);
+};
 
 /* ── HELPERS ── */
 function fmt(n){return Number(n).toLocaleString('tr-TR');}
