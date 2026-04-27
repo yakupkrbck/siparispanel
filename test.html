@@ -911,13 +911,27 @@ body { font-weight: 500; }
       <!-- PRO GATE -->
       <div id="raporlarGate" style="display:none">
         <div class="pro-gate-wrap" style="min-height:400px">
-          <div class="pro-gate-blur">
-            <div style="height:400px;background:var(--surface);border-radius:var(--radius);overflow:hidden;padding:1.5rem">
+          <div class="pro-gate-blur" style="pointer-events:none;user-select:none">
+            <div style="height:400px;background:var(--surface);border-radius:var(--radius);overflow:hidden;padding:1.5rem;pointer-events:none">
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
-                <div style="background:var(--surface2);border-radius:var(--radius-sm);height:90px"></div>
-                <div style="background:var(--surface2);border-radius:var(--radius-sm);height:90px"></div>
+                <div style="background:var(--surface2);border-radius:var(--radius-sm);height:90px;padding:.75rem">
+                  <div style="width:60%;height:10px;background:var(--border);border-radius:4px;margin-bottom:.5rem"></div>
+                  <div style="width:40%;height:24px;background:var(--border);border-radius:4px"></div>
+                </div>
+                <div style="background:var(--surface2);border-radius:var(--radius-sm);height:90px;padding:.75rem">
+                  <div style="width:60%;height:10px;background:var(--border);border-radius:4px;margin-bottom:.5rem"></div>
+                  <div style="width:40%;height:24px;background:var(--border);border-radius:4px"></div>
+                </div>
               </div>
-              <div style="background:var(--surface2);border-radius:var(--radius-sm);height:180px"></div>
+              <div style="background:var(--surface2);border-radius:var(--radius-sm);height:180px;display:flex;align-items:flex-end;gap:6px;padding:1rem">
+                <div style="flex:1;height:40%;background:var(--border);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:70%;background:var(--border);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:55%;background:var(--border);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:85%;background:var(--border);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:60%;background:var(--border);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:90%;background:var(--border);border-radius:4px 4px 0 0"></div>
+                <div style="flex:1;height:45%;background:var(--border);border-radius:4px 4px 0 0"></div>
+              </div>
             </div>
           </div>
           <div class="pro-gate-overlay" onclick="goToPurchase()">
@@ -1100,9 +1114,8 @@ body { font-weight: 500; }
       <!-- PRO GATE -->
       <div id="takvimGate" style="display:none">
         <div class="pro-gate-wrap" style="min-height:360px">
-          <div class="pro-gate-blur">
-            <div style="height:360px;background:var(--surface);border-radius:var(--radius);padding:1.25rem;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;align-content:start">
-              ${Array.from({length:35},(_,i)=>`<div style="background:var(--surface2);border-radius:6px;height:40px;opacity:${0.3+Math.random()*.5}"></div>`).join('')}
+          <div class="pro-gate-blur" style="pointer-events:none;user-select:none">
+            <div style="height:360px;background:var(--surface);border-radius:var(--radius);padding:1.25rem;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;align-content:start"><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.3"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.39"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.48"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.57"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.66"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.75"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.84"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.3"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.39"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.48"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.57"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.66"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.75"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.84"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.3"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.39"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.48"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.57"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.66"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.75"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.84"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.3"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.39"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.48"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.57"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.66"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.75"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.84"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.3"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.39"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.48"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.57"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.66"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.75"></div><div style="background:var(--surface2);border-radius:6px;height:40px;opacity:0.84"></div></div>`).join('')}
             </div>
           </div>
           <div class="pro-gate-overlay" onclick="goToPurchase()">
@@ -1460,6 +1473,7 @@ async function init(){
   renderPeriodList();
   renderCalendar();
   renderExportPreview();
+  renderAllGates();
   renderPurchaseStatus();
 }
 
@@ -2400,7 +2414,6 @@ Devam etmek istiyor musunuz?
    Here: re-check Firebase ── */
 window.restorePurchases = async function() {
   toast('Satın alımlar kontrol ediliyor...','');
-  await checkLicenseStatus();
   toast(isPro ? '✓ Satın alımlar geri yüklendi' : 'Kayıtlı satın alım bulunamadı',
         isPro ? 's' : 'w');
 };
