@@ -369,7 +369,13 @@
     function fmt(n){return Number(n).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });}
     function $(id,val){const e=document.getElementById(id);if(e)e.textContent=val;}
     function errTR(code){
-      const m={'auth/invalid-credential':'E-posta veya şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Hatalı şifre','auth/email-already-in-use':'Bu e-posta zaten kullanımda.'};
+      const m={
+        'auth/invalid-credential':'E-posta veya şifre hatalı',
+        'auth/user-not-found':'Kullanıcı bulunamadı',
+        'auth/wrong-password':'Hatalı şifre',
+        'auth/email-already-in-use':'Bu e-posta zaten kullanımda.',
+        'auth/network-request-failed':'Ağ bağlantısı engellendi. Lütfen VPN veya Reklam Engelleyici eklentinizi kapatıp tekrar deneyin.'
+      };
       return m[code]||'Bir hata oluştu: ' + code;
     }
 
@@ -539,6 +545,7 @@
   </script>
 </body>
 </html>
+
 
 
 ```
