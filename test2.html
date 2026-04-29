@@ -15,14 +15,13 @@
   <style>
     /* ══ TEMALAR VE MODERN RENK PALETİ ══ */
     :root {
-      /* Derin Antrasit ve Turuncu Paleti */
       --bg: #121418; 
       --surface: rgba(30, 33, 40, 0.65); 
       --surface-hover: rgba(45, 49, 58, 0.8);
       --border: rgba(255, 255, 255, 0.08); 
       --border-light: rgba(255, 255, 255, 0.15);
       
-      --accent: #FF7A00; /* Enerjik Turuncu */
+      --accent: #FF7A00; 
       --accent-hover: #E06A00;
       --accent-alpha: rgba(255, 122, 0, 0.15);
       
@@ -30,9 +29,7 @@
       --muted: #9BA1B0;
       
       --danger: #ff4455; 
-      --danger-alpha: rgba(255, 68, 85, 0.15);
       --success: #3dd68c; 
-      --success-alpha: rgba(61, 214, 140, 0.15);
       --warn: #f5c842; 
       
       --font-body: 'Inter', sans-serif; 
@@ -40,8 +37,6 @@
       
       --radius: 16px; 
       --radius-sm: 8px; 
-      --radius-full: 999px;
-      
       --sidebar-w: 260px;
       --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -94,26 +89,17 @@
       justify-content: center;
       gap: 8px;
     }
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
     .btn-icon {
       background: var(--surface-hover);
       color: var(--text);
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       border: 1px solid var(--border);
     }
-    .btn-icon:hover {
-      border-color: var(--border-light);
-      background: rgba(255,255,255,0.1);
-    }
+    .btn-icon:hover { background: rgba(255,255,255,0.1); }
 
     input, select {
       width: 100%;
@@ -126,355 +112,101 @@
       font-size: 0.95rem;
       transition: var(--transition);
     }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent);
-      background: rgba(0,0,0,0.4);
-    }
+    input:focus { outline: none; border-color: var(--accent); background: rgba(0,0,0,0.4); }
 
-    /* ══ GÖRÜNÜM YÖNETİMİ ══ */
     .view { display: none; opacity: 0; transition: opacity 0.4s ease; }
     .view.active { display: flex; opacity: 1; }
 
     /* ══ AUTH EKRANI ══ */
-    #auth-screen {
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      flex-direction: column;
-    }
-    
-    .auth-card {
-      width: 100%;
-      max-width: 420px;
-      padding: 40px 32px;
-      text-align: center;
-    }
-    
-    .auth-logo {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+    #auth-screen, #register-screen { min-height: 100vh; align-items: center; justify-content: center; padding: 20px; flex-direction: column; }
+    .auth-card { width: 100%; max-width: 400px; padding: 40px 32px; text-align: center; }
+    .auth-logo { font-family: var(--font-display); font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
     .auth-logo span { color: var(--accent); }
-    
-    .auth-desc {
-      color: var(--muted);
-      margin-bottom: 32px;
-      font-size: 0.95rem;
-    }
-
+    .auth-desc { color: var(--muted); margin-bottom: 32px; font-size: 0.95rem; }
     .form-group { margin-bottom: 16px; text-align: left; }
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 500;
-    }
+    .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+    .auth-link { margin-top: 15px; font-size: 0.85rem; color: var(--muted); }
+    .auth-link a { color: var(--accent); text-decoration: none; font-weight: 500; }
 
-    /* ══ ANA UYGULAMA DÜZENİ ══ */
-    #app-screen {
-      width: 100%;
-      min-height: 100vh;
-      display: flex;
-    }
-
-    /* SIDEBAR (Masaüstü & Mobil Menü) */
+    /* ══ ANA UYGULAMA ══ */
+    #app-screen { width: 100%; min-height: 100vh; display: flex; }
+    
     .sidebar {
-      width: var(--sidebar-w);
-      height: 100vh;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 300;
-      display: flex;
-      flex-direction: column;
-      border-right: 1px solid var(--border);
-      border-radius: 0;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
+      width: var(--sidebar-w); height: 100vh; position: fixed; top: 0; left: 0; z-index: 300;
+      display: flex; flex-direction: column; border-right: 1px solid var(--border); border-radius: 0;
+      transform: translateX(-100%); transition: transform 0.3s ease;
     }
     .sidebar.open { transform: translateX(0); }
-    
-    @media (min-width: 1024px) {
-      .sidebar { transform: translateX(0); }
-    }
+    @media (min-width: 1024px) { .sidebar { transform: translateX(0); } }
 
-    .sidebar-header {
-      padding: 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .sidebar-logo {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
+    .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-logo { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
     .sidebar-logo span { color: var(--accent); }
     
-    .nav-links {
-      flex: 1;
-      padding: 24px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: var(--radius-sm);
-      color: var(--muted);
-      text-decoration: none;
-      font-weight: 500;
-      transition: var(--transition);
-      cursor: pointer;
-    }
+    .nav-links { flex: 1; padding: 24px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius-sm); color: var(--muted); font-weight: 500; transition: var(--transition); cursor: pointer; }
     .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-    .nav-item.active {
-      color: var(--accent);
-      background: var(--accent-alpha);
-      border-right: 3px solid var(--accent);
-    }
-    
-    .sidebar-footer {
-      padding: 24px 16px;
-      border-top: 1px solid var(--border);
-    }
+    .nav-item.active { color: var(--accent); background: var(--accent-alpha); border-right: 3px solid var(--accent); }
+    .sidebar-footer { padding: 24px 16px; border-top: 1px solid var(--border); }
 
-    /* ANA İÇERİK ALANI */
-    .main-content {
-      flex: 1;
-      margin-left: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      transition: margin-left 0.3s ease;
-    }
-    @media (min-width: 1024px) {
-      .main-content { margin-left: var(--sidebar-w); }
-    }
+    .main-content { flex: 1; margin-left: 0; min-height: 100vh; display: flex; flex-direction: column; transition: margin-left 0.3s ease; }
+    @media (min-width: 1024px) { .main-content { margin-left: var(--sidebar-w); } }
 
-    /* KUSURSUZ MOBİL TOP BAR */
-    .top-bar {
-      display: flex;
-      height: 64px;
-      align-items: center;
-      padding: 0 16px;
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      border-bottom: 1px solid var(--border);
-      border-radius: 0;
-      justify-content: space-between;
-    }
-    @media (min-width: 1024px) {
-      .top-bar { display: none; }
-    }
-
-    .hamburger-btn {
-      background: none;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-    }
-    .top-bar-logo {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      pointer-events: none;
-      margin: 0;
-    }
+    .top-bar { display: flex; height: 64px; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 200; border-bottom: 1px solid var(--border); border-radius: 0; justify-content: space-between; }
+    @media (min-width: 1024px) { .top-bar { display: none; } }
+    .hamburger-btn { background: none; color: var(--text); display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+    .top-bar-logo { font-family: var(--font-display); font-size: 1.3rem; position: absolute; left: 50%; transform: translateX(-50%); }
     .top-bar-logo span { color: var(--accent); }
 
-    /* İÇERİK KAPSAYICI */
-    .container {
-      padding: 24px;
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-    @media (max-width: 768px) {
-      .container { padding: 16px; gap: 16px; }
-    }
+    .container { padding: 24px; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 24px; }
+    @media (max-width: 768px) { .container { padding: 16px; gap: 16px; } }
 
     /* İSTATİSTİK KARTLARI */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
-    @media (max-width: 768px) {
-      .stats-grid { grid-template-columns: 1fr; gap: 16px; }
-    }
-    
-    .stat-card {
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 4px; height: 100%;
-    }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; gap: 16px; } }
+    .stat-card { padding: 24px; position: relative; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
     .stat-card.income::before { background: var(--accent); }
     .stat-card.balance::before { background: var(--success); }
     .stat-card.expense::before { background: var(--text); }
-    
-    .stat-title {
-      font-size: 0.9rem;
-      color: var(--muted);
-      font-weight: 500;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .stat-value {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      font-weight: 700;
-    }
+    .stat-title { font-size: 0.9rem; color: var(--muted); font-weight: 500; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .stat-value { font-family: var(--font-display); font-size: 2rem; font-weight: 700; }
 
-    /* HIZLI İŞLEM FORMU */
-    .quick-entry {
-      padding: 24px;
-    }
-    .section-title {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .entry-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 2fr auto;
-      gap: 16px;
-      align-items: end;
-    }
-    @media (max-width: 768px) {
-      .entry-grid { grid-template-columns: 1fr; }
-      .btn-primary.w-full-mob { width: 100%; }
-    }
+    /* FORM & LİSTE */
+    .quick-entry { padding: 24px; }
+    .section-title { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .entry-grid { display: grid; grid-template-columns: 1fr 1fr 2fr auto; gap: 16px; align-items: end; }
+    @media (max-width: 768px) { .entry-grid { grid-template-columns: 1fr; } .btn-primary.w-full-mob { width: 100%; } }
 
-    /* LİSTE / TABLO ALANI */
-    .list-card {
-      padding: 24px;
-      min-height: 300px;
-    }
-    .transaction-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-      transition: var(--transition);
-    }
-    .transaction-item:hover {
-      background: rgba(255,255,255,0.02);
-    }
+    .list-card { padding: 24px; min-height: 300px; }
+    .transaction-item { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid var(--border); transition: var(--transition); }
+    .transaction-item:hover { background: rgba(255,255,255,0.02); }
     .transaction-item:last-child { border-bottom: none; }
-    
     .t-info { display: flex; align-items: center; gap: 16px; }
-    .t-icon {
-      width: 48px; height: 48px;
-      border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .t-icon.inc { background: var(--accent-alpha); color: var(--accent); }
-    
+    .t-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; background: var(--accent-alpha); color: var(--accent); }
     .t-desc { font-weight: 500; margin-bottom: 4px; }
     .t-date { font-size: 0.8rem; color: var(--muted); }
-    
-    .t-amount { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; }
-    .t-amount.inc { color: var(--accent); }
+    .t-amount { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; color: var(--accent); }
 
-    /* TOAST BİLDİRİMLERİ */
-    #toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .toast {
-      padding: 16px 24px;
-      border-radius: var(--radius-sm);
-      color: #fff;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: var(--card-shadow);
-      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .toast.success { background: var(--success); }
-    .toast.error { background: var(--danger); }
-    .toast.warn { background: var(--warn); color: #000; }
-    
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    /* MOBİL OVERLAY */
-    .overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(4px);
-      z-index: 250;
-      display: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
+    /* BİLDİRİMLER & OVERLAY */
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
+    .toast { padding: 16px 24px; border-radius: var(--radius-sm); color: #fff; font-weight: 500; display: flex; align-items: center; gap: 12px; box-shadow: var(--card-shadow); animation: slideIn 0.3s; }
+    .toast.success { background: var(--success); } .toast.error { background: var(--danger); } .toast.warn { background: var(--warn); color: #000; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 250; display: none; opacity: 0; transition: opacity 0.3s; }
     .overlay.active { display: block; opacity: 1; }
 
-    /* AI KİLİT KARTI */
-    .ai-card {
-      background: linear-gradient(135deg, rgba(255,122,0,0.1), rgba(45,49,58,0.8));
-      border: 1px solid var(--accent);
-      padding: 24px;
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    @media (max-width: 768px) {
-      .ai-card { flex-direction: column; text-align: center; gap: 16px; }
-    }
-
+    .ai-card { background: linear-gradient(135deg, rgba(255,122,0,0.1), rgba(45,49,58,0.8)); border: 1px solid var(--accent); padding: 24px; border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between; }
+    @media (max-width: 768px) { .ai-card { flex-direction: column; text-align: center; gap: 16px; } }
   </style>
 </head>
 <body>
 
-  <!-- Toast Container -->
+  <!-- Toast & Overlay -->
   <div id="toast-container"></div>
-  <!-- Mobil Menü Overlay -->
   <div class="overlay" id="mobile-overlay"></div>
 
-  <!-- ══ AUTH EKRANI ══ -->
+  <!-- AUTH (GİRİŞ) EKRANI -->
   <div id="auth-screen" class="view active">
     <div class="auth-card glass">
       <div class="auth-logo">Ciro<span>Log</span></div>
@@ -493,13 +225,11 @@
           Giriş Yap <i data-lucide="arrow-right" style="width: 18px;"></i>
         </button>
       </form>
-      <div style="margin-top: 15px; font-size: 0.85rem; color: var(--muted);">
-        Hesabın yok mu? <a href="#" id="show-register" style="color: var(--accent); text-decoration: none;">Kayıt Ol</a>
-      </div>
+      <div class="auth-link">Hesabın yok mu? <a href="#" id="show-register">Kayıt Ol</a></div>
     </div>
   </div>
 
-  <!-- ══ KAYIT EKRANI ══ -->
+  <!-- KAYIT OL EKRANI -->
   <div id="register-screen" class="view">
     <div class="auth-card glass">
       <div class="auth-logo">Ciro<span>Log</span></div>
@@ -522,37 +252,24 @@
           Kayıt Ol <i data-lucide="user-plus" style="width: 18px;"></i>
         </button>
       </form>
-      <div style="margin-top: 15px; font-size: 0.85rem; color: var(--muted);">
-        Zaten hesabın var mı? <a href="#" id="show-login" style="color: var(--accent); text-decoration: none;">Giriş Yap</a>
-      </div>
+      <div class="auth-link">Zaten hesabın var mı? <a href="#" id="show-login">Giriş Yap</a></div>
     </div>
   </div>
 
-  <!-- ══ ANA UYGULAMA EKRANI ══ -->
+  <!-- ANA UYGULAMA EKRANI -->
   <div id="app-screen" class="view">
     
-    <!-- Sidebar -->
     <aside class="sidebar glass" id="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">Ciro<span>Log</span></div>
         <button class="btn-icon" id="close-menu-btn" style="display: none;"><i data-lucide="x"></i></button>
       </div>
-      
       <nav class="nav-links">
-        <div class="nav-item active">
-          <i data-lucide="layout-dashboard"></i> Gösterge Paneli
-        </div>
-        <div class="nav-item">
-          <i data-lucide="calendar-days"></i> Günlük Kayıtlar
-        </div>
-        <div class="nav-item">
-          <i data-lucide="bar-chart-3"></i> Aylık & Yıllık Analiz
-        </div>
-        <div class="nav-item" onclick="triggerRestorePurchases()">
-          <i data-lucide="sparkles"></i> AI Analiz Modülü
-        </div>
+        <div class="nav-item active"><i data-lucide="layout-dashboard"></i> Gösterge Paneli</div>
+        <div class="nav-item"><i data-lucide="calendar-days"></i> Günlük Kayıtlar</div>
+        <div class="nav-item"><i data-lucide="bar-chart-3"></i> Aylık & Yıllık Analiz</div>
+        <div class="nav-item" onclick="triggerRestorePurchases()"><i data-lucide="sparkles"></i> AI Analiz Modülü</div>
       </nav>
-
       <div class="sidebar-footer">
         <button id="logout-btn" class="btn-primary" style="width: 100%; background: transparent; border: 1px solid var(--danger); color: var(--danger);">
           <i data-lucide="log-out"></i> Çıkış Yap
@@ -560,22 +277,14 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
-      
-      <!-- Mobil Top Bar -->
       <header class="top-bar glass">
-        <button class="hamburger-btn" id="menu-btn">
-          <i data-lucide="menu"></i>
-        </button>
+        <button class="hamburger-btn" id="menu-btn"><i data-lucide="menu"></i></button>
         <h1 class="top-bar-logo">Ciro<span>Log</span></h1>
         <div style="width: 40px;"></div>
       </header>
 
-      <!-- İçerik -->
       <div class="container">
-        
-        <!-- Üst Başlık & Kullanıcı -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div>
             <h2 style="font-family: var(--font-display); font-size: 1.5rem;">Hoş Geldin, <span id="user-display" style="color: var(--accent);">Kullanıcı</span></h2>
@@ -583,7 +292,6 @@
           </div>
         </div>
 
-        <!-- İstatistikler -->
         <div class="stats-grid">
           <div class="stat-card income glass">
             <div class="stat-title"><i data-lucide="sun" color="var(--accent)"></i> Bugünün Cirosu</div>
@@ -599,37 +307,23 @@
           </div>
         </div>
 
-        <!-- Hızlı Kayıt Ekleme -->
         <div class="quick-entry glass">
           <h3 class="section-title"><i data-lucide="plus-circle"></i> Günlük Ciro Gir</h3>
           <form id="transaction-form" class="entry-grid">
-            <div>
-              <input type="date" id="t-date" required>
-            </div>
-            <div>
-              <input type="number" id="t-amount" placeholder="Ciro Tutarı (₺)" step="0.01" required>
-            </div>
-            <div>
-              <input type="text" id="t-desc" placeholder="Not (Örn: Hafta Sonu, Etkinlik)">
-            </div>
-            <button type="submit" class="btn-primary w-full-mob">
-              <i data-lucide="save"></i> Kaydet
-            </button>
+            <div><input type="date" id="t-date" required></div>
+            <div><input type="number" id="t-amount" placeholder="Ciro Tutarı (₺)" step="0.01" required></div>
+            <div><input type="text" id="t-desc" placeholder="Not (Örn: Hafta Sonu, Etkinlik)"></div>
+            <button type="submit" class="btn-primary w-full-mob"><i data-lucide="save"></i> Kaydet</button>
           </form>
         </div>
 
-        <!-- Son İşlemler Listesi -->
         <div class="list-card glass">
           <h3 class="section-title"><i data-lucide="list"></i> Son İşlemler</h3>
           <div id="transactions-list">
-            <!-- JS ile doldurulacak -->
-            <div style="text-align: center; color: var(--muted); padding: 40px;">
-              İşlem yükleniyor...
-            </div>
+            <div style="text-align: center; color: var(--muted); padding: 40px;">İşlem yükleniyor...</div>
           </div>
         </div>
 
-        <!-- AI Modülü Bilgi Kartı -->
         <div class="ai-card">
           <div>
             <h3 style="font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px; display:flex; align-items:center; gap:8px;">
@@ -639,39 +333,45 @@
           </div>
           <button class="btn-primary" onclick="triggerRestorePurchases()">Geri Yükle / Kontrol Et</button>
         </div>
-
       </div>
     </main>
   </div>
 
-  <!-- ══ SENİN FİREBASE KODLARIN (DOKUNULMADI) ══ -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- ══ JAVASCRIPT & FİREBASE KODLARI                  ══ -->
+  <!-- ═══════════════════════════════════════════════════ -->
   <script type="module">
     lucide.createIcons();
 
-    // Senin Firebase ayarların (orijinal dosyadakinin aynısı)
+    // 1. Firebase Kütüphaneleri (Senin 10.8.0 sürümün)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, setDoc, doc, getDoc, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, setDoc, doc, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase ayarlarını Canvas ortamından güvenli bir şekilde al veya kullanıcının dosyasına göre ayarla
-    let app, auth, db;
-    try {
-      // Eğer Canvas'ta çalışıyorsak Canvas config'i kullan (güvenlik için)
-      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-        // Eğer dışarıda çalıştırırsan kendi configini buraya yapıştırabilirsin
-      };
-      app = initializeApp(firebaseConfig);
-      auth = getAuth();
-      db = getFirestore();
-    } catch(e) {
-      console.error("Firebase başlatılamadı:", e);
-    }
+    // ⚠️ DİKKAT: AŞAĞIDAKİ ALANI KENDİ BİLGİLERİNLE DOLDURMALISIN ⚠️
+    // Lütfen kendi 'test (4).html' dosyanın en altındaki firebaseConfig kısmını buraya yapıştır.
+    const firebaseConfig = {
+      apiKey: "KENDİ_API_KEYİNİ_BURAYA_YAPIŞTIR",
+      authDomain: "KENDİ_DOMAINİNİ_BURAYA_YAPIŞTIR",
+      projectId: "KENDİ_PROJECT_ID_BURAYA_YAPIŞTIR",
+      storageBucket: "KENDİ_BUCKET_BURAYA_YAPIŞTIR",
+      messagingSenderId: "KENDİ_SENDER_BURAYA_YAPIŞTIR",
+      appId: "KENDİ_APP_ID_BURAYA_YAPIŞTIR"
+    };
+    // ⚠️---------------------------------------------------------⚠️
+    
+    // Firebase Başlatma
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    /* ── SENİN FONKSİYONLARIN ── */
-    function fmt(n){return Number(n).toLocaleString('tr-TR');}
+    // 2. Yardımcı Fonksiyonlar
+    function fmt(n){return Number(n).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });}
     function $(id,val){const e=document.getElementById(id);if(e)e.textContent=val;}
-    function pLabel(p){const m={baslangic:'Başlangıç',pro:'Pro',kurumsal:'Kurumsal','14gun':'14 Gün Deneme'};return m[p]||p||'—';}
-    function errTR(code){const m={'auth/invalid-credential':'E-posta veya şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Hatalı şifre','auth/too-many-requests':'Çok fazla deneme, bekleyin'};return m[code]||'Bir hata oluştu.';}
+    function errTR(code){
+      const m={'auth/invalid-credential':'E-posta veya şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Hatalı şifre','auth/email-already-in-use':'Bu e-posta zaten kullanımda.'};
+      return m[code]||'Bir hata oluştu: ' + code;
+    }
 
     window.toast = function(msg,type){
       const t=document.createElement('div');
@@ -681,15 +381,12 @@
       setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},3000);
     }
 
-    /* ── LİSANS / UYGULAMA İÇİ SATIN ALIM (Senin kodların) ── */
+    // AI Lisans Simülasyonu
     let aiUnlocked = false;
     async function checkLicenseStatus() {
       return new Promise(res => setTimeout(() => {
         aiUnlocked = true; 
-        if(aiUnlocked) {
-          $('ai-status-badge', 'AÇIK');
-          document.getElementById('ai-status-badge').style.background = 'var(--success)';
-        }
+        if(aiUnlocked) { $('ai-status-badge', 'AÇIK'); document.getElementById('ai-status-badge').style.background = 'var(--success)'; }
         res();
       }, 800));
     }
@@ -699,49 +396,38 @@
       toast(aiUnlocked ? '✓ Satın alımlar geri yüklendi' : 'Kayıtlı satın alım bulunamadı', aiUnlocked ? 'success' : 'warn');
     };
 
-    /* ── EKRAN DEĞİŞİMİ ── */
+    // 3. Arayüz Yönetimi
     function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');}
-    document.getElementById('show-register').onclick=()=>show('register-screen');
-    document.getElementById('show-login').onclick=()=>show('auth-screen');
-
-    /* ── ARAYÜZ / MOBİL MENÜ YÖNETİMİ ── */
+    document.getElementById('show-register').onclick = () => show('register-screen');
+    document.getElementById('show-login').onclick = () => show('auth-screen');
+    
+    // Mobil Menü
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobile-overlay');
     function toggleMenu() { sidebar.classList.toggle('open'); overlay.classList.toggle('active'); }
     document.getElementById('menu-btn').addEventListener('click', toggleMenu);
     document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
     overlay.addEventListener('click', toggleMenu);
-
     if (window.innerWidth < 1024) document.getElementById('close-menu-btn').style.display = 'block';
 
-    /* ── AUTH İŞLEMLERİ ── */
+    // 4. AUTH İŞLEMLERİ
     let currentUser=null;
     let unsub=null;
 
-    onAuthStateChanged(auth, async (u)=>{
+    // Oturum Dinleyici
+    onAuthStateChanged(auth, (u)=>{
       currentUser=u;
       if(u){
         show('app-screen');
-        try {
-            // Kullanıcı bilgilerini çekme (Senin mantığın)
-            const d=await getDoc(doc(db,'ciro_kullanicilari',u.uid));
-            if(d.exists()){
-                const dData=d.data();
-                $('user-display', dData.name || 'Kullanıcı');
-                // document.getElementById('u-plan').textContent=pLabel(dData.plan); // Eğer paneli kullanmak istersen
-            } else {
-                 $('user-display', u.email.split('@')[0]);
-            }
-        } catch(err) {
-             $('user-display', u.email.split('@')[0]);
-        }
-        loadData(u.uid);
+        $('user-display', u.email.split('@')[0]);
+        loadData(u.uid); // Kullanıcı giriş yapınca verilerini çek
       } else {
         show('auth-screen');
         if(unsub) unsub();
       }
     });
 
+    // Giriş Yap
     document.getElementById('login-form').onsubmit=async(e)=>{
       e.preventDefault();
       try{
@@ -749,20 +435,21 @@
       }catch(err){toast(errTR(err.code),'error');}
     };
 
+    // Kayıt Ol
     document.getElementById('register-form').onsubmit=async(e)=>{
       e.preventDefault();
       try{
         const nm=document.getElementById('reg-name').value;
         const res=await createUserWithEmailAndPassword(auth, document.getElementById('reg-email').value, document.getElementById('reg-pass').value);
         await setDoc(doc(db,'ciro_kullanicilari',res.user.uid),{name:nm, plan:'baslangic', createdAt:serverTimestamp()});
-        toast('Hesap oluşturuldu','success');
+        toast('Hesap oluşturuldu, giriş yapılıyor...','success');
       }catch(err){toast(errTR(err.code),'error');}
     };
 
+    // Çıkış Yap
     document.getElementById('logout-btn').onclick=()=>signOut(auth);
 
-
-    /* ── VERİ OKUMA VE HESAPLAMA ── */
+    // 5. GÜNLÜK CİRO MANTIĞI VE FİREBASE VERİ ÇEKME
     function getTodayString() {
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -770,30 +457,30 @@
     }
 
     function loadData(uid){
-      // Senin db yapına uygun: "ciro_kayitlari" koleksiyonu, "uid" alanı.
-      // Firestore kuralları gereği uid ile filtreleme yapıyoruz.
-      const q=query(collection(db,'ciro_kayitlari'), where("uid", "==", uid));
+      // Sadece bu kullanıcıya ait verileri çekiyoruz
+      const q = query(collection(db, 'ciro_kayitlari'), where("uid", "==", uid)); 
       
-      unsub=onSnapshot(q,(snap)=>{
-        let totalToday = 0;
-        let totalMonth = 0;
-        let totalYear = 0;
+      unsub = onSnapshot(q, (snap)=>{
+        let totalToday = 0; let totalMonth = 0; let totalYear = 0;
         let items = [];
+        
+        const todayStr = getTodayString(); 
+        const currentMonth = todayStr.substring(0, 7); 
+        const currentYear = todayStr.substring(0, 4); 
 
-        const todayStr = getTodayString(); // "YYYY-MM-DD"
-        const currentMonth = todayStr.substring(0, 7); // "YYYY-MM"
-        const currentYear = todayStr.substring(0, 4); // "YYYY"
+        snap.forEach(d=>{ items.push({id:d.id, ...d.data()}); });
 
-        snap.forEach(d=>{ items.push({id:d.id,...d.data()}); });
-
-        // Tarihe göre sıralama (İstemcide)
-        items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+        // İşlemleri tarihe göre sırala (En yeni en üstte)
+        items.sort((a,b)=> {
+            if (a.date !== b.date) return new Date(b.date) - new Date(a.date);
+            return (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0);
+        });
         
         const listEl=document.getElementById('transactions-list');
         listEl.innerHTML='';
 
         if(items.length===0){
-          listEl.innerHTML='<div style="text-align: center; color: var(--muted); padding: 20px;">Henüz kayıt yok.</div>';
+          listEl.innerHTML='<div style="text-align: center; color: var(--muted); padding: 20px;">Henüz kayıt yok. İlk ciroyu yukarıdan ekle.</div>';
         } else {
            items.forEach(i=>{
               const m=Number(i.amount)||0;
@@ -809,35 +496,29 @@
               listEl.innerHTML+=`
                 <div class="transaction-item">
                   <div class="t-info">
-                    <div class="t-icon inc">
-                      <i data-lucide="check-circle"></i>
-                    </div>
+                    <div class="t-icon inc"><i data-lucide="check-circle"></i></div>
                     <div>
                       <div class="t-desc">${displayDate} Cirosu</div>
                       <div class="t-date">${i.note || 'Not girilmedi'}</div>
                     </div>
                   </div>
-                  <div class="t-amount inc" style="color: var(--accent);">
-                    ₺${fmt(m)}
-                  </div>
+                  <div class="t-amount inc" style="color: var(--accent);">₺${fmt(m)}</div>
                 </div>
               `;
           });
         }
         lucide.createIcons();
-        
-        $('val-today', fmt(totalToday));
-        $('val-month', fmt(totalMonth));
-        $('val-year', fmt(totalYear));
+        $('val-today', fmt(totalToday)); $('val-month', fmt(totalMonth)); $('val-year', fmt(totalYear));
+      }, (error) => {
+        console.error("Veri Çekme Hatası:", error);
       });
     }
 
-    /* ── VERİ EKLEME (Senin alan adlarınla) ── */
+    // 6. GÜNLÜK CİRO EKLEME
     document.getElementById('transaction-form').onsubmit=async(e)=>{
       e.preventDefault();
       if(!currentUser) return;
       try{
-        // Senin orijinal dosyadaki alan isimleri: uid, date, amount, note, createdAt
         await addDoc(collection(db,'ciro_kayitlari'),{
           uid: currentUser.uid,
           date: document.getElementById('t-date').value,
@@ -845,16 +526,16 @@
           note: document.getElementById('t-desc').value,
           createdAt: serverTimestamp()
         });
-        toast('Kayıt eklendi','success');
+        toast('Ciro eklendi','success');
         e.target.reset();
         document.getElementById('t-date').value = getTodayString();
       }catch(err){toast('Hata: '+err.message,'error');}
     };
 
+    // Sayfa yüklendiğinde varsayılan olarak bugünün tarihini seç
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('t-date').value = getTodayString();
     });
-
   </script>
 </body>
 </html>
