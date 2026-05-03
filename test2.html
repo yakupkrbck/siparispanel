@@ -8,67 +8,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-body{
-  margin:0;
-  font-family:'Inter',sans-serif;
-  background:#0b0b12;
-  color:#fff;
+:root{
+  --bg:#0b0b12;
+  --card:rgba(20,20,30,.65);
+  --border:rgba(255,255,255,.06);
+  --accent:#ff2e63;
+  --accent2:#ff8a5b;
 }
 
-/* HEADER */
-.header{
-  padding:16px;
-  font-size:22px;
-  font-weight:800;
-}
+body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:#fff;}
+.header{padding:16px;font-weight:800;font-size:20px;}
+.nav{display:flex;gap:8px;padding:8px;overflow:auto;}
+.nav button{flex:1;padding:10px;border:none;border-radius:10px;background:#1a1a24;color:#fff;}
+.nav button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));}
 
-/* CARD */
+.page{display:none;padding-bottom:80px;}
+.page.active{display:block;}
+
 .card{
-  margin:16px;
-  padding:20px;
+  margin:12px;
+  padding:16px;
   border-radius:14px;
-  background:rgba(20,20,30,.65);
+  background:var(--card);
   backdrop-filter:blur(16px);
-  border:1px solid rgba(255,255,255,.06);
-  box-shadow:0 12px 40px rgba(0,0,0,.7);
+  border:1px solid var(--border);
 }
 
-/* INPUT */
-input{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:10px;
-  border:none;
-  background:#1a1a24;
-  color:#fff;
+input,select{
+  width:100%;padding:10px;margin-top:8px;border:none;border-radius:10px;background:#1a1a24;color:#fff;
 }
 
-/* BUTTON */
-button{
-  margin-top:12px;
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  font-weight:800;
-  background:linear-gradient(135deg,#ff2e63,#ff8a5b);
-  color:#fff;
+button.main{
+  margin-top:10px;width:100%;padding:12px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;
 }
 
-/* STATS */
-.stat{
-  font-size:28px;
-  font-weight:800;
-}
-
-.list{
-  margin-top:10px;
-  font-size:14px;
-  opacity:.85;
-  max-height:200px;
-  overflow:auto;
-}
+.stat{font-size:24px;font-weight:800;margin-top:10px;}
+.list{font-size:14px;margin-top:10px;max-height:200px;overflow:auto;}
+.small{opacity:.7;font-size:12px;margin-top:6px;}
 </style>
 </head>
 
@@ -76,30 +53,78 @@ button{
 
 <div class="header">CiroLog PRO 🚀</div>
 
-<div class="card">
-  <div>Günlük Ciro</div>
-  <input type="date" id="date">
-  <input type="number" id="amount" placeholder="₺">
-  <button onclick="save()">Kaydet</button>
+<div class="nav">
+  <button onclick="show('dash')" class="active">Dashboard</button>
+  <button onclick="show('entry')">Kayıt</button>
+  <button onclick="show('cal')">Takvim</button>
+  <button onclick="show('rep')">Rapor</button>
+  <button onclick="show('set')">Ayarlar</button>
 </div>
 
-<div class="card">
-  <div>Toplam Ciro</div>
-  <div class="stat" id="total">₺0</div>
-  <div id="analysis"></div>
+<!-- DASHBOARD -->
+<div id="dash" class="page active">
+  <div class="card">
+    <div>Toplam Ciro</div>
+    <div class="stat" id="total">₺0</div>
+    <div id="analysis"></div>
+  </div>
 </div>
 
-<div class="card">
-  <div>Kayıtlar</div>
-  <div id="list" class="list"></div>
+<!-- ENTRY -->
+<div id="entry" class="page">
+  <div class="card">
+    <div>Ciro Gir</div>
+    <input type="date" id="date">
+    <input type="number" id="amount" placeholder="₺">
+    <button class="main" onclick="save()">Kaydet</button>
+  </div>
+
+  <div class="card">
+    <div>Kayıtlar</div>
+    <div id="list" class="list"></div>
+  </div>
+</div>
+
+<!-- CALENDAR -->
+<div id="cal" class="page">
+  <div class="card">
+    <div>Takvim</div>
+    <div id="calendar"></div>
+  </div>
+</div>
+
+<!-- REPORT -->
+<div id="rep" class="page">
+  <div class="card">
+    <div>Rapor</div>
+    <div id="report"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="set" class="page">
+  <div class="card">
+    <div>Ayarlar</div>
+    <label>Kapalı Günler</label>
+    <select id="closed" multiple>
+      <option value="0">Pazar</option>
+      <option value="1">Pzt</option>
+      <option value="2">Sal</option>
+      <option value="3">Çar</option>
+      <option value="4">Per</option>
+      <option value="5">Cum</option>
+      <option value="6">Cmt</option>
+    </select>
+    <button class="main" onclick="saveSettings()">Kaydet</button>
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* SENİN CONFIG */
+/* CONFIG */
 const cfg={
   apiKey:'AIzaSyD2CPjkui-HSM9WG0eh0olu6uidA0RrP10',
   authDomain:'siparispanel-a4c6e.firebaseapp.com',
@@ -112,76 +137,92 @@ const db=getFirestore(app);
 
 let cu=null;
 let records=[];
+let settings={closedDays:[]};
 
-/* LOGIN (anonim) */
+/* NAV */
+window.show=(id)=>{
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+};
+
+/* LOGIN */
 signInAnonymously(auth);
-
-onAuthStateChanged(auth,user=>{
-  if(user){
-    cu=user;
-    listen();
-  }
+onAuthStateChanged(auth,u=>{
+  if(u){ cu=u; listen(); }
 });
 
-/* REALTIME */
+/* LISTEN */
 function listen(){
-  const ref=collection(db,`cirolog_records/${cu.uid}/entries`);
-  const q=query(ref,orderBy("createdAt","desc"));
-
-  onSnapshot(q,snap=>{
+  onSnapshot(collection(db,`cirolog_records/${cu.uid}/entries`),snap=>{
     records=[];
-    let total=0;
-    let html="";
+    let total=0, html="";
 
-    snap.forEach(doc=>{
-      let d=doc.data();
-      records.push(d);
-      total+=d.amount;
-      html+=`${d.date} → ₺${d.amount}<br>`;
+    snap.forEach(d=>{
+      let x=d.data();
+      records.push(x);
+      total+=x.amount;
+      html+=`${x.date} → ₺${x.amount}<br>`;
     });
 
     document.getElementById("total").innerText="₺"+total;
     document.getElementById("list").innerHTML=html;
 
     analyze();
+    renderCalendar();
+    renderReport();
   });
 }
 
 /* SAVE */
-window.save=async function(){
-  let date=document.getElementById("date").value;
-  let amount=document.getElementById("amount").value;
-
-  if(!date||!amount) return alert("Eksik veri");
-
+window.save=async ()=>{
+  let d=date.value,a=amount.value;
+  if(!d||!a)return alert("Eksik");
   await addDoc(collection(db,`cirolog_records/${cu.uid}/entries`),{
-    date:date,
-    amount:Number(amount),
-    createdAt:new Date()
+    date:d,amount:+a,created:new Date()
   });
-
-  document.getElementById("amount").value="";
-}
+  amount.value="";
+};
 
 /* ANALİZ */
 function analyze(){
-  if(records.length<5){
-    document.getElementById("analysis").innerText="Veri az";
-    return;
-  }
-
+  if(records.length<3){analysis.innerText="Veri az";return;}
   let avg=records.reduce((a,b)=>a+b.amount,0)/records.length;
-
-  let trend=records[0].amount > records[4].amount;
-
-  if(avg>5000){
-    document.getElementById("analysis").innerText="🔥 Satış çok iyi";
-  }else if(trend){
-    document.getElementById("analysis").innerText="📈 Yükseliş var";
-  }else{
-    document.getElementById("analysis").innerText="⚠️ Düşüş olabilir";
-  }
+  analysis.innerText=avg>5000?"🔥 İyi":"⚠️ Düşüş";
 }
+
+/* CALENDAR */
+function renderCalendar(){
+  let map={};
+  records.forEach(r=>map[r.date]=r.amount);
+
+  let html="";
+  for(let d in map){
+    html+=`${d}: ₺${map[d]}<br>`;
+  }
+  calendar.innerHTML=html;
+}
+
+/* REPORT */
+function renderReport(){
+  let total=records.reduce((a,b)=>a+b.amount,0);
+  let avg=records.length? total/records.length:0;
+
+  report.innerHTML=`
+    Toplam: ₺${total}<br>
+    Ortalama: ₺${avg.toFixed(0)}
+  `;
+}
+
+/* SETTINGS */
+window.saveSettings=async ()=>{
+  let vals=[...closed.selectedOptions].map(o=>o.value);
+  settings.closedDays=vals;
+
+  await setDoc(doc(db,`cirolog_settings/${cu.uid}`),settings);
+  alert("Kaydedildi");
+};
 </script>
 
 </body>
