@@ -88,17 +88,14 @@ h1,h2,h3{font-family:var(--font-display);}
 
 /* ══ SIDEBAR ══ */
 .sidebar{width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:0;flex-shrink:0;transition:transform .3s;overflow:hidden;}
-.sidebar-scroll{flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column;padding:1.25rem .875rem .5rem;overflow-x:hidden;}
+  display:flex;flex-direction:column;padding:0;flex-shrink:0;transition:transform .3s;overflow:visible;}
+.sidebar-scroll{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;padding:1rem .75rem .5rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
 .sidebar-footer{
   background:var(--surface);
-  padding:.625rem .875rem;
-  padding-bottom:max(.75rem,env(safe-area-inset-bottom));
+  padding:.625rem .75rem;
+  padding-bottom:max(.875rem,env(safe-area-inset-bottom));
   border-top:1px solid var(--border);
   flex-shrink:0;
-  position:sticky;
-  bottom:0;
-  z-index:10;
 }
 .sidebar-logo{
   font-family:var(--font-display);font-size:1.4rem;font-weight:900;
@@ -215,31 +212,32 @@ h1,h2,h3{font-family:var(--font-display);}
 .skeleton-bar{border-radius:var(--radius-sm) var(--radius-sm) 0 0;}
 
 /* ══ MOBILE BOTTOM NAV ══ */
-.bottom-nav{
-  display:none;position:fixed;bottom:0;left:0;right:0;
-  background:var(--surface);border-top:1px solid var(--border);
-  padding:.5rem .5rem calc(.5rem + env(safe-area-inset-bottom));
-  z-index:180;
-  display:none;
-  grid-template-columns:repeat(5,1fr);
-  gap:0;
-}
-.bn-item{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:.2rem;padding:.4rem .25rem;border:none;background:transparent;
-  color:var(--muted);font-family:var(--font-body);font-size:.58rem;font-weight:700;
-  cursor:pointer;border-radius:var(--radius-sm);transition:color .15s;
-  min-width:0;
-}
-.bn-item.active{color:var(--accent);}
-.bn-item .bn-icon{font-size:1.25rem;line-height:1;}
-.bn-item .bn-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);margin-top:.1rem;opacity:0;transition:opacity .15s;}
-.bn-item.active .bn-dot{opacity:1;}
+/* Kaldırıldı */
 
 @media(max-width:768px){
-  .bottom-nav{display:grid;}
-  .main-content{padding-bottom:calc(60px + env(safe-area-inset-bottom));}
-  .page{padding:.875rem .875rem;}
+  .main-content{padding-bottom:1rem;}
+  .page{padding:.75rem;}
+  .two-col{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .stat-value{font-size:1.35rem;}
+  .quick-entry{padding:1rem;gap:.75rem;}
+  .qi-wrap{min-width:0;width:100%;}
+  .chart-wrap{gap:3px;}
+  .bar-val{display:none;}
+  .supplier-grid{grid-template-columns:1fr;}
+  .entry-form{padding:1.25rem;}
+  .tabs{width:100%;}
+  .tab{flex:1;text-align:center;font-size:.75rem;padding:.4rem .5rem;}
+  .filter-bar{gap:.5rem;}
+  .sup-summary{gap:.875rem;padding:.875rem 1rem;}
+  .sup-sum-val{font-size:1.1rem;}
+}
+
+@media(max-width:400px){
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .stat-value{font-size:1.2rem;}
+  .page{padding:.625rem;}
 }
 
 /* ══ SUPPLIER / TEDARİKÇİ ══ */
@@ -301,39 +299,6 @@ h1,h2,h3{font-family:var(--font-display);}
 .empty-state-icon{font-size:3.5rem;margin-bottom:1rem;opacity:.6;}
 .empty-state h3{font-family:var(--font-display);font-size:1.1rem;color:var(--text);margin-bottom:.4rem;}
 .empty-state p{font-size:.82rem;line-height:1.6;}
-
-/* ══ SIDEBAR - daha temiz görünüm ══ */
-.sidebar{
-  width:var(--sidebar-w);height:100vh;
-  background:var(--surface);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:0;flex-shrink:0;
-  transition:transform .28s cubic-bezier(.4,0,.2,1);overflow:hidden;
-}
-.nav-item{
-  display:flex;align-items:center;gap:.65rem;
-  padding:.55rem .7rem;border-radius:var(--radius-sm);
-  cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);
-  transition:background .12s,color .12s,border-color .12s;margin-bottom:.02rem;
-  border:none;background:transparent;width:100%;text-align:left;
-  font-family:var(--font-body);line-height:1.25;
-  min-height:38px;white-space:nowrap;overflow:hidden;
-  border-left:2px solid transparent;
-}
-.nav-item:hover{background:var(--surface2);color:var(--text);}
-.nav-item.active{
-  background:var(--nav-active-bg);color:var(--accent);font-weight:800;
-  border-left-color:var(--accent);
-}
-
-/* ══ QUICK ENTRY — daha şık ══ */
-.quick-entry{
-  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 7%,var(--surface)),color-mix(in srgb,var(--accent2) 5%,var(--surface)));
-  border:1px solid color-mix(in srgb,var(--accent) 20%,var(--border));
-  border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;
-  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
-  box-shadow:0 0 0 1px rgba(184,240,80,.04),var(--card-shadow);
-}
 
 /* ══ QUICK ENTRY ══ */
 .quick-entry{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--accent2) 6%,transparent));
@@ -684,9 +649,11 @@ body { font-weight: 500; }
 
 /* ══ MOBILE: full sidebar coverage, proper stacking ══ */
 @media(max-width: 768px) {
-  .sidebar { z-index: 160; box-shadow: 4px 0 24px rgba(0,0,0,.5); top:0; height:100dvh; overflow:hidden; }
+  .sidebar { z-index: 160; box-shadow: 4px 0 24px rgba(0,0,0,.5); top:0; height:100dvh; overflow:visible; }
+  .sidebar-scroll { overflow-y:auto; }
   .main-content { min-height:calc(100dvh - 52px); }
   .sidebar-overlay { z-index: 155; }
+  .sidebar-footer { padding-bottom:max(.875rem,env(safe-area-inset-bottom)); }
   .top-bar { height: 52px; min-height: 52px; }
   .hamburger-btn { height: 52px; }
   .main-content { padding-top: 0; }
@@ -1370,25 +1337,7 @@ body { font-weight: 500; }
     </div>
 
   </div><!-- /main-content -->
-
-  <!-- ════ MOBILE BOTTOM NAV ════ -->
-  <nav class="bottom-nav" id="bottomNav">
-    <button class="bn-item active" onclick="navTo('dashboard',document.querySelector('[onclick*=dashboard]'));setBottomNav(this)">
-      <span class="bn-icon">📊</span><span>Özet</span><div class="bn-dot"></div>
-    </button>
-    <button class="bn-item" onclick="navTo('kayit',document.querySelector('[onclick*=kayit]'));setBottomNav(this)">
-      <span class="bn-icon">✏️</span><span>Giriş</span><div class="bn-dot"></div>
-    </button>
-    <button class="bn-item" onclick="navTo('tedarikciler',document.querySelector('[onclick*=tedarikciler]'));setBottomNav(this)">
-      <span class="bn-icon">🏭</span><span>Borç</span><div class="bn-dot"></div>
-    </button>
-    <button class="bn-item" onclick="navTo('raporlar',document.querySelector('[onclick*=raporlar]'));setBottomNav(this)">
-      <span class="bn-icon">📈</span><span>Rapor</span><div class="bn-dot"></div>
-    </button>
-    <button class="bn-item" onclick="navTo('ai',document.querySelector('[onclick*=\"navTo(\'ai\'\"]'));setBottomNav(this)">
-      <span class="bn-icon">✨</span><span>AI</span><div class="bn-dot"></div>
-    </button>
-  </nav>
+</div><!-- /screenApp -->
 
 <script type="module">
 import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -2731,12 +2680,6 @@ async function renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m){
 
   el.innerHTML=items.map(html=>`<div class="insight-item"><div class="insight-text">${html}</div></div>`).join('');
 }
-
-/* ── BOTTOM NAV ── */
-window.setBottomNav=function(el){
-  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
-  if(el)el.classList.add('active');
-};
 
 /* ══ TEDARİKÇİ / SUPPLIER MODULE ══ */
 async function loadSuppliers(){
