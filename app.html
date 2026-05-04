@@ -17,12 +17,12 @@
 <meta name="msapplication-TileColor" content="#05050d">
 <meta name="msapplication-tap-highlight" content="no">
 
-<!-- ══ ICONS — SVG data URI ══ -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%2305050d'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='900' font-size='280' fill='%23b8f050'%3E₺%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%2305050d'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='900' font-size='280' fill='%23b8f050'%3E₺%3C/text%3E%3C/svg%3E">
+<!-- ══ ICONS ══ -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 
 <!-- ══ INLINE MANIFEST ══ -->
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22CiroLog%20%E2%80%94%20Ak%C4%B1ll%C4%B1%20%C4%B0%C5%9F%20Zekas%C4%B1%22%2C%22short_name%22%3A%22CiroLog%22%2C%22description%22%3A%22Restoran%20ve%20i%C5%9Fletme%20ciro%20takip%20uygulamas%C4%B1%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2305050d%22%2C%22theme_color%22%3A%22%2305050d%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%2520512%2520512'%253E%253Crect%2520width%3D'512'%2520height%3D'512'%2520rx%3D'96'%2520fill%3D'%252305050d'%2F%253E%253Ctext%2520x%3D'50%2525'%2520y%3D'54%2525'%2520dominant-baseline%3D'middle'%2520text-anchor%3D'middle'%2520font-family%3D'system-ui%2Csans-serif'%2520font-weight%3D'900'%2520font-size%3D'280'%2520fill%3D'%2523b8f050'%253E%25E2%2582%25BA%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22CiroLog%20%E2%80%94%20Ak%C4%B1ll%C4%B1%20%C4%B0%C5%9F%20Zekas%C4%B1%22%2C%22short_name%22%3A%22CiroLog%22%2C%22description%22%3A%22Restoran%20ve%20i%C5%9Fletme%20ciro%20takip%20uygulamas%C4%B1%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2305050d%22%2C%22theme_color%22%3A%22%2305050d%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon-192.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%2C%7B%22src%22%3A%22icon-512.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22maskable%22%7D%5D%7D">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lexend:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -731,10 +731,55 @@ body { font-weight: 500; }
     <div class="auth-card">
       <div class="logo">Ciro<span>Log</span></div>
       <div class="auth-sub">İşletme hesabınıza giriş yapın</div>
-      <div class="fg"><label>E-Posta</label><input type="email" id="loginEmail" placeholder="isletme@mail.com"></div>
-      <div class="fg"><label>Şifre</label><input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fg"><label>E-Posta</label><input type="email" id="loginEmail" placeholder="isletme@mail.com" autocomplete="email"></div>
+      <div class="fg"><label>Şifre</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
-      <div class="auth-link">Hesabın yok mu? <a href="./index.html#apply">Paket Seç & Başvur →</a></div>
+      <div class="auth-divider"><span>veya</span></div>
+      <button class="btn btn-ghost" onclick="ss('screenRegister')" style="width:100%">📝 Hesabın yok mu? Ücretsiz Başvur →</button>
+      <div style="text-align:center;margin-top:.875rem;font-size:.75rem;color:var(--muted)">14 gün ücretsiz, tüm özellikler açık</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ KAYIT / BAŞVURU ══ -->
+<div class="screen" id="screenRegister">
+  <div class="auth-wrap" style="padding:1.5rem 1rem">
+    <div class="auth-card" style="max-width:480px">
+
+      <!-- Header -->
+      <button onclick="ss('screenLogin')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.82rem;margin-bottom:1.25rem;padding:0;font-family:var(--font-body)">← Geri</button>
+      <div class="logo" style="font-size:1.75rem">Ciro<span>Log</span></div>
+      <div class="auth-sub" style="margin-bottom:1.5rem">Ücretsiz başlayın — 14 gün tüm özellikler açık</div>
+
+      <!-- Trial banner -->
+      <div style="background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1.5rem;display:flex;gap:.75rem;align-items:center">
+        <div style="font-size:1.5rem">🎁</div>
+        <div>
+          <div style="font-size:.82rem;font-weight:800;color:var(--accent)">14 Gün Tam Erişim</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">AI Analiz dahil tüm özellikler · Kredi kartı gerekmez</div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="form-row" style="gap:.75rem">
+        <div class="fg"><label>Ad Soyad *</label><input type="text" id="regName" placeholder="Ahmet Yılmaz" autocomplete="name"></div>
+        <div class="fg"><label>Telefon *</label><input type="tel" id="regPhone" placeholder="05xx xxx xx xx" autocomplete="tel"></div>
+      </div>
+      <div class="fg"><label>Firma / İşletme Adı *</label><input type="text" id="regBusiness" placeholder="Örn: Dönerci İsmail" autocomplete="organization"></div>
+      <div class="fg"><label>E-Posta *</label><input type="email" id="regEmail" placeholder="isletme@mail.com" autocomplete="email"></div>
+      <div class="form-row" style="gap:.75rem">
+        <div class="fg"><label>Şifre *</label><input type="password" id="regPass" placeholder="En az 6 karakter" autocomplete="new-password"></div>
+        <div class="fg"><label>Şifre Tekrar *</label><input type="password" id="regPass2" placeholder="••••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      </div>
+
+      <button class="btn btn-primary" id="regBtn" onclick="doRegister()" style="margin-top:.25rem">
+        🚀 Hesabı Oluştur & Başla
+      </button>
+
+      <div style="text-align:center;margin-top:.875rem;font-size:.72rem;color:var(--muted);line-height:1.6">
+        Kayıt olarak <span style="color:var(--text)">Kullanım Koşulları</span>'nı kabul etmiş olursunuz.<br>
+        14 gün sonra ücretsiz plana otomatik geçilir.
+      </div>
     </div>
   </div>
 </div>
@@ -801,6 +846,11 @@ body { font-weight: 500; }
 
     <!-- STICKY FOOTER — always visible, safe-area aware -->
     <div class="sidebar-footer">
+      <!-- Trial banner — only shows during trial -->
+      <div id="trialBanner" style="display:none;background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:var(--radius-sm);padding:.5rem .75rem;margin-bottom:.5rem;cursor:pointer" onclick="navTo('satin-al',document.querySelector('[onclick*=\'satin-al\']'))">
+        <div style="font-size:.68rem;font-weight:800;color:var(--warn);text-transform:uppercase;letter-spacing:.06em">⏳ Deneme Süresi</div>
+        <div id="trialCountdown" style="font-size:.78rem;color:var(--text);margin-top:.1rem">— gün kaldı</div>
+      </div>
       <div class="user-pill">
         <div class="avatar" id="userAvatar">?</div>
         <div class="user-info">
@@ -1361,7 +1411,7 @@ body { font-weight: 500; }
 
 <script type="module">
 import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged,
          updatePassword, EmailAuthProvider, reauthenticateWithCredential }
                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc,
@@ -1472,9 +1522,59 @@ window.doLogin=async function(){
   try{await signInWithEmailAndPassword(auth,e,p);}
   catch(err){toast(errTR(err.code),'e');btn.disabled=false;btn.textContent='Giriş Yap';}
 };
+
+window.doRegister=async function(){
+  const name    = document.getElementById('regName').value.trim();
+  const phone   = document.getElementById('regPhone').value.trim();
+  const business= document.getElementById('regBusiness').value.trim();
+  const email   = document.getElementById('regEmail').value.trim();
+  const pass    = document.getElementById('regPass').value;
+  const pass2   = document.getElementById('regPass2').value;
+
+  if(!name||!phone||!business||!email||!pass){toast('Tüm alanları doldurun','w');return;}
+  if(pass.length<6){toast('Şifre en az 6 karakter olmalı','w');return;}
+  if(pass!==pass2){toast('Şifreler eşleşmiyor','w');return;}
+
+  const btn=document.getElementById('regBtn');
+  btn.disabled=true;btn.textContent='⏳ Hesap oluşturuluyor...';
+
+  try{
+    // 1. Firebase Auth kullanıcısı oluştur
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    const uid=cred.user.uid;
+
+    // 2. 14 günlük deneme sonu tarihi
+    const trialEnd=new Date();
+    trialEnd.setDate(trialEnd.getDate()+14);
+
+    // 3. Firestore user dokümanı — otomatik onaylı, trial plan
+    await setDoc(doc(db,C.users,uid),{
+      name,
+      phone,
+      businessName: business,
+      email,
+      plan: 'trial',
+      trialEnd: trialEnd.toISOString().split('T')[0], // 'YYYY-MM-DD'
+      approved: true,
+      isBlocked: false,
+      isUnlocked: false,
+      purchases: {},
+      createdAt: serverTimestamp(),
+    });
+
+    toast(`Hoş geldin ${name.split(' ')[0]}! 14 günlük denemen başladı 🎉`,'s');
+    // onAuthStateChanged otomatik devralır
+  }catch(err){
+    toast(errTR(err.code)||err.message,'e');
+    btn.disabled=false;
+    btn.textContent='🚀 Hesabı Oluştur & Başla';
+  }
+};
+
 window.doLogout=async function(){
   if(userUnsub){userUnsub();userUnsub=null;}
   await signOut(auth);AR=[];cu=null;cp=null;aiUnlocked=false;
+  SUPPLIERS=[];PAYMENTS=[];
 };
 
 /* ── INIT ── */
@@ -2160,23 +2260,63 @@ let selectedPricingType = 'one';
 function applyPermissions(data) {
   if (!data) return;
 
-  // ── AI unlock: isUnlocked flag OR direct purchase OR plan includes it ──
-  const hasDirect  = !!data.purchases?.ai_module;
-  const planOk     = ['pro','kurumsal'].includes(data.plan);
-  const licValid   = data.licenseExpiry === 'unlimited' ||
-                     (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
-  const adminFlag  = data.isUnlocked === true;
+  const today = new Date().toISOString().split('T')[0];
 
-  aiUnlocked = adminFlag || hasDirect || (planOk && licValid);
+  // ── Trial check ──
+  const isTrial   = data.plan === 'trial';
+  const trialEnd  = data.trialEnd || '';
+  const trialActive = isTrial && trialEnd >= today;
+  const trialDaysLeft = trialActive
+    ? Math.ceil((new Date(trialEnd) - new Date(today)) / 86400000)
+    : 0;
 
-  // ── Feature flags from admin (permissions object or defaults) ──
-  const perms = data.permissions || {};
+  // ── AI unlock ──
+  const hasDirect = !!data.purchases?.ai_module;
+  const planOk    = ['pro','kurumsal'].includes(data.plan);
+  const licValid  = data.licenseExpiry === 'unlimited' ||
+                    (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
+  const adminFlag = data.isUnlocked === true;
+
+  // Trial süresindeyse tüm özellikler açık
+  aiUnlocked = adminFlag || hasDirect || trialActive || (planOk && licValid);
+
   PERMS = {
     ai       : aiUnlocked,
-    calendar : perms.calendar !== false,   // default ON
-    reports  : perms.reports  !== false,   // default ON
-    export   : perms.export   !== false,   // default ON
+    calendar : true,
+    reports  : true,
+    export   : true,
   };
+
+  // ── Trial Banner ──
+  const banner   = document.getElementById('trialBanner');
+  const countdown= document.getElementById('trialCountdown');
+  if (banner && countdown) {
+    if (trialActive) {
+      banner.style.display = 'block';
+      countdown.textContent = trialDaysLeft <= 1
+        ? '⚠ Son gün!'
+        : `${trialDaysLeft} gün kaldı — tam erişim`;
+      // 3 gün kaldıysa kırmızılaştır
+      if (trialDaysLeft <= 3) {
+        banner.style.background = 'color-mix(in srgb,var(--danger) 10%,transparent)';
+        banner.style.borderColor = 'color-mix(in srgb,var(--danger) 30%,transparent)';
+        countdown.style.color = 'var(--danger)';
+        const label = banner.querySelector('div');
+        if (label) { label.style.color = 'var(--danger)'; label.textContent = '⚠ Deneme Bitiyor'; }
+      }
+    } else if (isTrial && !trialActive) {
+      // Süresi dolmuş — uyarı göster
+      banner.style.display = 'block';
+      banner.style.background = 'color-mix(in srgb,var(--danger) 10%,transparent)';
+      banner.style.borderColor = 'color-mix(in srgb,var(--danger) 30%,transparent)';
+      const label = banner.querySelector('div');
+      if (label) { label.style.color = 'var(--danger)'; label.textContent = '⚠ Deneme Süresi Doldu'; }
+      countdown.textContent = 'Satın al → tam erişim';
+      countdown.style.color = 'var(--danger)';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
 
   // Apply to UI
   renderAiGate();
@@ -2184,10 +2324,10 @@ function applyPermissions(data) {
   renderPurchaseStatus();
   applyFeatureFlags();
 
-  // Sync price from Firebase app settings if available
+  // Sync price from Firebase app settings
   const buyBtn = document.getElementById('buyAiBtn');
   if (buyBtn && !aiUnlocked) {
-    buyBtn.textContent = `🔓 AI Modülünü Satın Al — ${APP_CFG.currency}${APP_CFG.aiPrice}`;
+    buyBtn.textContent = `🔓 Analiz Modülünü Satın Al — ${APP_CFG.currency}${APP_CFG.aiPrice}`;
   }
 }
 
