@@ -2,8 +2,28 @@
 <html lang="tr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>CiroLog — Akıllı İş Zekası</title>
+
+<!-- ══ PWA META ══ -->
+<meta name="application-name" content="CiroLog">
+<meta name="description" content="Restoran ve işletme ciro takip uygulaması">
+<meta name="theme-color" content="#05050d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f0f2f9" media="(prefers-color-scheme: light)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CiroLog">
+<meta name="msapplication-TileColor" content="#05050d">
+<meta name="msapplication-tap-highlight" content="no">
+
+<!-- ══ ICONS ══ -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- ══ INLINE MANIFEST ══ -->
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22CiroLog%20%E2%80%94%20Ak%C4%B1ll%C4%B1%20%C4%B0%C5%9F%20Zekas%C4%B1%22%2C%22short_name%22%3A%22CiroLog%22%2C%22description%22%3A%22Restoran%20ve%20i%C5%9Fletme%20ciro%20takip%20uygulamas%C4%B1%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2305050d%22%2C%22theme_color%22%3A%22%2305050d%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon-192.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22any%22%7D%2C%7B%22src%22%3A%22icon-512.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22purpose%22%3A%22maskable%22%7D%5D%7D">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Lexend:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ══ TEMALAR ══ */
@@ -711,10 +731,55 @@ body { font-weight: 500; }
     <div class="auth-card">
       <div class="logo">Ciro<span>Log</span></div>
       <div class="auth-sub">İşletme hesabınıza giriş yapın</div>
-      <div class="fg"><label>E-Posta</label><input type="email" id="loginEmail" placeholder="isletme@mail.com"></div>
-      <div class="fg"><label>Şifre</label><input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fg"><label>E-Posta</label><input type="email" id="loginEmail" placeholder="isletme@mail.com" autocomplete="email"></div>
+      <div class="fg"><label>Şifre</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
-      <div class="auth-link">Hesabın yok mu? <a href="./index.html#apply">Paket Seç & Başvur →</a></div>
+      <div class="auth-divider"><span>veya</span></div>
+      <button class="btn btn-ghost" onclick="ss('screenRegister')" style="width:100%">📝 Hesabın yok mu? Ücretsiz Başvur →</button>
+      <div style="text-align:center;margin-top:.875rem;font-size:.75rem;color:var(--muted)">14 gün ücretsiz, tüm özellikler açık</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ KAYIT / BAŞVURU ══ -->
+<div class="screen" id="screenRegister">
+  <div class="auth-wrap" style="padding:1.5rem 1rem">
+    <div class="auth-card" style="max-width:480px">
+
+      <!-- Header -->
+      <button onclick="ss('screenLogin')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.82rem;margin-bottom:1.25rem;padding:0;font-family:var(--font-body)">← Geri</button>
+      <div class="logo" style="font-size:1.75rem">Ciro<span>Log</span></div>
+      <div class="auth-sub" style="margin-bottom:1.5rem">Ücretsiz başlayın — 14 gün tüm özellikler açık</div>
+
+      <!-- Trial banner -->
+      <div style="background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1.5rem;display:flex;gap:.75rem;align-items:center">
+        <div style="font-size:1.5rem">🎁</div>
+        <div>
+          <div style="font-size:.82rem;font-weight:800;color:var(--accent)">14 Gün Tam Erişim</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">AI Analiz dahil tüm özellikler · Kredi kartı gerekmez</div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="form-row" style="gap:.75rem">
+        <div class="fg"><label>Ad Soyad *</label><input type="text" id="regName" placeholder="Ahmet Yılmaz" autocomplete="name"></div>
+        <div class="fg"><label>Telefon *</label><input type="tel" id="regPhone" placeholder="05xx xxx xx xx" autocomplete="tel"></div>
+      </div>
+      <div class="fg"><label>Firma / İşletme Adı *</label><input type="text" id="regBusiness" placeholder="Örn: Dönerci İsmail" autocomplete="organization"></div>
+      <div class="fg"><label>E-Posta *</label><input type="email" id="regEmail" placeholder="isletme@mail.com" autocomplete="email"></div>
+      <div class="form-row" style="gap:.75rem">
+        <div class="fg"><label>Şifre *</label><input type="password" id="regPass" placeholder="En az 6 karakter" autocomplete="new-password"></div>
+        <div class="fg"><label>Şifre Tekrar *</label><input type="password" id="regPass2" placeholder="••••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      </div>
+
+      <button class="btn btn-primary" id="regBtn" onclick="doRegister()" style="margin-top:.25rem">
+        🚀 Hesabı Oluştur & Başla
+      </button>
+
+      <div style="text-align:center;margin-top:.875rem;font-size:.72rem;color:var(--muted);line-height:1.6">
+        Kayıt olarak <span style="color:var(--text)">Kullanım Koşulları</span>'nı kabul etmiş olursunuz.<br>
+        14 gün sonra ücretsiz plana otomatik geçilir.
+      </div>
     </div>
   </div>
 </div>
@@ -781,6 +846,11 @@ body { font-weight: 500; }
 
     <!-- STICKY FOOTER — always visible, safe-area aware -->
     <div class="sidebar-footer">
+      <!-- Trial banner — only shows during trial -->
+      <div id="trialBanner" style="display:none;background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:var(--radius-sm);padding:.5rem .75rem;margin-bottom:.5rem;cursor:pointer" onclick="navTo('satin-al',document.querySelector('[onclick*=\'satin-al\']'))">
+        <div style="font-size:.68rem;font-weight:800;color:var(--warn);text-transform:uppercase;letter-spacing:.06em">⏳ Deneme Süresi</div>
+        <div id="trialCountdown" style="font-size:.78rem;color:var(--text);margin-top:.1rem">— gün kaldı</div>
+      </div>
       <div class="user-pill">
         <div class="avatar" id="userAvatar">?</div>
         <div class="user-info">
@@ -1341,7 +1411,7 @@ body { font-weight: 500; }
 
 <script type="module">
 import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged,
          updatePassword, EmailAuthProvider, reauthenticateWithCredential }
                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc,
@@ -1442,7 +1512,7 @@ onAuthStateChanged(auth,async(user)=>{
 });
 
 function poll(){const t=setInterval(async()=>{const s=await getDoc(doc(db,C.users,cu.uid));if(s.data()?.approved){clearInterval(t);cp=s.data();ss('screenApp');init();}},10000);}
-function ss(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+window.ss=function(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
 window.doLogin=async function(){
   const e=document.getElementById('loginEmail').value.trim();
@@ -1452,9 +1522,59 @@ window.doLogin=async function(){
   try{await signInWithEmailAndPassword(auth,e,p);}
   catch(err){toast(errTR(err.code),'e');btn.disabled=false;btn.textContent='Giriş Yap';}
 };
+
+window.doRegister=async function(){
+  const name    = document.getElementById('regName').value.trim();
+  const phone   = document.getElementById('regPhone').value.trim();
+  const business= document.getElementById('regBusiness').value.trim();
+  const email   = document.getElementById('regEmail').value.trim();
+  const pass    = document.getElementById('regPass').value;
+  const pass2   = document.getElementById('regPass2').value;
+
+  if(!name||!phone||!business||!email||!pass){toast('Tüm alanları doldurun','w');return;}
+  if(pass.length<6){toast('Şifre en az 6 karakter olmalı','w');return;}
+  if(pass!==pass2){toast('Şifreler eşleşmiyor','w');return;}
+
+  const btn=document.getElementById('regBtn');
+  btn.disabled=true;btn.textContent='⏳ Hesap oluşturuluyor...';
+
+  try{
+    // 1. Firebase Auth kullanıcısı oluştur
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    const uid=cred.user.uid;
+
+    // 2. 14 günlük deneme sonu tarihi
+    const trialEnd=new Date();
+    trialEnd.setDate(trialEnd.getDate()+14);
+
+    // 3. Firestore user dokümanı — otomatik onaylı, trial plan
+    await setDoc(doc(db,C.users,uid),{
+      name,
+      phone,
+      businessName: business,
+      email,
+      plan: 'trial',
+      trialEnd: trialEnd.toISOString().split('T')[0], // 'YYYY-MM-DD'
+      approved: true,
+      isBlocked: false,
+      isUnlocked: false,
+      purchases: {},
+      createdAt: serverTimestamp(),
+    });
+
+    toast(`Hoş geldin ${name.split(' ')[0]}! 14 günlük denemen başladı 🎉`,'s');
+    // onAuthStateChanged otomatik devralır
+  }catch(err){
+    toast(errTR(err.code)||err.message,'e');
+    btn.disabled=false;
+    btn.textContent='🚀 Hesabı Oluştur & Başla';
+  }
+};
+
 window.doLogout=async function(){
   if(userUnsub){userUnsub();userUnsub=null;}
   await signOut(auth);AR=[];cu=null;cp=null;aiUnlocked=false;
+  SUPPLIERS=[];PAYMENTS=[];
 };
 
 /* ── INIT ── */
@@ -2140,23 +2260,63 @@ let selectedPricingType = 'one';
 function applyPermissions(data) {
   if (!data) return;
 
-  // ── AI unlock: isUnlocked flag OR direct purchase OR plan includes it ──
-  const hasDirect  = !!data.purchases?.ai_module;
-  const planOk     = ['pro','kurumsal'].includes(data.plan);
-  const licValid   = data.licenseExpiry === 'unlimited' ||
-                     (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
-  const adminFlag  = data.isUnlocked === true;
+  const today = new Date().toISOString().split('T')[0];
 
-  aiUnlocked = adminFlag || hasDirect || (planOk && licValid);
+  // ── Trial check ──
+  const isTrial   = data.plan === 'trial';
+  const trialEnd  = data.trialEnd || '';
+  const trialActive = isTrial && trialEnd >= today;
+  const trialDaysLeft = trialActive
+    ? Math.ceil((new Date(trialEnd) - new Date(today)) / 86400000)
+    : 0;
 
-  // ── Feature flags from admin (permissions object or defaults) ──
-  const perms = data.permissions || {};
+  // ── AI unlock ──
+  const hasDirect = !!data.purchases?.ai_module;
+  const planOk    = ['pro','kurumsal'].includes(data.plan);
+  const licValid  = data.licenseExpiry === 'unlimited' ||
+                    (data.licenseExpiry && new Date(data.licenseExpiry) > new Date());
+  const adminFlag = data.isUnlocked === true;
+
+  // Trial süresindeyse tüm özellikler açık
+  aiUnlocked = adminFlag || hasDirect || trialActive || (planOk && licValid);
+
   PERMS = {
     ai       : aiUnlocked,
-    calendar : perms.calendar !== false,   // default ON
-    reports  : perms.reports  !== false,   // default ON
-    export   : perms.export   !== false,   // default ON
+    calendar : true,
+    reports  : true,
+    export   : true,
   };
+
+  // ── Trial Banner ──
+  const banner   = document.getElementById('trialBanner');
+  const countdown= document.getElementById('trialCountdown');
+  if (banner && countdown) {
+    if (trialActive) {
+      banner.style.display = 'block';
+      countdown.textContent = trialDaysLeft <= 1
+        ? '⚠ Son gün!'
+        : `${trialDaysLeft} gün kaldı — tam erişim`;
+      // 3 gün kaldıysa kırmızılaştır
+      if (trialDaysLeft <= 3) {
+        banner.style.background = 'color-mix(in srgb,var(--danger) 10%,transparent)';
+        banner.style.borderColor = 'color-mix(in srgb,var(--danger) 30%,transparent)';
+        countdown.style.color = 'var(--danger)';
+        const label = banner.querySelector('div');
+        if (label) { label.style.color = 'var(--danger)'; label.textContent = '⚠ Deneme Bitiyor'; }
+      }
+    } else if (isTrial && !trialActive) {
+      // Süresi dolmuş — uyarı göster
+      banner.style.display = 'block';
+      banner.style.background = 'color-mix(in srgb,var(--danger) 10%,transparent)';
+      banner.style.borderColor = 'color-mix(in srgb,var(--danger) 30%,transparent)';
+      const label = banner.querySelector('div');
+      if (label) { label.style.color = 'var(--danger)'; label.textContent = '⚠ Deneme Süresi Doldu'; }
+      countdown.textContent = 'Satın al → tam erişim';
+      countdown.style.color = 'var(--danger)';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
 
   // Apply to UI
   renderAiGate();
@@ -2164,10 +2324,10 @@ function applyPermissions(data) {
   renderPurchaseStatus();
   applyFeatureFlags();
 
-  // Sync price from Firebase app settings if available
+  // Sync price from Firebase app settings
   const buyBtn = document.getElementById('buyAiBtn');
   if (buyBtn && !aiUnlocked) {
-    buyBtn.textContent = `🔓 AI Modülünü Satın Al — ${APP_CFG.currency}${APP_CFG.aiPrice}`;
+    buyBtn.textContent = `🔓 Analiz Modülünü Satın Al — ${APP_CFG.currency}${APP_CFG.aiPrice}`;
   }
 }
 
@@ -2847,6 +3007,180 @@ window.deletePayment=async function(payId){
 function pLabel(p){const m={baslangic:'Başlangıç',pro:'Pro',kurumsal:'Kurumsal','14gun':'14 Gün Deneme'};return m[p]||p||'—';}
 function errTR(code){const m={'auth/invalid-credential':'E-posta veya şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Hatalı şifre','auth/too-many-requests':'Çok fazla deneme, bekleyin'};return m[code]||'Hata: '+code;}
 window.toast=function(msg,type='s'){const c=document.getElementById('toastC');const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=(type==='s'?'✓':type==='w'?'⚠️':'✕')+' '+msg;c.appendChild(t);setTimeout(()=>t.remove(),4500);};
+
+/* ══════════════════════════════════════════════
+   PWA — Service Worker + Install Prompt
+══════════════════════════════════════════════ */
+
+/* Service Worker — inline blob */
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+
+  const SW_CODE = `
+const CACHE = 'cirolog-v1';
+const OFFLINE_URLS = [self.location.href];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(OFFLINE_URLS)).catch(()=>{})
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  if(e.request.method !== 'GET') return;
+  if(!e.request.url.startsWith('http')) return;
+  // Firebase / Google APIs — network first, fallback cache
+  const isExternal = !e.request.url.includes(self.location.hostname);
+  if(isExternal){
+    e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));
+    return;
+  }
+  // App shell — cache first
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if(cached) return cached;
+      return fetch(e.request).then(res => {
+        if(res && res.status===200){
+          const clone = res.clone();
+          caches.open(CACHE).then(c=>c.put(e.request,clone));
+        }
+        return res;
+      }).catch(()=>cached);
+    })
+  );
+});
+`;
+
+  const blob = new Blob([SW_CODE], {type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+
+  navigator.serviceWorker.register(swUrl, {scope: './'})
+    .then(reg => {
+      console.log('[CiroLog] SW kayıtlı', reg.scope);
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        nw.addEventListener('statechange', () => {
+          if(nw.state==='installed' && navigator.serviceWorker.controller){
+            window.toast && window.toast('Güncelleme hazır — sayfayı yenileyin','w');
+          }
+        });
+      });
+    })
+    .catch(err => console.warn('[CiroLog] SW hatası:', err));
+})();
+
+/* Install Banner */
+(function(){
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBanner();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    hidePwaBanner();
+    window.toast && window.toast('CiroLog yüklendi! Ana ekrandan açabilirsiniz ✓','s');
+  });
+
+  function showInstallBanner(){
+    if(document.getElementById('pwaBanner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'pwaBanner';
+    banner.style.cssText = `
+      position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius);padding:.875rem 1.25rem;
+      display:flex;align-items:center;gap:.875rem;
+      box-shadow:0 8px 32px rgba(0,0,0,.5);
+      z-index:9999;max-width:360px;width:calc(100% - 2rem);
+      animation:slideUp .3s ease;
+    `;
+    banner.innerHTML = `
+      <div style="font-size:1.75rem;flex-shrink:0">📲</div>
+      <div style="flex:1">
+        <div style="font-weight:800;font-family:var(--font-display);font-size:.9rem">CiroLog'u Yükle</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">Ana ekrana ekle, uygulama gibi kullan</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        <button id="pwaInstallBtn" style="
+          background:var(--accent);color:#000;border:none;
+          border-radius:var(--radius-sm);padding:.5rem 1rem;
+          font-weight:800;font-size:.8rem;cursor:pointer;
+          font-family:var(--font-body);white-space:nowrap;
+        ">Yükle</button>
+        <button onclick="document.getElementById('pwaBanner').remove()" style="
+          background:transparent;border:none;color:var(--muted);
+          font-size:.72rem;cursor:pointer;font-family:var(--font-body);
+        ">Şimdi değil</button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+
+    document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const {outcome} = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      hidePwaBanner();
+      if(outcome==='accepted') window.toast && window.toast('Yükleniyor...','s');
+    });
+  }
+
+  function hidePwaBanner(){
+    const b = document.getElementById('pwaBanner');
+    if(b) b.remove();
+  }
+
+  /* iOS Safari: manuel talimat */
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode:standalone)').matches || window.navigator.standalone;
+
+  if(isIOS && !isStandalone){
+    setTimeout(()=>{
+      if(document.getElementById('pwaBanner')) return;
+      const tip = document.createElement('div');
+      tip.id = 'pwaBanner';
+      tip.style.cssText = `
+        position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
+        background:var(--surface);border:1px solid var(--border);
+        border-radius:var(--radius);padding:1rem 1.25rem;
+        box-shadow:0 8px 32px rgba(0,0,0,.5);
+        z-index:9999;max-width:340px;width:calc(100% - 2rem);
+        text-align:center;animation:slideUp .3s ease;
+      `;
+      tip.innerHTML = `
+        <div style="font-size:1.5rem;margin-bottom:.4rem">📲</div>
+        <div style="font-weight:800;font-family:var(--font-display);font-size:.9rem;margin-bottom:.3rem">Ana Ekrana Ekle</div>
+        <div style="font-size:.78rem;color:var(--muted);line-height:1.5">
+          Safari'de <strong style="color:var(--text)">Paylaş</strong> butonuna → <strong style="color:var(--text)">"Ana Ekrana Ekle"</strong> seçin
+        </div>
+        <button onclick="this.parentElement.remove()" style="
+          margin-top:.75rem;background:var(--surface2);border:1px solid var(--border);
+          border-radius:var(--radius-sm);padding:.4rem 1rem;
+          color:var(--muted);font-size:.75rem;cursor:pointer;font-family:var(--font-body);
+        ">Tamam</button>
+      `;
+      document.body.appendChild(tip);
+    }, 3000);
+  }
+})();
+
+/* Slide-up animasyonu */
+const _pwaStyle = document.createElement('style');
+_pwaStyle.textContent = `@keyframes slideUp{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}`;
+document.head.appendChild(_pwaStyle);
 </script>
 </body>
 </html>
