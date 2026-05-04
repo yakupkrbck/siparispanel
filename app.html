@@ -1389,18 +1389,18 @@ body { font-weight: 500; }
       </div>
     </div>
 
-    <!-- ════ ÖDEME MODAL ════ -->
+    <!-- ════ ÖDEME / BORÇ MODAL ════ -->
     <div id="payModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;width:100%;max-width:420px;box-shadow:0 24px 64px var(--sh);position:relative">
-        <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:800;margin-bottom:1.25rem">💳 Ödeme Yap</div>
+        <div id="payModalTitle" style="font-family:var(--font-display);font-size:1.15rem;font-weight:800;margin-bottom:1.25rem">💳 Ödeme Yap</div>
         <input type="hidden" id="paySupId">
-        <div style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">Tedarikçi: <strong id="paySupName" style="color:var(--text)">—</strong></div>
-        <div style="font-size:.82rem;color:var(--supplier-color);margin-bottom:1rem;font-weight:700">Kalan Borç: <span id="paySupRemaining">₺0</span></div>
-        <div class="form-group"><label>Ödeme Miktarı (₺)</label><div class="amt-wrap"><span class="cur">₺</span><input type="number" id="payAmount" placeholder="0" min="0"></div></div>
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:.4rem">Tedarikçi: <strong id="paySupName" style="color:var(--text)">—</strong></div>
+        <div style="font-size:.82rem;color:var(--supplier-color);margin-bottom:1rem;font-weight:700" id="paySupRemaining">—</div>
+        <div class="form-group"><label id="payModalAmountLabel">Ödeme Miktarı (₺)</label><div class="amt-wrap"><span class="cur">₺</span><input type="number" id="payAmount" placeholder="0" min="0"></div></div>
         <div class="form-group"><label>Tarih</label><input type="date" id="payDate"></div>
         <div class="form-group"><label>Not (Opsiyonel)</label><input type="text" id="payNote" placeholder="Açıklama..."></div>
         <div style="display:flex;gap:.75rem;margin-top:1rem">
-          <button class="btn-save" style="flex:1" onclick="confirmPayment()">✓ Ödemeyi Kaydet</button>
+          <button class="btn-save" id="payModalBtn" style="flex:1" onclick="confirmPayment()">✓ Ödemeyi Kaydet</button>
           <button class="btn-secondary" onclick="closePayModal()">İptal</button>
         </div>
       </div>
@@ -1512,7 +1512,7 @@ onAuthStateChanged(auth,async(user)=>{
 });
 
 function poll(){const t=setInterval(async()=>{const s=await getDoc(doc(db,C.users,cu.uid));if(s.data()?.approved){clearInterval(t);cp=s.data();ss('screenApp');init();}},10000);}
-function ss(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+window.ss=function(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
 window.doLogin=async function(){
   const e=document.getElementById('loginEmail').value.trim();
@@ -2892,7 +2892,7 @@ function renderSuppliers(){
         ${isCleared?'<div style="margin-top:.625rem;text-align:center;font-size:.75rem;color:var(--success);font-weight:700;background:rgba(52,216,138,.08);border-radius:var(--radius-sm);padding:.4rem">✓ Borç Kapatıldı</div>':''}
         <div class="supplier-actions">
           ${!isCleared?`<button class="sup-btn pay" onclick="openPayModal('${sup.id}','${sup.name.replace(/'/g,"\\'")}',${remaining})">💳 Ödeme Yap</button>`:''}
-          <button class="sup-btn" onclick="editSupplierDebt('${sup.id}','${sup.name.replace(/'/g,"\\'")}',${sup.totalDebt||0})">✏️ Güncelle</button>
+          <button class="sup-btn" onclick="openAddDebtModal('${sup.id}','${sup.name.replace(/'/g,"\\'")}')">➕ Borç Ekle</button>
           <button class="sup-btn danger" onclick="deleteSupplier('${sup.id}')">🗑️</button>
         </div>
       </div>`;
@@ -2911,9 +2911,11 @@ function renderSuppliers(){
         <div class="pay-divider"></div>
         <div class="pay-info">
           <div class="pay-supplier">${p.supplierName||'—'}</div>
-          ${p.note?`<div class="pay-note">📝 ${p.note}</div>`:''}
+          ${p.note?`<div class="pay-note">${p.type==='debt'?'➕ Borç':'📝'} ${p.note}</div>`:p.type==='debt'?'<div class="pay-note" style="color:var(--warn)">➕ Yeni borç eklendi</div>':''}
         </div>
-        <div class="pay-amount">₺${fmt(p.amount)}</div>
+        <div class="pay-amount" style="${p.type==='debt'?'color:var(--warn)':''}">
+          ${p.type==='debt'?'+':''}₺${fmt(p.amount)}
+        </div>
         <div class="icon-btn danger" onclick="deletePayment('${p.id}','${p.supplierId}')">🗑️</div>
       </div>`;
     }).join('');
@@ -2938,21 +2940,26 @@ window.addSupplier=async function(){
   }catch(e){toast('Hata: '+e.message,'e');}
 };
 
-window.editSupplierDebt=async function(supId,supName,currentDebt){
-  const newDebt=prompt(`"${supName}" için yeni toplam borç:\n(Mevcut: ₺${fmt(currentDebt)})`,currentDebt);
-  if(newDebt===null)return;
-  const parsed=parseFloat(newDebt);
-  if(isNaN(parsed)||parsed<0){toast('Geçersiz miktar','w');return;}
-  try{
-    await updateDoc(doc(db,C.suppliers(cu.uid),supId),{totalDebt:parsed});
-    const s=SUPPLIERS.find(x=>x.id===supId);if(s)s.totalDebt=parsed;
-    renderSuppliers();
-    toast('Borç güncellendi ✓','s');
-  }catch(e){toast('Hata: '+e.message,'e');}
+/* Yeni borç ekleme */
+window.openAddDebtModal=function(supId,supName){
+  const sup=SUPPLIERS.find(s=>s.id===supId);if(!sup)return;
+  const m=document.getElementById('payModal');if(!m)return;
+  m.dataset.mode='debt';
+  document.getElementById('payModalTitle').textContent='➕ Yeni Borç Ekle';
+  document.getElementById('payModalAmountLabel').textContent='Borç Miktarı (₺)';
+  document.getElementById('payModalBtn').textContent='➕ Borç Ekle';
+  document.getElementById('paySupRemaining').textContent='Mevcut toplam: ₺'+fmt(sup.totalDebt||0);
+  document.getElementById('paySupId').value=supId;
+  document.getElementById('paySupName').textContent=supName;
+  document.getElementById('payAmount').value='';
+  document.getElementById('payDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('payNote').value='';
+  m.style.display='flex';
+  setTimeout(()=>document.getElementById('payAmount').focus(),100);
 };
 
 window.deleteSupplier=async function(supId){
-  if(!confirm('Bu tedarikçi silinecek. Ödeme kayıtları da kaldırılacak. Emin misiniz?'))return;
+  if(!confirm('Bu tedarikçi silinecek. Emin misiniz?'))return;
   try{
     await deleteDoc(doc(db,C.suppliers(cu.uid),supId));
     SUPPLIERS=SUPPLIERS.filter(s=>s.id!==supId);
@@ -2963,11 +2970,14 @@ window.deleteSupplier=async function(supId){
 };
 
 window.openPayModal=function(supId,supName,remaining){
-  const m=document.getElementById('payModal');
-  if(!m)return;
+  const m=document.getElementById('payModal');if(!m)return;
+  m.dataset.mode='payment';
+  document.getElementById('payModalTitle').textContent='💳 Ödeme Yap';
+  document.getElementById('payModalAmountLabel').textContent='Ödeme Miktarı (₺)';
+  document.getElementById('payModalBtn').textContent='✓ Ödemeyi Kaydet';
   document.getElementById('paySupId').value=supId;
   document.getElementById('paySupName').textContent=supName;
-  document.getElementById('paySupRemaining').textContent='₺'+fmt(remaining);
+  document.getElementById('paySupRemaining').textContent='Kalan borç: ₺'+fmt(remaining);
   document.getElementById('payAmount').value='';
   document.getElementById('payDate').value=new Date().toISOString().split('T')[0];
   document.getElementById('payNote').value='';
@@ -2978,6 +2988,8 @@ window.openPayModal=function(supId,supName,remaining){
 window.closePayModal=function(){document.getElementById('payModal').style.display='none';};
 
 window.confirmPayment=async function(){
+  const m=document.getElementById('payModal');
+  const mode=m?.dataset?.mode||'payment';
   const supId=document.getElementById('paySupId').value;
   const supName=document.getElementById('paySupName').textContent;
   const amount=parseFloat(document.getElementById('payAmount').value||'0');
@@ -2986,21 +2998,40 @@ window.confirmPayment=async function(){
   if(!amount||amount<=0){toast('Geçerli bir miktar girin','w');return;}
   if(!date){toast('Tarih seçin','w');return;}
   try{
-    const ref=await addDoc(collection(db,C.payments(cu.uid)),{supplierId:supId,supplierName:supName,amount,date,note,createdAt:serverTimestamp()});
-    PAYMENTS.unshift({id:ref.id,supplierId:supId,supplierName:supName,amount,date,note});
-    closePayModal();
-    renderSuppliers();
-    toast(`₺${fmt(amount)} ödeme kaydedildi ✓`,'s');
+    if(mode==='debt'){
+      const sup=SUPPLIERS.find(s=>s.id===supId);
+      const newDebt=Number(sup?.totalDebt||0)+amount;
+      await updateDoc(doc(db,C.suppliers(cu.uid),supId),{totalDebt:newDebt});
+      if(sup)sup.totalDebt=newDebt;
+      const ref=await addDoc(collection(db,C.payments(cu.uid)),{supplierId:supId,supplierName:supName,amount,date,note,type:'debt',createdAt:serverTimestamp()});
+      PAYMENTS.unshift({id:ref.id,supplierId:supId,supplierName:supName,amount,date,note,type:'debt'});
+      closePayModal();renderSuppliers();
+      toast('₺'+fmt(amount)+' borç eklendi ✓','s');
+    } else {
+      const ref=await addDoc(collection(db,C.payments(cu.uid)),{supplierId:supId,supplierName:supName,amount,date,note,type:'payment',createdAt:serverTimestamp()});
+      PAYMENTS.unshift({id:ref.id,supplierId:supId,supplierName:supName,amount,date,note,type:'payment'});
+      closePayModal();renderSuppliers();
+      toast('₺'+fmt(amount)+' ödeme kaydedildi ✓','s');
+    }
   }catch(e){toast('Hata: '+e.message,'e');}
 };
 
 window.deletePayment=async function(payId){
-  if(!confirm('Bu ödeme kaydı silinsin mi?'))return;
+  if(!confirm('Bu kayıt silinsin mi?'))return;
   try{
+    const pay=PAYMENTS.find(p=>p.id===payId);
     await deleteDoc(doc(db,C.payments(cu.uid),payId));
+    if(pay?.type==='debt'){
+      const sup=SUPPLIERS.find(s=>s.id===pay.supplierId);
+      if(sup){
+        const newDebt=Math.max(0,Number(sup.totalDebt||0)-Number(pay.amount));
+        await updateDoc(doc(db,C.suppliers(cu.uid),pay.supplierId),{totalDebt:newDebt});
+        sup.totalDebt=newDebt;
+      }
+    }
     PAYMENTS=PAYMENTS.filter(p=>p.id!==payId);
     renderSuppliers();
-    toast('Ödeme silindi','w');
+    toast('Silindi','w');
   }catch(e){toast('Hata: '+e.message,'e');}
 };
 
