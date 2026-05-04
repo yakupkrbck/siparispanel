@@ -8,22 +8,28 @@
 <style>
 /* ══ TEMALAR ══ */
 [data-theme="dark"]{
-  --bg:#080810; --surface:#111118; --surface2:#18181f; --border:#26263a;
-  --accent:#c8f55a; --accent2:#7b6ff0; --text:#f2f2f7; --muted:#60607a;
-  --danger:#ff4455; --success:#3dd68c; --warn:#f5c842; --sh:rgba(0,0,0,.6);
+  --bg:#05050d; --surface:#0e0e1a; --surface2:#141422; --border:#1e1e30;
+  --accent:#b8f050; --accent2:#8b5cf6; --accent3:#06b6d4;
+  --text:#eeeef5; --muted:#5a5a78;
+  --danger:#f04060; --success:#34d88a; --warn:#fbbf24; --sh:rgba(0,0,0,.7);
   --font-body:'Inter',sans-serif; --font-display:'Lexend',sans-serif;
-  --radius:10px; --radius-sm:7px; --sidebar-w:244px;
-  --nav-active-bg:rgba(200,245,90,.09);
-  --card-shadow:0 2px 12px rgba(0,0,0,.35);
+  --radius:12px; --radius-sm:8px; --sidebar-w:248px;
+  --nav-active-bg:rgba(184,240,80,.08);
+  --card-shadow:0 4px 24px rgba(0,0,0,.4);
+  --glow:rgba(184,240,80,.15);
+  --supplier-color:#06b6d4;
 }
 [data-theme="light"]{
-  --bg:#eef0f7; --surface:#ffffff; --surface2:#e4e7f2; --border:#ccd0e0;
-  --accent:#4338ca; --accent2:#0ea5e9; --text:#141428; --muted:#7880a0;
-  --danger:#dc2626; --success:#16a34a; --warn:#ca8a04; --sh:rgba(20,20,60,.12);
+  --bg:#f0f2f9; --surface:#ffffff; --surface2:#e8eaf4; --border:#d0d4e8;
+  --accent:#5b21b6; --accent2:#0891b2; --accent3:#059669;
+  --text:#12122a; --muted:#6b7194;
+  --danger:#dc2626; --success:#16a34a; --warn:#d97706; --sh:rgba(18,18,42,.1);
   --font-body:'Inter',sans-serif; --font-display:'Lexend',sans-serif;
-  --radius:8px; --radius-sm:5px; --sidebar-w:244px;
+  --radius:10px; --radius-sm:6px; --sidebar-w:248px;
   --nav-active-bg:#ede9fe;
-  --card-shadow:0 1px 6px rgba(20,20,60,.08);
+  --card-shadow:0 2px 12px rgba(18,18,42,.08);
+  --glow:rgba(91,33,182,.1);
+  --supplier-color:#0891b2;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -82,17 +88,14 @@ h1,h2,h3{font-family:var(--font-display);}
 
 /* ══ SIDEBAR ══ */
 .sidebar{width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:0;flex-shrink:0;transition:transform .3s;overflow:hidden;}
-.sidebar-scroll{flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column;padding:1.25rem .875rem .5rem;overflow-x:hidden;}
+  display:flex;flex-direction:column;padding:0;flex-shrink:0;transition:transform .3s;overflow:visible;}
+.sidebar-scroll{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;padding:1rem .75rem .5rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
 .sidebar-footer{
   background:var(--surface);
-  padding:.625rem .875rem;
-  padding-bottom:max(.75rem,env(safe-area-inset-bottom));
+  padding:.625rem .75rem;
+  padding-bottom:max(.875rem,env(safe-area-inset-bottom));
   border-top:1px solid var(--border);
   flex-shrink:0;
-  position:sticky;
-  bottom:0;
-  z-index:10;
 }
 .sidebar-logo{
   font-family:var(--font-display);font-size:1.4rem;font-weight:900;
@@ -164,20 +167,138 @@ h1,h2,h3{font-family:var(--font-display);}
 .page-header p{color:var(--muted);font-size:.825rem;margin-top:.3rem;font-weight:500;}
 
 /* ══ STAT CARDS ══ */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.875rem;margin-bottom:1.5rem;}
 .stat-card{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
   padding:1.1rem 1.25rem;box-shadow:var(--card-shadow);
+  transition:transform .18s,box-shadow .18s,border-color .18s;
+  position:relative;overflow:hidden;
 }
-.stat-label{font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;}
-.stat-value{font-family:var(--font-display);font-size:1.75rem;font-weight:800;letter-spacing:-.03em;}
-.stat-delta{font-size:.75rem;margin-top:.2rem;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.45);border-color:color-mix(in srgb,var(--accent) 30%,var(--border));}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .18s;}
+.stat-card:hover::after{opacity:1;}
+.stat-label{font-size:.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;}
+.stat-value{font-family:var(--font-display);font-size:1.7rem;font-weight:800;letter-spacing:-.03em;}
+.stat-delta{font-size:.73rem;margin-top:.2rem;}
 .up{color:var(--success);} .dn{color:var(--danger);} .neu{color:var(--muted);}
 
 /* ══ CARDS ══ */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;box-shadow:var(--card-shadow);margin-bottom:.875rem;}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.chart-title{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.4rem;box-shadow:var(--card-shadow);margin-bottom:.875rem;
+  transition:border-color .18s;
+}
+.card:hover{border-color:color-mix(in srgb,var(--accent) 20%,var(--border));}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;}
+.chart-title{font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.875rem;}
+
+/* ══ CHARTS ══ */
+.chart-wrap{display:flex;align-items:flex-end;gap:5px;padding:.5rem 0 0;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:.35rem;}
+.bar{width:100%;border-radius:var(--radius-sm) var(--radius-sm) 0 0;transition:height .6s cubic-bezier(.34,1.56,.64,1),filter .15s;cursor:pointer;position:relative;}
+.bar:hover{filter:brightness(1.25);}
+.bar-label{font-size:.6rem;color:var(--muted);}
+.bar-val{font-size:.58rem;color:var(--text);white-space:nowrap;}
+
+/* ══ SKELETON LOADING ══ */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skeleton{
+  background:linear-gradient(90deg,var(--surface2) 25%,color-mix(in srgb,var(--accent) 6%,var(--surface2)) 50%,var(--surface2) 75%);
+  background-size:800px 100%;animation:shimmer 1.5s infinite;
+  border-radius:var(--radius-sm);
+}
+.skeleton-line{height:.85rem;margin-bottom:.5rem;}
+.skeleton-val{height:2.2rem;width:60%;margin-bottom:.4rem;}
+.skeleton-bar{border-radius:var(--radius-sm) var(--radius-sm) 0 0;}
+
+/* ══ MOBILE BOTTOM NAV ══ */
+/* Kaldırıldı */
+
+@media(max-width:768px){
+  .main-content{padding-bottom:1rem;}
+  .page{padding:.75rem;}
+  .two-col{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .stat-value{font-size:1.35rem;}
+  .quick-entry{padding:1rem;gap:.75rem;}
+  .qi-wrap{min-width:0;width:100%;}
+  .chart-wrap{gap:3px;}
+  .bar-val{display:none;}
+  .supplier-grid{grid-template-columns:1fr;}
+  .entry-form{padding:1.25rem;}
+  .tabs{width:100%;}
+  .tab{flex:1;text-align:center;font-size:.75rem;padding:.4rem .5rem;}
+  .filter-bar{gap:.5rem;}
+  .sup-summary{gap:.875rem;padding:.875rem 1rem;}
+  .sup-sum-val{font-size:1.1rem;}
+}
+
+@media(max-width:400px){
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .stat-value{font-size:1.2rem;}
+  .page{padding:.625rem;}
+}
+
+/* ══ SUPPLIER / TEDARİKÇİ ══ */
+.supplier-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.875rem;margin-bottom:1.5rem;}
+.supplier-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.25rem;box-shadow:var(--card-shadow);
+  transition:transform .18s,box-shadow .18s,border-color .18s;
+  position:relative;overflow:hidden;
+}
+.supplier-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4);border-color:var(--supplier-color);}
+.supplier-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--supplier-color),var(--accent2));}
+.supplier-name{font-family:var(--font-display);font-size:1rem;font-weight:800;margin-bottom:.75rem;}
+.supplier-debt-row{display:flex;justify-content:space-between;align-items:baseline;padding:.3rem 0;border-bottom:1px solid var(--border);font-size:.82rem;}
+.supplier-debt-row:last-of-type{border-bottom:none;}
+.debt-label{color:var(--muted);}
+.debt-val{font-weight:700;font-family:var(--font-display);}
+.debt-remaining{font-size:1.2rem;color:var(--supplier-color) !important;}
+.debt-zero{color:var(--success) !important;}
+.supplier-actions{display:flex;gap:.5rem;margin-top:.875rem;}
+.sup-btn{flex:1;padding:.55rem;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface2);color:var(--text);font-family:var(--font-body);font-size:.78rem;
+  font-weight:700;cursor:pointer;transition:all .15s;text-align:center;}
+.sup-btn:hover{border-color:var(--accent);color:var(--accent);}
+.sup-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
+.sup-btn.pay{background:var(--supplier-color);color:#000;border-color:var(--supplier-color);}
+.sup-btn.pay:hover{opacity:.85;}
+
+.payment-log{margin-top:.875rem;}
+.payment-item{display:flex;align-items:center;gap:.875rem;padding:.75rem 1rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:.5rem;transition:border-color .15s;}
+.payment-item:hover{border-color:var(--supplier-color);}
+.pay-date{min-width:52px;text-align:center;}
+.pay-day{font-family:var(--font-display);font-size:1.3rem;font-weight:700;line-height:1;}
+.pay-month{font-size:.6rem;color:var(--muted);text-transform:uppercase;}
+.pay-divider{width:1px;height:36px;background:var(--border);}
+.pay-info{flex:1;}
+.pay-supplier{font-size:.85rem;font-weight:700;}
+.pay-note{font-size:.72rem;color:var(--muted);}
+.pay-amount{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--supplier-color);}
+
+/* Tedarikçi özet banner */
+.sup-summary{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--supplier-color) 8%,var(--surface)),color-mix(in srgb,var(--accent2) 5%,var(--surface)));
+  border:1px solid color-mix(in srgb,var(--supplier-color) 25%,var(--border));
+  border-radius:var(--radius);padding:1.1rem 1.4rem;margin-bottom:1.25rem;
+  display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;
+}
+.sup-sum-item{text-align:center;flex:1;min-width:80px;}
+.sup-sum-val{font-family:var(--font-display);font-size:1.4rem;font-weight:800;}
+.sup-sum-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.15rem;}
+
+/* ══ EMPTY STATE ══ */
+.empty-state{
+  text-align:center;padding:3rem 1.5rem;
+  color:var(--muted);
+}
+.empty-state-icon{font-size:3.5rem;margin-bottom:1rem;opacity:.6;}
+.empty-state h3{font-family:var(--font-display);font-size:1.1rem;color:var(--text);margin-bottom:.4rem;}
+.empty-state p{font-size:.82rem;line-height:1.6;}
 
 /* ══ QUICK ENTRY ══ */
 .quick-entry{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--accent2) 6%,transparent));
@@ -528,9 +649,11 @@ body { font-weight: 500; }
 
 /* ══ MOBILE: full sidebar coverage, proper stacking ══ */
 @media(max-width: 768px) {
-  .sidebar { z-index: 160; box-shadow: 4px 0 24px rgba(0,0,0,.5); top:0; height:100dvh; overflow:hidden; }
+  .sidebar { z-index: 160; box-shadow: 4px 0 24px rgba(0,0,0,.5); top:0; height:100dvh; overflow:visible; }
+  .sidebar-scroll { overflow-y:auto; }
   .main-content { min-height:calc(100dvh - 52px); }
   .sidebar-overlay { z-index: 155; }
+  .sidebar-footer { padding-bottom:max(.875rem,env(safe-area-inset-bottom)); }
   .top-bar { height: 52px; min-height: 52px; }
   .hamburger-btn { height: 52px; }
   .main-content { padding-top: 0; }
@@ -641,11 +764,12 @@ body { font-weight: 500; }
       <button class="nav-item active" onclick="navTo('dashboard',this)"><span class="nav-icon">📊</span> Özet</button>
       <button class="nav-item" onclick="navTo('kayit',this)"><span class="nav-icon">✏️</span> Ciro Girişi</button>
       <button class="nav-item" onclick="navTo('import',this)"><span class="nav-icon">📤</span> Toplu Yükle</button>
+      <button class="nav-item" onclick="navTo('tedarikciler',this)"><span class="nav-icon">🏭</span> Tedarikçiler</button>
 
       <div class="nav-cat">Analiz</div>
       <button class="nav-item" onclick="navTo('raporlar',this)"><span class="nav-icon">📈</span> Raporlar</button>
       <button class="nav-item" onclick="navTo('karsilastir',this)"><span class="nav-icon">⚖️</span> Karşılaştır</button>
-      <button class="nav-item" id="navAiBtn" onclick="navTo('ai',this)"><span class="nav-icon">🧠</span> Yerel AI Analiz <span id="aiLockBadge" style="font-size:.6rem;background:var(--warn);color:#000;padding:.05rem .3rem;border-radius:3px;margin-left:.3rem;display:none">KİLİTLİ</span></button>
+      <button class="nav-item" id="navAiBtn" onclick="navTo('ai',this)"><span class="nav-icon">✨</span> Gemini AI <span id="aiLockBadge" style="font-size:.6rem;background:var(--warn);color:#000;padding:.05rem .3rem;border-radius:3px;margin-left:.3rem;display:none">KİLİTLİ</span></button>
       <button class="nav-item" onclick="navTo('takvim',this)"><span class="nav-icon">📅</span> Takvim Görünümü</button>
 
       <div class="nav-cat">Hesap</div>
@@ -887,61 +1011,61 @@ body { font-weight: 500; }
       </div>
     </div>
 
-    <!-- ════ YEREl AI ANALİZ (FEATURE GATED) ════ -->
+    <!-- ════ AKILLI ANALİZ ════ -->
     <div class="page" id="page-ai">
-      <div class="page-header"><h1>🧠 Yerel AI Analiz</h1><p>Dış API bağımsız, istatistiksel analiz motoru</p></div>
+      <div class="page-header"><h1>🧠 Akıllı Analiz</h1><p>Verilerinizden otomatik üretilen içgörüler ve tahminler</p></div>
 
-      <!-- LOCKED STATE — shown if aiUnlocked=false -->
+      <!-- LOCKED STATE -->
       <div id="aiLockedView" style="display:none">
         <div class="feature-locked-banner" style="margin-bottom:1rem">
           <div style="font-size:3rem;margin-bottom:.75rem">🔒</div>
-          <h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:.5rem">AI Analiz Modülü Kilitli</h2>
+          <h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:.5rem">Akıllı Analiz Modülü Kilitli</h2>
           <p style="color:var(--muted);font-size:.875rem;line-height:1.65;max-width:400px;margin:0 auto .5rem">
-            Haftalık tahminler, trend analizi, kapalı gün etkisi ve 30 günlük projeksiyon gibi güçlü analizlere erişin.
+            Trend analizi, haftalık dağılım, 30 günlük projeksiyon ve aksiyon tavsiyeleriyle işletmenizi veriyle yönetin.
           </p>
           <div style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap">
             <span class="purchase-status ps-not-owned">⚠ Bu özellik için ek satın alım gerekli</span>
           </div>
         </div>
-        <!-- Preview (blurred) -->
         <div class="paywall-wrap" style="margin-bottom:1rem">
           <div class="paywall-blur">
             <div class="ai-insight-card">
               <h3>🧠 Örnek Analiz Raporu</h3>
-              <div class="insight-item"><div class="insight-icon">📈</div><div class="insight-text"><strong>Trend Analizi:</strong> Son 30 günde ciro trendi %12 yukarı yönlü. Cuma günleri zirve performans.</div></div>
-              <div class="insight-item"><div class="insight-icon">🔮</div><div class="insight-text"><strong>30 Günlük Projeksiyon:</strong> Mevcut hızla ay sonu tahmini ₺127.500. Hedefinizin %102'si.</div></div>
+              <div class="insight-item"><div class="insight-icon">📈</div><div class="insight-text"><strong>Trend:</strong> Son 30 günde ciro trendi %12 yukarı yönlü. Cuma günleri zirve performans.</div></div>
+              <div class="insight-item"><div class="insight-icon">🔮</div><div class="insight-text"><strong>Projeksiyon:</strong> Mevcut hızla ay sonu tahmini ₺127.500 — hedefinizin %102'si.</div></div>
               <div class="insight-item"><div class="insight-icon">📅</div><div class="insight-text"><strong>En Verimli Gün:</strong> Cuma — günlük ort. ₺8.400. Hafta sonu farkı %34.</div></div>
             </div>
           </div>
           <div class="paywall-overlay">
-            <button class="paywall-cta" onclick="navTo('satin-al', document.querySelector('[onclick*="satin-al"]'))" style="max-width:320px">
-              🔓 AI Modülünü Satın Al — ₺299
+            <button class="paywall-cta" onclick="navTo('satin-al', document.querySelector('[onclick*=\'satin-al\']'))" style="max-width:320px">
+              🔓 Analiz Modülünü Satın Al — ₺299
             </button>
             <div class="paywall-note">Tek seferlik ödeme · Anında aktivasyon</div>
           </div>
         </div>
       </div>
 
-      <!-- UNLOCKED STATE — shown if aiUnlocked=true -->
+      <!-- UNLOCKED STATE -->
       <div id="aiUnlockedView" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-          <span class="purchase-status ps-owned">✓ AI Analiz Modülü Aktif</span>
-        </div>
+        <span class="purchase-status ps-owned" style="margin-bottom:1rem;display:inline-flex">✓ Akıllı Analiz Aktif</span>
+
+        <!-- Analiz Kontrolü -->
         <div class="card" style="margin-bottom:1rem">
           <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
-            <div style="flex:1">
-              <div style="font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.35rem">Analiz Türü</div>
-              <select id="aiType" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .9rem;color:var(--text);font-family:var(--font-body);outline:none">
-                <option value="genel">📊 Genel Özet</option>
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">Analiz Türü</div>
+              <select id="aiType" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.65rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
+                <option value="genel">📊 Genel Rapor</option>
                 <option value="trend">📈 Trend Analizi</option>
                 <option value="gun">📅 Gün/Hafta Dağılımı</option>
                 <option value="tahmin">🔮 30 Günlük Tahmin</option>
                 <option value="kapali">🏪 Kapalı Gün Etkisi</option>
+                <option value="rekor">🏆 Rekor & Zirveler</option>
               </select>
             </div>
-            <div style="flex:1">
-              <div style="font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:.35rem">Veri Aralığı</div>
-              <select id="aiRange" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .9rem;color:var(--text);font-family:var(--font-body);outline:none">
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem">Veri Aralığı</div>
+              <select id="aiRange" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.65rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
                 <option value="30">Son 30 Gün</option>
                 <option value="90" selected>Son 90 Gün</option>
                 <option value="180">Son 6 Ay</option>
@@ -950,11 +1074,21 @@ body { font-weight: 500; }
               </select>
             </div>
           </div>
-          <button class="btn-save" id="aiBtn" onclick="runLocalAI()">🧠 Analizi Çalıştır</button>
+          <button class="btn-save" id="aiBtn" onclick="runLocalAI()" style="width:100%">🧠 Analizi Başlat</button>
         </div>
+
+        <!-- Sonuç Alanı -->
         <div id="aiResult" class="ai-insight-card">
-          <h3>🧠 Analiz Raporu</h3>
-          <div style="color:var(--muted);font-size:.875rem">Analiz için yukarıdan tür ve aralık seçip "Çalıştır"a basın.</div>
+          <div style="text-align:center;padding:1.5rem 0;color:var(--muted)">
+            <div style="font-size:2.5rem;margin-bottom:.5rem">🧠</div>
+            <div style="font-size:.875rem">Analiz türü ve aralık seçip <strong style="color:var(--text)">Analizi Başlat</strong>'a basın</div>
+          </div>
+        </div>
+
+        <!-- Hızlı İçgörüler — her zaman görünür -->
+        <div style="margin-top:1.25rem">
+          <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem">⚡ Anlık İçgörüler</div>
+          <div id="aiQuickInsights" class="ai-insight-card"></div>
         </div>
       </div>
     </div>
@@ -994,74 +1128,48 @@ body { font-weight: 500; }
       <div class="paywall-card" style="margin-bottom:1.5rem">
         <div class="paywall-hero">
           <div class="paywall-hero-icon">🧠</div>
-          <h2>AI Analiz Modülü</h2>
-          <p>İşletmenizi veriyle yönetin. Yapay zeka destekli tahminler ve derinlemesine analizlerle bir adım önde olun.</p>
+          <h2>Akıllı Analiz Modülü</h2>
+          <p>İşletmenizi veriyle yönetin. Gelişmiş trend analizi, projeksiyon ve gün bazlı içgörülerle bir adım önde olun.</p>
         </div>
         <div class="paywall-features">
-          <div class="pf-item"><div class="pf-icon">🔮</div><div class="pf-text"><strong>30 Günlük Projeksiyon</strong><span>Mevcut verilerinizle ay sonu ciro tahmini yapın</span></div></div>
-          <div class="pf-item"><div class="pf-icon">📈</div><div class="pf-text"><strong>Trend Analizi</strong><span>Yükselen ve düşen dönemleri erken tespit edin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">📅</div><div class="pf-text"><strong>Gün/Hafta Dağılımı</strong><span>En verimli gün ve saatleri keşfedin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">🏪</div><div class="pf-text"><strong>Kapalı Gün Zekası</strong><span>Tatil etkisini hesaplamalara dahil edin</span></div></div>
-          <div class="pf-item"><div class="pf-icon">⚡</div><div class="pf-text"><strong>Anında Aktivasyon</strong><span>Ödeme onaylanınca hemen kullanıma açılır</span></div></div>
+          <div class="pf-item"><div class="pf-icon">🔮</div><div class="pf-text"><strong>30 Günlük Projeksiyon</strong><span>Mevcut verilerle ay sonu ciro tahmini</span></div></div>
+          <div class="pf-item"><div class="pf-icon">📈</div><div class="pf-text"><strong>Trend Analizi</strong><span>Yükselen ve düşen dönemleri erkenden tespit edin</span></div></div>
+          <div class="pf-item"><div class="pf-icon">📅</div><div class="pf-text"><strong>Gün/Hafta Dağılımı</strong><span>En verimli günlerinizi keşfedin</span></div></div>
+          <div class="pf-item"><div class="pf-icon">🏆</div><div class="pf-text"><strong>Rekor & Zirveler</strong><span>En iyi günleriniz, haftalarınız, aylarınız</span></div></div>
+          <div class="pf-item"><div class="pf-icon">🏪</div><div class="pf-text"><strong>Kapalı Gün Zekası</strong><span>Tatil etkisini hesaplamalara dahil eder</span></div></div>
+          <div class="pf-item"><div class="pf-icon">⚡</div><div class="pf-text"><strong>Dashboard İçgörüleri</strong><span>Her gün otomatik özet ve tavsiyeler</span></div></div>
         </div>
         <div class="paywall-pricing">
           <div id="aiModuleBuySection">
-            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.25rem;text-align:center;margin-bottom:1rem">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.5rem;text-align:center;margin-bottom:1rem">
               <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Tek Seferlik Ödeme</div>
-              <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--accent)" id="aiPriceDisplay">₺299</div>
-              <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Sınırsız kullanım · Anında aktivasyon</div>
+              <div style="font-family:var(--font-display);font-size:2.5rem;font-weight:900;color:var(--accent);letter-spacing:-.04em" id="aiPriceDisplay">₺299</div>
+              <div style="font-size:.78rem;color:var(--muted);margin-top:.25rem">Sınırsız kullanım · Ömür boyu geçerli</div>
             </div>
             <button class="paywall-cta" id="buyAiBtn" onclick="purchaseAiModule()">
-              🔓 AI Modülünü Satın Al
+              🔓 Analiz Modülünü Satın Al
             </button>
           </div>
           <div id="aiModuleOwnedSection" style="display:none">
-            <div style="text-align:center;padding:.75rem;background:rgba(78,219,143,.08);border:1px solid rgba(78,219,143,.2);border-radius:var(--radius-sm)">
-              <span style="color:var(--success);font-weight:700">✓ AI Modülü Aktif</span>
-              <div style="font-size:.75rem;color:var(--muted);margin-top:.25rem">Satın alındı — sınırsız kullanım</div>
+            <div style="text-align:center;padding:1rem;background:rgba(78,219,143,.08);border:1px solid rgba(78,219,143,.2);border-radius:var(--radius-sm)">
+              <span style="color:var(--success);font-weight:700;font-size:1rem">✓ Analiz Modülü Aktif</span>
+              <div style="font-size:.78rem;color:var(--muted);margin-top:.3rem">Tek seferlik ödeme yapıldı — sınırsız kullanım</div>
             </div>
           </div>
           <div class="paywall-note">
-            🔒 Güvenli ödeme · Google Play Billing<br>
+            🔒 Güvenli ödeme · Anında aktivasyon<br>
             <button class="paywall-restore" onclick="restorePurchases()">Önceki satın alımı geri yükle</button>
           </div>
         </div>
       </div>
 
-      <!-- APP PLAN SECTION -->
-      <div style="font-family:var(--font-display);font-size:1.2rem;margin-bottom:1rem">📱 Uygulama Planı</div>
-      <div class="plan-cards" id="planCards">
-        <div class="plan-card" onclick="selectPlan('baslangic',this)">
-          <h4>Başlangıç</h4>
-          <div class="price">Ücretsiz</div>
-          <ul><li>14 gün deneme</li><li>Temel raporlar</li><li>CSV dışa aktarım</li></ul>
+      <!-- Mevcut durum -->
+      <div class="card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1">
+          <div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;margin-bottom:.35rem">Hesap Durumu</div>
+          <div id="purchaseCurrentStatus" style="font-size:.9rem">Yükleniyor...</div>
         </div>
-        <div class="plan-card" onclick="selectPlan('pro',this)">
-          <h4>Pro</h4>
-          <div class="price">₺499/ay</div>
-          <ul><li>Sınırsız kayıt</li><li>Gelişmiş raporlar</li><li>PDF dışa aktarım</li><li>AI Modülü dahil</li></ul>
-        </div>
-        <div class="plan-card" onclick="selectPlan('kurumsal',this)">
-          <h4>Kurumsal</h4>
-          <div class="price">₺999/ay</div>
-          <ul><li>Tüm Pro özellikleri</li><li>Öncelikli destek</li><li>Çoklu işletme</li></ul>
-        </div>
-      </div>
-      <div style="margin-top:1.25rem">
-        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem" id="selectedPlanNote">Bir paket seçin</div>
-        <button class="btn-save" id="applyPlanBtn" disabled onclick="applyPlan()">📤 Başvuruyu Gönder</button>
-      </div>
-
-      <!-- PLAY STORE INFO -->
-      <div class="card" style="margin-top:1.5rem">
-        <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.75rem">📦 Google Play Store Bilgisi</div>
-        <div class="manifest-box">
-          <strong>Uygulama ID:</strong> <code>com.cirolog.app</code><br>
-          <strong>Billing SKU (AI Modül):</strong> <code>ai_module_lifetime</code><br>
-          <strong>Subscription SKU:</strong> <code>ai_module_monthly</code><br>
-          <strong>Play Billing Lib:</strong> <code>6.x.x</code><br>
-          <span style="color:var(--muted);font-size:.78rem">Gerçek Play Billing entegrasyonu için Android Native veya Flutter/React Native gereklidir. Bu web versiyonu Firebase üzerinden lisans yönetimi yapar.</span>
-        </div>
+        <button class="btn-secondary" onclick="restorePurchases()" style="white-space:nowrap">↺ Geri Yükle</button>
       </div>
     </div><!-- /page-satin-al -->
 
@@ -1171,6 +1279,63 @@ body { font-weight: 500; }
       </div>
     </div>
 
+    <!-- ════ TEDARİKÇİLER ════ -->
+    <div class="page" id="page-tedarikciler">
+      <div class="page-header"><h1>🏭 Tedarikçiler</h1><p>Tedarikçi borçlarınızı ve ödemelerinizi takip edin</p></div>
+
+      <!-- Özet Banner -->
+      <div class="sup-summary" id="supSummary">
+        <div class="sup-sum-item"><div class="sup-sum-val" id="supTotalDebt">₺0</div><div class="sup-sum-label">Toplam Borç</div></div>
+        <div class="sup-sum-item"><div class="sup-sum-val" id="supTotalPaid">₺0</div><div class="sup-sum-label">Toplam Ödenen</div></div>
+        <div class="sup-sum-item"><div class="sup-sum-val" id="supTotalRemaining" style="color:var(--supplier-color)">₺0</div><div class="sup-sum-label">Kalan Borç</div></div>
+        <div class="sup-sum-item"><div class="sup-sum-val" id="supCount">0</div><div class="sup-sum-label">Tedarikçi</div></div>
+      </div>
+
+      <!-- Yeni Tedarikçi Ekle -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="chart-title">➕ Tedarikçi Ekle</div>
+        <div class="form-row">
+          <div class="form-group"><label>Tedarikçi Adı</label><input type="text" id="supName" placeholder="Örn: Ali Usta Et"></div>
+          <div class="form-group"><label>Toplam Borç (₺)</label><div class="amt-wrap"><span class="cur">₺</span><input type="number" id="supDebt" placeholder="0" min="0"></div></div>
+        </div>
+        <div class="form-group"><label>Not (Opsiyonel)</label><input type="text" id="supNote" placeholder="Telefon, kategori..."></div>
+        <button class="btn-save" onclick="addSupplier()">🏭 Tedarikçi Ekle</button>
+      </div>
+
+      <!-- Tedarikçi Kartları -->
+      <div style="font-family:var(--font-display);font-size:1rem;font-weight:800;margin-bottom:.75rem;color:var(--text)">Tedarikçi Listesi</div>
+      <div class="supplier-grid" id="supplierGrid">
+        <div class="empty-state">
+          <div class="empty-state-icon">🏭</div>
+          <h3>Henüz tedarikçi yok</h3>
+          <p>Yukarıdan ilk tedarikçinizi ekleyin</p>
+        </div>
+      </div>
+
+      <!-- Ödeme Geçmişi -->
+      <div style="font-family:var(--font-display);font-size:1rem;font-weight:800;margin:.5rem 0 .75rem">Son Ödemeler</div>
+      <div class="payment-log" id="paymentLog">
+        <div class="empty-state"><div class="empty-state-icon">💳</div><h3>Ödeme kaydı yok</h3><p>Tedarikçi kartından ödeme yapın</p></div>
+      </div>
+    </div>
+
+    <!-- ════ ÖDEME MODAL ════ -->
+    <div id="payModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;width:100%;max-width:420px;box-shadow:0 24px 64px var(--sh);position:relative">
+        <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:800;margin-bottom:1.25rem">💳 Ödeme Yap</div>
+        <input type="hidden" id="paySupId">
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">Tedarikçi: <strong id="paySupName" style="color:var(--text)">—</strong></div>
+        <div style="font-size:.82rem;color:var(--supplier-color);margin-bottom:1rem;font-weight:700">Kalan Borç: <span id="paySupRemaining">₺0</span></div>
+        <div class="form-group"><label>Ödeme Miktarı (₺)</label><div class="amt-wrap"><span class="cur">₺</span><input type="number" id="payAmount" placeholder="0" min="0"></div></div>
+        <div class="form-group"><label>Tarih</label><input type="date" id="payDate"></div>
+        <div class="form-group"><label>Not (Opsiyonel)</label><input type="text" id="payNote" placeholder="Açıklama..."></div>
+        <div style="display:flex;gap:.75rem;margin-top:1rem">
+          <button class="btn-save" style="flex:1" onclick="confirmPayment()">✓ Ödemeyi Kaydet</button>
+          <button class="btn-secondary" onclick="closePayModal()">İptal</button>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /main-content -->
 </div><!-- /screenApp -->
 
@@ -1195,16 +1360,19 @@ const C={
   rec:(uid)=>`cirolog_records/${uid}/entries`,
   settings:(uid)=>`cirolog_settings/${uid}`,
   applications:'cirolog_applications',
-  appSettings:'cirolog_app_settings'  // global: { aiPrice, appPrice, features }
+  appSettings:'cirolog_app_settings',
+  suppliers:(uid)=>`cirolog_suppliers/${uid}/list`,
+  payments:(uid)=>`cirolog_payments/${uid}/entries`
 };
 
 /* ── State ── */
 let cu=null,cp=null,AR=[],SETTINGS={closedDays:[],closedPeriods:[]};
+let SUPPLIERS=[],PAYMENTS=[];
 let selectedPlan=null,calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
 let aiUnlocked=false;
-let PERMS={ai:false,calendar:true,reports:true,export:true};  // feature flags from admin
-let APP_CFG={aiPrice:'299',appPrice:'0',currency:'₺'};       // prices from Firebase
-let userUnsub=null;  // onSnapshot unsubscribe handle
+let PERMS={ai:false,calendar:true,reports:true,export:true};
+let APP_CFG={aiPrice:'299',appPrice:'0',currency:'₺'};
+let userUnsub=null;
 
 const CLR=['#c8f55a','#7b6ff0','#4edb8f','#f5c842','#ff5e5e','#58c4f5','#f58c42','#e87af5'];
 const MON=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
@@ -1311,6 +1479,7 @@ async function init(){
   // settings (kapalı günler)
   await loadSettings();
   await loadRecs();
+  await loadSuppliers();
   renderDash();
   renderDashAiGate();
   buildClosedDayUI();
@@ -1551,53 +1720,6 @@ function renderDash(){
   if(aiUnlocked)renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m);
 }
 
-/* ── DASH INSIGHTS (Local AI) ── */
-function renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m){
-  const el=document.getElementById('dashInsights');if(!el)return;
-  if(AR.length<3){el.innerHTML='<div style="color:var(--muted);font-size:.875rem">Analiz için en az 3 kayıt gerekli.</div>';return;}
-  const insights=[];
-  // Kapali gün yorumu
-  const now=new Date();const totalDays=new Date(y,m+1,0).getDate();
-  const closedCount=countClosedInRange(`${y}-${String(m+1).padStart(2,'0')}-01`,`${y}-${String(m+1).padStart(2,'0')}-${String(totalDays).padStart(2,'0')}`);
-  const openDays=totalDays-closedCount;
-  if(closedCount>0&&mR.length>0){
-    insights.push({icon:'🏪',text:`Bu ay <strong>${totalDays} günden ${closedCount}ü kapalı</strong> olduğu için ${openDays} açık gün üzerinden hesaplanıyor. Açık gün ortalamanız <strong>₺${fmt(mAvg)}</strong>.`,badge:null});
-  }
-  // Haftalık trend
-  const prevWStart=new Date(now);prevWStart.setDate(now.getDate()-13);
-  const prevWEnd=new Date(now);prevWEnd.setDate(now.getDate()-7);
-  const pwR=AR.filter(r=>r.date>=prevWStart.toISOString().split('T')[0]&&r.date<=prevWEnd.toISOString().split('T')[0]);
-  if(pwR.length>0&&wR.length>0){
-    const pwS=pwR.reduce((s,r)=>s+Number(r.amount),0);
-    const weekChange=Math.round((wS-pwS)/pwS*100);
-    insights.push({icon:'📈',text:`Bu hafta geçen haftaya göre <strong>%${Math.abs(weekChange)} ${weekChange>=0?'artış':'düşüş'}</strong> var. Bu hafta: ₺${fmt(wS)} / Geçen hafta: ₺${fmt(pwS)}.`,badge:weekChange>=0?'ib-up':'ib-dn'});
-  }
-  // En iyi gün
-  const bestDay=AR.reduce((a,b)=>Number(a.amount)>Number(b.amount)?a:b,AR[0]);
-  const bd=new Date(bestDay.date+'T00:00:00');
-  insights.push({icon:'🏆',text:`Tüm zamanların en iyi günü: <strong>${bd.toLocaleDateString('tr-TR',{day:'numeric',month:'long'})} (${DAYS[bd.getDay()]})</strong> — ₺${fmt(bestDay.amount)}.`,badge:'ib-up'});
-  // Tahmin
-  if(AR.length>=7){
-    const last30=AR.slice(0,30);const l30avg=smartAvg(last30);
-    const goal=cp?.monthlyGoal||0;
-    if(goal>0&&mS>0){
-      const now2=new Date();const dLeft=new Date(y,m+1,0).getDate()-now2.getDate();
-      const closedLeft=countClosedInRange(new Date(now2.getTime()+86400000).toISOString().split('T')[0],`${y}-${String(m+1).padStart(2,'0')}-${String(new Date(y,m+1,0).getDate()).padStart(2,'0')}`);
-      const openLeft=dLeft-closedLeft;
-      const projected=mS+(l30avg*openLeft);
-      const projPct=Math.round((projected/goal)*100);
-      insights.push({icon:'🔮',text:`Mevcut açık gün ortalaması (₺${fmt(l30avg)}) ile devam ederse ay sonu tahmini: <strong>₺${fmt(Math.round(projected))}</strong> (Hedefin %${projPct}i).`,badge:projPct>=100?'ib-up':'ib-warn'});
-    }
-  }
-  // Haftanın en iyi günü
-  const dt=[0,0,0,0,0,0,0],dc=[0,0,0,0,0,0,0];
-  AR.filter(r=>!isClosedDay(r.id).closed).forEach(r=>{const wd=new Date(r.date+'T00:00:00').getDay();dt[wd]+=Number(r.amount);dc[wd]++;});
-  const avgs=dt.map((t,i)=>dc[i]>0?Math.round(t/dc[i]):0);
-  const bestWd=avgs.indexOf(Math.max(...avgs));
-  if(avgs[bestWd]>0)insights.push({icon:'📅',text:`En verimli gününüz <strong>${DAYS[bestWd]}</strong> — günlük ort. ₺${fmt(avgs[bestWd])}.`,badge:'ib-up'});
-  el.innerHTML=insights.map(i=>`<div class="insight-item"><div class="insight-icon">${i.icon}</div><div class="insight-text">${i.text}${i.badge?`<span class="insight-badge ${i.badge}">✓</span>`:''}</div></div>`).join('');
-}
-
 /* ── CHARTS ── */
 function bars(cid,vals,labels,h,colors){
   const el=document.getElementById(cid);if(!el)return;
@@ -1647,92 +1769,6 @@ function renderCalendar(){
     {l:'Ay Toplam',v:'₺'+fmt(monthTotal)},{l:'Açık Gün Ort.',v:'₺'+fmt(monthAvgVal)},{l:'Kapalı Gün',v:totalClosed+' gün'}
   ].map(x=>`<div style="text-align:center;background:var(--surface2);border-radius:var(--radius-sm);padding:.75rem"><div style="font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em">${x.l}</div><div style="font-family:var(--font-display);font-size:1.3rem;margin-top:.2rem">${x.v}</div></div>`).join('');
 }
-
-/* ── LOCAL AI ── */
-window.runLocalAI=async function(){
-  const btn=document.getElementById('aiBtn');const type=document.getElementById('aiType')?.value||'genel';
-  const range=document.getElementById('aiRange')?.value||'90';
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Analiz ediliyor...';
-  let filtered=AR;
-  if(range!=='all'){const cut=new Date();cut.setDate(cut.getDate()-parseInt(range));filtered=AR.filter(r=>r.date>=cut.toISOString().split('T')[0]);}
-  if(filtered.length<3){toast('En az 3 kayıt gerekli','w');btn.disabled=false;btn.textContent='🧠 Analizi Çalıştır';return;}
-  // Hesaplamalar
-  const sorted=[...filtered].sort((a,b)=>a.date.localeCompare(b.date));
-  const openRecs=sorted.filter(r=>!isClosedDay(r.id).closed);
-  const total=sorted.reduce((s,r)=>s+Number(r.amount),0);
-  const avg=openRecs.length?Math.round(total/openRecs.length):0;
-  const maxR=sorted.reduce((a,b)=>Number(a.amount)>Number(b.amount)?a:b);
-  const minR=sorted.reduce((a,b)=>Number(a.amount)<Number(b.amount)?a:b,sorted[0]);
-  // Aylık
-  const monthMap={};
-  sorted.forEach(r=>{const k=r.date.slice(0,7);monthMap[k]=(monthMap[k]||0)+Number(r.amount);});
-  const months=Object.entries(monthMap).sort();
-  // Haftalık gün ortalamaları
-  const dt=[0,0,0,0,0,0,0],dc=[0,0,0,0,0,0,0];
-  openRecs.forEach(r=>{const wd=new Date(r.date+'T00:00:00').getDay();dt[wd]+=Number(r.amount);dc[wd]++;});
-  const dayAvgs=dt.map((t,i)=>dc[i]?Math.round(t/dc[i]):null);
-  const bestDow=dayAvgs.indexOf(Math.max(...dayAvgs.filter(Boolean)));
-  const worstDow=dayAvgs.reduce((bi,v,i,a)=>v!==null&&(a[bi]===null||v<a[bi])?i:bi,0);
-  // Trend (son vs önceki dönem)
-  const half=Math.floor(sorted.length/2);
-  const firstHalf=sorted.slice(0,half),lastHalf=sorted.slice(half);
-  const firstAvg=smartAvg(firstHalf),lastAvg=smartAvg(lastHalf);
-  const trendPct=firstAvg>0?Math.round((lastAvg-firstAvg)/firstAvg*100):0;
-  // Tahmin
-  const last14=sorted.slice(-14);const l14avg=smartAvg(last14);
-  // Kapalı gün yorumu
-  const closedRecs=sorted.filter(r=>isClosedDay(r.id).closed).length;
-  const closedTotal=sorted.reduce((s,r)=>isClosedDay(r.id).closed?s+Number(r.amount):s,0);
-  let html='';
-
-  if(type==='genel'||type==='trend'){
-    html+=section('📊 Genel Performans',[
-      `<strong>${sorted.length} kayıt</strong> analiz edildi (${sorted[0].date} → ${sorted[sorted.length-1].date}).`,
-      `Toplam ciro: <strong>₺${fmt(total)}</strong>`,
-      `Açık gün günlük ort.: <strong>₺${fmt(avg)}</strong>`,
-      `En yüksek gün: <strong>${maxR.date} — ₺${fmt(maxR.amount)}</strong>`,
-      `En düşük gün: <strong>${minR.date} — ₺${fmt(minR.amount)}</strong>`,
-    ]);
-    html+=section('📈 Trend Analizi',[
-      `Dönem ikiye bölündüğünde: İlk yarı ort. ₺${fmt(firstAvg)} → Son yarı ort. ₺${fmt(lastAvg)}`,
-      `<strong>Trend: ${trendPct>=0?'Yükseliş':'Düşüş'} ${Math.abs(trendPct)}%</strong> ${badge(trendPct>=0?'ib-up':'ib-dn',trendPct>=0?'▲ İyileşiyor':'▼ Gerilemekte')}`,
-      `Son 14 gün ort.: ₺${fmt(l14avg)}`,
-    ]);
-  }
-  if(type==='gun'||type==='genel'){
-    html+=section('📅 Gün/Hafta Dağılımı',[
-      `En verimli gün: <strong>${DAYS[bestDow]}</strong> — ₺${fmt(dayAvgs[bestDow])} ort. ${badge('ib-up','★ En İyi')}`,
-      `En düşük gün: <strong>${DAYS[worstDow]}</strong> — ₺${fmt(dayAvgs[worstDow]||0)} ort. ${badge('ib-dn','↓ En Düşük')}`,
-      ...DAYS.map((d,i)=>dayAvgs[i]!==null?`${d}: ₺${fmt(dayAvgs[i])}`:null).filter(Boolean),
-    ]);
-  }
-  if(type==='tahmin'){
-    const projected30=l14avg*22; // ~22 açık gün
-    html+=section('🔮 30 Günlük Projeksiyon',[
-      `Son 14 günün açık gün ort.: <strong>₺${fmt(l14avg)}</strong>`,
-      `Mevcut hız ile 30 günlük tahmini ciro (22 açık gün): <strong>₺${fmt(Math.round(projected30))}</strong>`,
-      `Aylık hedef: ${cp?.monthlyGoal?'₺'+fmt(cp.monthlyGoal):'Belirlenmemiş'}`,
-      cp?.monthlyGoal&&projected30>=cp.monthlyGoal?`${badge('ib-up','✓ Hedefe Ulaşacak')} Mevcut hızla hedef aşılacak.`:cp?.monthlyGoal?`${badge('ib-dn','⚠ Hedef Riski')} Günlük ortalama ₺${fmt(Math.ceil((cp.monthlyGoal-projected30)/22))} artırılmalı.`:'',
-    ].filter(Boolean));
-    if(months.length>=2){
-      const mArr=months.slice(-6);html+=section('📉 Aylık Eğilim (Son 6 Ay)',mArr.map(([k,v],i,a)=>{const prev=i>0?a[i-1][1]:null;const p=prev?Math.round((v-prev)/prev*100):null;const [y2,mn]=k.split('-');const pBadge=p!==null?' '+badge(p>=0?'ib-up':'ib-dn',(p>=0?'+':'')+p+'%'):'';return'<strong>'+MON[parseInt(mn)-1]+' '+y2+':</strong> ₺'+fmt(v)+pBadge;}).filter(Boolean));
-    }
-  }
-  if(type==='kapali'){
-    html+=section('🏪 Kapalı Gün Etkisi',[
-      `Analiz döneminde <strong>${closedRecs} kapalı günde kayıt</strong> bulundu.`,
-      closedRecs>0?`Bu günlerdeki toplam ciro: ₺${fmt(closedTotal)} (muhtemelen kısmi açılış).`:'Kapalı günlerde kayıt yok — istatistikler doğru.',
-      `Haftalık kapalı: <strong>${SETTINGS.closedDays.map(i=>DAYS[i]).join(', ')||'Belirlenmemiş'}</strong>`,
-      SETTINGS.closedPeriods.length?`Özel kapalı dönem: ${SETTINGS.closedPeriods.map(p=>`${p.label} (${p.from}→${p.to})`).join(', ')}`:'Özel kapalı dönem yok.',
-      `Kapalı günler <em>dahil</em> ham ort.: ₺${fmt(Math.round(total/sorted.length))}`,
-      `Kapalı günler <em>hariç</em> gerçek ort.: ₺${fmt(avg)} ${badge('ib-up','✓ Doğru Oran')}`,
-    ]);
-  }
-  document.getElementById('aiResult').innerHTML=`<h3>🧠 Analiz Raporu — ${new Date().toLocaleString('tr-TR')}</h3>${html}`;
-  btn.disabled=false;btn.textContent='🧠 Analizi Çalıştır';
-};
-function section(title,items){return`<div style="margin-bottom:1.25rem"><div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem">${title}</div>${items.map(i=>`<div class="insight-item" style="padding:.5rem 0"><div class="insight-text">${i}</div></div>`).join('')}</div>`;}
-function badge(cls,txt){return`<span class="insight-badge ${cls}">${txt}</span>`;}
 
 /* ── RAPORLAR ── */
 function monthWeeks(y,m){const total=new Date(y,m+1,0).getDate(),wks=[[],[],[],[]];for(let d=1;d<=total;d++){const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;wks[Math.min(3,Math.floor((d-1)/7))].push(k);}return wks;}
@@ -2065,7 +2101,7 @@ window.navTo=function(page,el){
   if(page==='takvim')renderCalendar();
   if(page==='ihracat')renderExportPreview();
   if(page==='ayarlar'){buildClosedDayUI();renderPeriodList();}
-  if(page==='ai'){renderAiGate();}
+  if(page==='ai'){renderAiGate();if(aiUnlocked)renderQuickInsights();}
   if(page==='satin-al'){renderPurchaseStatus();renderPurchaseStatus();}
 };
 window.switchTab=function(name,el){
@@ -2327,6 +2363,487 @@ window.restorePurchases = async function() {
 /* ── HELPERS ── */
 function fmt(n){return Number(n).toLocaleString('tr-TR');}
 function $(id,val){const e=document.getElementById(id);if(e)e.textContent=val;}
+
+/* ══════════════════════════════════════════════
+   AKILLI ANALİZ MOTORU — Saf JS, API gereksiz
+══════════════════════════════════════════════ */
+
+/* Temel istatistik yardımcıları */
+function aiStats(recs){
+  const open=recs.filter(r=>!isClosedDay(r.id).closed);
+  const vals=open.map(r=>Number(r.amount));
+  if(!vals.length)return null;
+  const sum=vals.reduce((a,b)=>a+b,0);
+  const avg=sum/vals.length;
+  const sorted=[...vals].sort((a,b)=>a-b);
+  const median=vals.length%2===0?(sorted[vals.length/2-1]+sorted[vals.length/2])/2:sorted[Math.floor(vals.length/2)];
+  const variance=vals.reduce((a,v)=>a+(v-avg)**2,0)/vals.length;
+  const std=Math.sqrt(variance);
+  return{sum,avg,median,std,min:Math.min(...vals),max:Math.max(...vals),count:vals.length,allCount:recs.length};
+}
+
+function aiTrend(recs){
+  const open=recs.filter(r=>!isClosedDay(r.id).closed).sort((a,b)=>a.date.localeCompare(b.date));
+  if(open.length<6)return{slope:0,pct:0,label:'yetersiz veri'};
+  const half=Math.floor(open.length/2);
+  const a1=open.slice(0,half).reduce((s,r)=>s+Number(r.amount),0)/half;
+  const a2=open.slice(half).reduce((s,r)=>s+Number(r.amount),0)/(open.length-half);
+  const pct=Math.round((a2-a1)/a1*100);
+  return{slope:a2-a1,pct,label:pct>10?'güçlü yükseliş':pct>3?'hafif yükseliş':pct<-10?'belirgin düşüş':pct<-3?'hafif düşüş':'yatay seyir'};
+}
+
+function aiDayBreakdown(recs){
+  const dt=[0,0,0,0,0,0,0],dc=[0,0,0,0,0,0,0];
+  recs.filter(r=>!isClosedDay(r.id).closed).forEach(r=>{
+    const wd=new Date(r.date+'T00:00:00').getDay();
+    dt[wd]+=Number(r.amount);dc[wd]++;
+  });
+  return dt.map((t,i)=>({day:i,avg:dc[i]?Math.round(t/dc[i]):0,count:dc[i]}));
+}
+
+function aiMonthBreakdown(recs){
+  const m={};
+  recs.forEach(r=>{const k=r.date.slice(0,7);if(!m[k]){m[k]={sum:0,count:0};}m[k].sum+=Number(r.amount);m[k].count++;});
+  return Object.entries(m).sort().map(([k,v])=>({month:k,...v,avg:Math.round(v.sum/v.count)}));
+}
+
+function aiWeeklyAvg(recs,n=4){
+  // Son n haftanın ortalamaları
+  const sorted=[...recs].filter(r=>!isClosedDay(r.id).closed).sort((a,b)=>b.date.localeCompare(a.date));
+  const weeks=[];
+  for(let i=0;i<n;i++){
+    const s=new Date();s.setDate(s.getDate()-7*(i+1));
+    const e=new Date();e.setDate(e.getDate()-7*i);
+    const sl=sorted.filter(r=>r.date>=s.toISOString().split('T')[0]&&r.date<e.toISOString().split('T')[0]);
+    weeks.unshift({label:`${i+1}. hafta önce`,avg:sl.length?Math.round(sl.reduce((a,r)=>a+Number(r.amount),0)/sl.length):0,days:sl.length});
+  }
+  return weeks;
+}
+
+/* Metin üretici — gözlemden cümle oluşturur */
+function aiSentence(obs){
+  const templates={
+    trend_up:[
+      `📈 Son dönemde ciro <strong>%${obs.pct} artış</strong> trendi gösteriyor — bu momentum korunabilirse güçlü bir büyüme sinyali.`,
+      `🚀 Dönemin ikinci yarısında <strong>%${obs.pct} iyileşme</strong> kaydedildi. İşletme büyüme fazına girmiş görünüyor.`
+    ],
+    trend_down:[
+      `⚠️ Son dönemde ciro <strong>%${Math.abs(obs.pct)} gerileme</strong> eğiliminde. Maliyet ve operasyon gözden geçirilmeli.`,
+      `📉 Dönemin ikinci yarısı ilk yarıya göre <strong>%${Math.abs(obs.pct)} düşük</strong> seyretti. Dikkat edilmesi gereken bir sinyal.`
+    ],
+    trend_flat:[
+      `➡️ Ciro stabil bir seyir izliyor. <strong>Yatay trend</strong> hem istikrar hem de büyüme fırsatının değerlendirilmediğine işaret edebilir.`,
+      `📊 Dönem boyunca ciro <strong>tutarlı bir bant</strong> içinde kaldı. Dışarı çıkan günler büyüme ipucu verebilir.`
+    ],
+    best_day:[
+      `🏆 En verimli gününüz <strong>${obs.day}</strong> — günlük ortalama <strong>₺${fmt(obs.avg)}</strong>. Bu günde daha fazla kampanya denenebilir.`,
+      `⭐ <strong>${obs.day}</strong> günleri açık ara öne çıkıyor: ort. <strong>₺${fmt(obs.avg)}</strong>. Diğer günlerin bu seviyeye çekilmesi potansiyel artışı temsil ediyor.`
+    ],
+    worst_day:[
+      `📉 <strong>${obs.day}</strong> en düşük performanslı gün — ort. <strong>₺${fmt(obs.avg)}</strong>. Özel promosyon veya indirim uygulanabilir.`,
+      `💡 <strong>${obs.day}</strong> günleri diğerlerine göre belirgin şekilde düşük kalıyor (ort. ₺${fmt(obs.avg)}). Menü veya fiyat stratejisi denenebilir.`
+    ],
+    projection:[
+      `🔮 Son ${obs.days} günün açık gün ortalaması (₺${fmt(obs.avg)}) baz alınırsa, ayın kalan <strong>${obs.openLeft} açık gününde</strong> ek ₺${fmt(obs.projected)} bekleniyor.`,
+      `📅 Mevcut hızla ay sonunda toplam <strong>₺${fmt(obs.total)}</strong>'ye ulaşılması öngörülüyor.`
+    ],
+    goal_hit:[
+      `✅ Hedef <strong>₺${fmt(obs.goal)}</strong> için projeksiyon <strong>%${obs.pct}</strong> — ay hedefi gerçekleşecek gibi görünüyor!`,
+    ],
+    goal_miss:[
+      `⚠️ Hedef <strong>₺${fmt(obs.goal)}</strong> için kalan günlerde günlük <strong>₺${fmt(obs.needed)}</strong> gerekiyor — mevcut ortalamanın <strong>%${obs.pct} üzerinde</strong>.`,
+    ],
+    volatility_high:[
+      `📊 Günlük ciro standart sapması <strong>₺${fmt(obs.std)}</strong> — oldukça değişken bir yapı. Bazı günler olağanüstü iyi, bazıları düşük.`,
+    ],
+    volatility_low:[
+      `📊 Günlük ciro oldukça <strong>istikrarlı</strong> (std: ₺${fmt(obs.std)}). Sürpriz günler az ama tahmin edilebilirlik yüksek.`,
+    ],
+    closed_effect:[
+      `🏪 Kapalı günler dahil ham ortalama ₺${fmt(obs.raw)} iken, kapalı günler çıkarıldığında gerçek açık gün ort. <strong>₺${fmt(obs.clean)}</strong>. Bu fark %${obs.pct}.`,
+    ],
+    record:[
+      `🏆 Tüm zamanların rekoru <strong>${obs.date}</strong> günü — <strong>₺${fmt(obs.val)}</strong>. Bu rakamın %80'i bile her gün yakalanabilse aylık büyük fark oluşur.`,
+    ],
+    week_compare:[
+      `📅 Bu hafta geçen haftaya göre <strong>${obs.pct>=0?'+':''}%${obs.pct}</strong>. (Bu hafta ₺${fmt(obs.tw)} / Geçen hafta ₺${fmt(obs.lw)})`,
+    ],
+  };
+  const pool=templates[obs.type]||[`ℹ️ ${obs.raw||''}`];
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function aiInsightCard(items,title=''){
+  return`<div style="margin-bottom:.1rem">${title?`<div style="font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem">${title}</div>`:''}`+
+    items.map(html=>`<div class="insight-item" style="border-bottom:1px solid var(--border);padding:.75rem 0"><div class="insight-text" style="font-size:.875rem;line-height:1.7">${html}</div></div>`).join('')+
+  `</div>`;
+}
+
+/* ANA ANALİZ FONKSİYONU */
+window.runLocalAI=function(){
+  const btn=document.getElementById('aiBtn');
+  const type=document.getElementById('aiType')?.value||'genel';
+  const range=document.getElementById('aiRange')?.value||'90';
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> Analiz ediliyor...';
+
+  // Filtrelenmiş kayıtlar
+  let recs=[...AR];
+  if(range!=='all'){const cut=new Date();cut.setDate(cut.getDate()-parseInt(range));recs=AR.filter(r=>r.date>=cut.toISOString().split('T')[0]);}
+  if(recs.length<3){toast('En az 3 kayıt gerekli','w');btn.disabled=false;btn.innerHTML='🧠 Analizi Başlat';return;}
+
+  const sorted=recs.sort((a,b)=>a.date.localeCompare(b.date));
+  const stats=aiStats(sorted);
+  const trend=aiTrend(sorted);
+  const days=aiDayBreakdown(sorted);
+  const months=aiMonthBreakdown(sorted);
+  const validDays=days.filter(d=>d.avg>0);
+  const bestDow=validDays.reduce((a,b)=>b.avg>a.avg?b:a,validDays[0]||{day:0,avg:0});
+  const worstDow=validDays.reduce((a,b)=>b.avg<a.avg?b:a,validDays[0]||{day:0,avg:0});
+  const maxRec=sorted.reduce((a,b)=>Number(a.amount)>Number(b.amount)?a:b);
+  const minRec=sorted.reduce((a,b)=>Number(a.amount)<Number(b.amount)?a:b,sorted[0]);
+  const now=new Date();const y=now.getFullYear(),m=now.getMonth();
+  const totalDays=new Date(y,m+1,0).getDate();
+  const closedLeft=countClosedInRange(new Date(now.getTime()+86400000).toISOString().split('T')[0],`${y}-${String(m+1).padStart(2,'0')}-${String(totalDays).padStart(2,'0')}`);
+  const openLeft=Math.max(0,(totalDays-now.getDate())-closedLeft);
+  const last14avg=smartAvg(sorted.slice(-14));
+  const goal=cp?.monthlyGoal||0;
+
+  // Bu ay verisi
+  const thisMonthKey=`${y}-${String(m+1).padStart(2,'0')}`;
+  const thisMonthSum=sorted.filter(r=>r.date.startsWith(thisMonthKey)).reduce((s,r)=>s+Number(r.amount),0);
+  const projected=thisMonthSum+(last14avg*openLeft);
+
+  // Geçen hafta karşılaştırma
+  const twStart=new Date();twStart.setDate(twStart.getDate()-7);
+  const lwStart=new Date();lwStart.setDate(lwStart.getDate()-14);
+  const twRecs=sorted.filter(r=>r.date>=twStart.toISOString().split('T')[0]);
+  const lwRecs=sorted.filter(r=>r.date>=lwStart.toISOString().split('T')[0]&&r.date<twStart.toISOString().split('T')[0]);
+  const twSum=twRecs.reduce((s,r)=>s+Number(r.amount),0);
+  const lwSum=lwRecs.reduce((s,r)=>s+Number(r.amount),0);
+  const weekPct=lwSum>0?Math.round((twSum-lwSum)/lwSum*100):0;
+
+  const cvPct=stats.avg>0?Math.round((stats.std/stats.avg)*100):0;
+  const closedCount=sorted.filter(r=>isClosedDay(r.id).closed).length;
+  const rawAvg=stats.sum/sorted.length;
+
+  let html='';
+  const title=`🧠 Analiz Raporu — ${sorted[0].date} / ${sorted[sorted.length-1].date}`;
+
+  if(type==='genel'){
+    const items=[
+      aiSentence({type:trend.pct>3?'trend_up':trend.pct<-3?'trend_down':'trend_flat',pct:Math.abs(trend.pct)}),
+      `📊 <strong>${stats.allCount} kayıt</strong> analiz edildi. Toplam ciro: <strong>₺${fmt(stats.sum)}</strong> · Açık gün ort: <strong>₺${fmt(Math.round(stats.avg))}</strong> · Medyan: <strong>₺${fmt(Math.round(stats.median))}</strong>`,
+      aiSentence({type:'best_day',day:DAYS[bestDow.day],avg:bestDow.avg}),
+      aiSentence({type:cvPct>40?'volatility_high':'volatility_low',std:Math.round(stats.std)}),
+      aiSentence({type:'week_compare',pct:weekPct,tw:twSum,lw:lwSum}),
+      `🏆 En yüksek gün: <strong>${maxRec.date} (${DAYS[new Date(maxRec.date+'T00:00:00').getDay()]}) — ₺${fmt(maxRec.amount)}</strong>. En düşük: <strong>${minRec.date} — ₺${fmt(minRec.amount)}</strong>`,
+    ];
+    html=aiInsightCard(items,'📊 Genel Performans Raporu');
+  }
+
+  else if(type==='trend'){
+    const mItems=months.slice(-6).map((mo,i,a)=>{
+      const prev=i>0?a[i-1]:null;
+      const p=prev?Math.round((mo.sum-prev.sum)/prev.sum*100):null;
+      const [y2,mn]=mo.month.split('-');
+      return `<strong>${MON[parseInt(mn)-1]} ${y2}:</strong> ₺${fmt(mo.sum)} (${mo.count} gün, ort. ₺${fmt(mo.avg)})${p!==null?` <span class="${p>=0?'up':'dn'}" style="font-size:.78rem">${p>=0?'▲+':'▼'}%${Math.abs(p)}</span>`:''}`;
+    });
+    const items=[
+      aiSentence({type:trend.pct>3?'trend_up':trend.pct<-3?'trend_down':'trend_flat',pct:Math.abs(trend.pct)}),
+      `📈 <strong>İlk yarı ortalaması:</strong> ₺${fmt(Math.round(aiStats(sorted.slice(0,Math.floor(sorted.length/2)))?.avg||0))} → <strong>Son yarı ortalaması:</strong> ₺${fmt(Math.round(stats.avg))}`,
+      `📅 Son 14 günün açık gün ort: <strong>₺${fmt(last14avg)}</strong>`,
+      ...mItems,
+    ];
+    html=aiInsightCard(items,'📈 Trend Analizi');
+  }
+
+  else if(type==='gun'){
+    const dayItems=validDays.sort((a,b)=>b.avg-a.avg).map((d,i)=>{
+      const bar=Math.round((d.avg/bestDow.avg)*10);
+      const barStr='█'.repeat(bar)+'░'.repeat(10-bar);
+      return`<span style="font-size:.7rem;font-family:monospace;color:var(--muted)">${barStr}</span> <strong>${DAYS[d.day]}</strong>: ₺${fmt(d.avg)} ort. (${d.count} kayıt)${i===0?' ⭐':i===validDays.length-1?' 📉':''}`;
+    });
+    const items=[
+      aiSentence({type:'best_day',day:DAYS[bestDow.day],avg:bestDow.avg}),
+      aiSentence({type:'worst_day',day:DAYS[worstDow.day],avg:worstDow.avg}),
+      ...dayItems,
+      `💡 En iyi ve en kötü gün arasındaki fark: <strong>₺${fmt(bestDow.avg-worstDow.avg)}</strong> (%${Math.round((bestDow.avg-worstDow.avg)/worstDow.avg*100)} fark)`,
+    ];
+    html=aiInsightCard(items,'📅 Gün/Hafta Dağılımı');
+  }
+
+  else if(type==='tahmin'){
+    const neededDaily=goal>0&&projected<goal?Math.ceil((goal-thisMonthSum)/Math.max(1,openLeft)):0;
+    const items=[
+      `📅 Bu ay bugüne kadar: <strong>₺${fmt(thisMonthSum)}</strong> · Kalan açık gün: <strong>${openLeft}</strong>`,
+      aiSentence({type:'projection',days:14,avg:last14avg,openLeft,projected:Math.round(last14avg*openLeft),total:Math.round(projected)}),
+      goal>0?aiSentence(projected>=goal?{type:'goal_hit',goal,pct:Math.round(projected/goal*100)}:{type:'goal_miss',goal,needed:neededDaily,pct:Math.round((neededDaily/last14avg-1)*100)}):`💡 Aylık hedef belirlenmemiş — Ayarlar'dan hedef girerek projeksiyon daha anlamlı hale gelir.`,
+      months.length>=2?`📉 Geçen ay toplamı: <strong>₺${fmt(months[months.length-2]?.sum||0)}</strong> → Bu ay tahmini: <strong>₺${fmt(Math.round(projected))}</strong> (<span class="${projected>=(months[months.length-2]?.sum||0)?'up':'dn'}">${projected>=(months[months.length-2]?.sum||0)?'▲':'▼'}%${Math.abs(Math.round(((projected-(months[months.length-2]?.sum||0))/(months[months.length-2]?.sum||1))*100))}</span>)`:'',
+      `🔮 Mevcut hız korunursa yıl sonu tahmini: <strong>₺${fmt(Math.round(last14avg*250))}</strong> (yılda ~250 açık gün varsayımıyla)`,
+    ].filter(Boolean);
+    html=aiInsightCard(items,'🔮 30 Günlük Tahmin & Projeksiyon');
+  }
+
+  else if(type==='kapali'){
+    const openRecs=sorted.filter(r=>!isClosedDay(r.id).closed);
+    const closedRecs2=sorted.filter(r=>isClosedDay(r.id).closed);
+    const items=[
+      aiSentence({type:'closed_effect',raw:Math.round(rawAvg),clean:Math.round(stats.avg),pct:Math.round((stats.avg-rawAvg)/rawAvg*100)}),
+      `🏪 Analiz döneminde ${sorted.length} toplam kayıt: <strong>${openRecs.length} açık</strong> + <strong>${closedRecs2.length} kapalı günde kayıt</strong>`,
+      `📅 Haftalık kapalı günler: <strong>${SETTINGS.closedDays.map(i=>DAYS[i]).join(', ')||'Belirlenmemiş'}</strong>`,
+      SETTINGS.closedPeriods.length?`🗓 Özel kapalı dönemler: ${SETTINGS.closedPeriods.map(p=>`${p.label} (${p.from}→${p.to})`).join(', ')}`:null,
+      closedRecs2.length>0?`⚠️ ${closedRecs2.length} kapalı gün kayıt var — bu muhtemelen kısmi açılış veya veri giriş hatası. Kapalı gün ayarlarınızı kontrol edin.`:null,
+      `💡 Yıllık bazda: Haftada ${SETTINGS.closedDays.length} gün kapalı = yılda ~${SETTINGS.closedDays.length*52} kapalı gün. Bu günlerde alternatif gelir kaynağı değerlendirilebilir.`,
+    ].filter(Boolean);
+    html=aiInsightCard(items,'🏪 Kapalı Gün Analizi');
+  }
+
+  else if(type==='rekor'){
+    const sorted2=[...recs].sort((a,b)=>Number(b.amount)-Number(a.amount));
+    const top5=sorted2.slice(0,5);
+    const bottom5=[...recs].filter(r=>!isClosedDay(r.id).closed).sort((a,b)=>Number(a.amount)-Number(b.amount)).slice(0,5);
+    const monthTops=Object.entries(
+      recs.reduce((acc,r)=>{const k=r.date.slice(0,7);if(!acc[k]||Number(r.amount)>Number(acc[k].amount))acc[k]=r;return acc;},{})
+    ).sort().map(([k,r])=>`${k}: <strong>₺${fmt(r.amount)}</strong> (${r.date})`);
+    const items=[
+      aiSentence({type:'record',date:maxRec.date,val:maxRec.amount}),
+      `🏆 <strong>En İyi 5 Gün:</strong><br>${top5.map((r,i)=>`${['🥇','🥈','🥉','4️⃣','5️⃣'][i]} ${r.date} (${DAYS[new Date(r.date+'T00:00:00').getDay()]}): <strong>₺${fmt(r.amount)}</strong>`).join('<br>')}`,
+      `📉 <strong>En Düşük 5 Gün (Açık):</strong><br>${bottom5.map((r,i)=>`${i+1}. ${r.date}: ₺${fmt(r.amount)}`).join('<br>')}`,
+      `📅 <strong>Aylık Rekolar:</strong><br>${monthTops.slice(-6).join('<br>')}`,
+      `💡 En iyi gün ile genel ortalama farkı: <strong>₺${fmt(Math.round(Number(maxRec.amount)-stats.avg))}</strong>. Bu fark sistematik tekrarlanabilir olabilir.`,
+    ];
+    html=aiInsightCard(items,'🏆 Rekor & Zirve Günleri');
+  }
+
+  document.getElementById('aiResult').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+      <div style="font-size:.7rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em">${title}</div>
+      <div style="font-size:.68rem;color:var(--muted)">${new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div>
+    </div>
+    ${html}`;
+
+  btn.disabled=false;btn.innerHTML='🧠 Analizi Başlat';
+};
+
+/* Hızlı İçgörüler — AI sayfası açıldığında otomatik */
+function renderQuickInsights(){
+  const el=document.getElementById('aiQuickInsights');
+  if(!el||AR.length<3)return;
+  const trend=aiTrend(AR);
+  const days=aiDayBreakdown(AR);
+  const validDays=days.filter(d=>d.avg>0);
+  const bestDow=validDays.length?validDays.reduce((a,b)=>b.avg>a.avg?b:a):null;
+  const last7=AR.slice(0,7);const l7avg=smartAvg(last7);
+  const last14=AR.slice(0,14);const l14avg=smartAvg(last14);
+  const wPct=l14avg>0?Math.round((l7avg-l14avg)/l14avg*100):0;
+  const stats=aiStats(AR.slice(0,90));
+
+  const items=[
+    aiSentence({type:trend.pct>3?'trend_up':trend.pct<-3?'trend_down':'trend_flat',pct:Math.abs(trend.pct)}),
+    bestDow?aiSentence({type:'best_day',day:DAYS[bestDow.day],avg:bestDow.avg}):'',
+    `📅 Bu hafta ort: <strong>₺${fmt(l7avg)}</strong> — geçen haftaya göre <span class="${wPct>=0?'up':'dn'}">${wPct>=0?'▲+':'▼'}%${Math.abs(wPct)}</span>`,
+    stats?aiSentence({type:stats.std/stats.avg>0.4?'volatility_high':'volatility_low',std:Math.round(stats.std)}):'',
+  ].filter(Boolean);
+
+  el.innerHTML=aiInsightCard(items,'⚡ Anlık Özet');
+}
+
+/* Dashboard insights — local engine */
+async function renderDashInsights(mR,mS,mAvg,wR,wS,wAvg,y,m){
+  const el=document.getElementById('dashInsights');if(!el)return;
+  if(AR.length<3){el.innerHTML='<div style="color:var(--muted);font-size:.875rem">Analiz için en az 3 kayıt gerekli.</div>';return;}
+
+  const trend=aiTrend(AR);
+  const days=aiDayBreakdown(AR);
+  const validDays=days.filter(d=>d.avg>0);
+  const bestDow=validDays.length?validDays.reduce((a,b)=>b.avg>a.avg?b:a):null;
+  const now=new Date();
+  const twStart=new Date();twStart.setDate(twStart.getDate()-7);
+  const lwStart=new Date();lwStart.setDate(lwStart.getDate()-14);
+  const lwRecs=AR.filter(r=>r.date>=lwStart.toISOString().split('T')[0]&&r.date<twStart.toISOString().split('T')[0]);
+  const lwS=lwRecs.reduce((s,r)=>s+Number(r.amount),0);
+  const weekPct=lwS>0?Math.round((wS-lwS)/lwS*100):0;
+  const last14avg=smartAvg(AR.slice(0,14));
+  const goal=cp?.monthlyGoal||0;
+  const totalDays=new Date(y,m+1,0).getDate();
+  const closedLeft=countClosedInRange(new Date(now.getTime()+86400000).toISOString().split('T')[0],`${y}-${String(m+1).padStart(2,'0')}-${String(totalDays).padStart(2,'0')}`);
+  const openLeft=Math.max(0,(totalDays-now.getDate())-closedLeft);
+  const projected=mS+(last14avg*openLeft);
+
+  const items=[
+    aiSentence({type:trend.pct>3?'trend_up':trend.pct<-3?'trend_down':'trend_flat',pct:Math.abs(trend.pct)}),
+    aiSentence({type:'week_compare',pct:weekPct,tw:wS,lw:lwS}),
+    bestDow?aiSentence({type:'best_day',day:DAYS[bestDow.day],avg:bestDow.avg}):'',
+    goal>0?aiSentence(projected>=goal?{type:'goal_hit',goal,pct:Math.round(projected/goal*100)}:{type:'goal_miss',goal,needed:Math.max(0,Math.ceil((goal-mS)/Math.max(1,openLeft))),pct:Math.round(Math.max(0,(Math.ceil((goal-mS)/Math.max(1,openLeft))/last14avg-1)*100))}):'',
+  ].filter(Boolean).slice(0,4);
+
+  el.innerHTML=items.map(html=>`<div class="insight-item"><div class="insight-text">${html}</div></div>`).join('');
+}
+
+/* ══ TEDARİKÇİ / SUPPLIER MODULE ══ */
+async function loadSuppliers(){
+  if(!cu)return;
+  try{
+    const [supSnap,paySnap]=await Promise.all([
+      getDocs(query(collection(db,C.suppliers(cu.uid)),orderBy('name'))),
+      getDocs(query(collection(db,C.payments(cu.uid)),orderBy('date','desc'),limit(100)))
+    ]);
+    SUPPLIERS=supSnap.docs.map(d=>({id:d.id,...d.data()}));
+    PAYMENTS=paySnap.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){SUPPLIERS=[];PAYMENTS=[];}
+  renderSuppliers();
+}
+
+function getSupplierPaid(supId){
+  return PAYMENTS.filter(p=>p.supplierId===supId).reduce((s,p)=>s+Number(p.amount),0);
+}
+
+function renderSuppliers(){
+  const ge=id=>document.getElementById(id);
+  const totalDebt=SUPPLIERS.reduce((s,sup)=>s+Number(sup.totalDebt||0),0);
+  const totalPaid=SUPPLIERS.reduce((s,sup)=>s+getSupplierPaid(sup.id),0);
+  const totalRemaining=Math.max(0,totalDebt-totalPaid);
+  if(ge('supTotalDebt'))ge('supTotalDebt').textContent='₺'+fmt(totalDebt);
+  if(ge('supTotalPaid'))ge('supTotalPaid').textContent='₺'+fmt(totalPaid);
+  if(ge('supTotalRemaining')){ge('supTotalRemaining').textContent='₺'+fmt(totalRemaining);ge('supTotalRemaining').style.color=totalRemaining===0?'var(--success)':'var(--supplier-color)';}
+  if(ge('supCount'))ge('supCount').textContent=SUPPLIERS.length;
+
+  const grid=ge('supplierGrid');
+  if(!grid)return;
+  if(!SUPPLIERS.length){
+    grid.innerHTML='<div class="empty-state"><div class="empty-state-icon">🏭</div><h3>Henüz tedarikçi yok</h3><p>Yukarıdan ilk tedarikçinizi ekleyin</p></div>';
+  } else {
+    grid.innerHTML=SUPPLIERS.map(sup=>{
+      const paid=getSupplierPaid(sup.id);
+      const remaining=Math.max(0,Number(sup.totalDebt||0)-paid);
+      const pct=Number(sup.totalDebt)>0?Math.min(100,Math.round((paid/Number(sup.totalDebt))*100)):100;
+      const isCleared=remaining===0;
+      return`<div class="supplier-card">
+        <div class="supplier-name">${sup.name}</div>
+        ${sup.note?`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.625rem">📝 ${sup.note}</div>`:''}
+        <div class="supplier-debt-row"><span class="debt-label">Toplam Borç</span><span class="debt-val">₺${fmt(sup.totalDebt||0)}</span></div>
+        <div class="supplier-debt-row"><span class="debt-label">Ödenen</span><span class="debt-val" style="color:var(--success)">₺${fmt(paid)}</span></div>
+        <div class="supplier-debt-row" style="margin-top:.1rem"><span class="debt-label" style="font-weight:700">Kalan Borç</span><span class="debt-val debt-remaining ${isCleared?'debt-zero':''}">₺${fmt(remaining)}</span></div>
+        <div style="margin-top:.75rem">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-bottom:.3rem"><span>Ödeme ilerlemesi</span><span>%${pct}</span></div>
+          <div style="height:6px;background:var(--surface2);border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:${isCleared?'var(--success)':'linear-gradient(90deg,var(--supplier-color),var(--accent2))'};width:${pct}%;transition:width 1.2s ease"></div></div>
+        </div>
+        ${isCleared?'<div style="margin-top:.625rem;text-align:center;font-size:.75rem;color:var(--success);font-weight:700;background:rgba(52,216,138,.08);border-radius:var(--radius-sm);padding:.4rem">✓ Borç Kapatıldı</div>':''}
+        <div class="supplier-actions">
+          ${!isCleared?`<button class="sup-btn pay" onclick="openPayModal('${sup.id}','${sup.name.replace(/'/g,"\\'")}',${remaining})">💳 Ödeme Yap</button>`:''}
+          <button class="sup-btn" onclick="editSupplierDebt('${sup.id}','${sup.name.replace(/'/g,"\\'")}',${sup.totalDebt||0})">✏️ Güncelle</button>
+          <button class="sup-btn danger" onclick="deleteSupplier('${sup.id}')">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const log=ge('paymentLog');
+  if(!log)return;
+  if(!PAYMENTS.length){
+    log.innerHTML='<div class="empty-state"><div class="empty-state-icon">💳</div><h3>Ödeme kaydı yok</h3><p>Tedarikçi kartından ödeme yapın</p></div>';
+  } else {
+    log.innerHTML=PAYMENTS.slice(0,40).map(p=>{
+      const d=new Date(p.date+'T00:00:00');
+      return`<div class="payment-item">
+        <div class="pay-date"><div class="pay-day">${d.getDate()}</div><div class="pay-month">${MSH[d.getMonth()]} ${d.getFullYear()}</div></div>
+        <div class="pay-divider"></div>
+        <div class="pay-info">
+          <div class="pay-supplier">${p.supplierName||'—'}</div>
+          ${p.note?`<div class="pay-note">📝 ${p.note}</div>`:''}
+        </div>
+        <div class="pay-amount">₺${fmt(p.amount)}</div>
+        <div class="icon-btn danger" onclick="deletePayment('${p.id}','${p.supplierId}')">🗑️</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+window.addSupplier=async function(){
+  const name=document.getElementById('supName')?.value.trim();
+  const debt=parseFloat(document.getElementById('supDebt')?.value||'0');
+  const note=document.getElementById('supNote')?.value.trim()||'';
+  if(!name){toast('Tedarikçi adı girin','w');return;}
+  if(isNaN(debt)||debt<0){toast('Geçerli bir borç miktarı girin','w');return;}
+  try{
+    const ref=await addDoc(collection(db,C.suppliers(cu.uid)),{name,totalDebt:debt,note,addedAt:serverTimestamp()});
+    SUPPLIERS.push({id:ref.id,name,totalDebt:debt,note});
+    SUPPLIERS.sort((a,b)=>a.name.localeCompare(b.name,'tr'));
+    document.getElementById('supName').value='';
+    document.getElementById('supDebt').value='';
+    document.getElementById('supNote').value='';
+    renderSuppliers();
+    toast(`"${name}" eklendi ✓`,'s');
+  }catch(e){toast('Hata: '+e.message,'e');}
+};
+
+window.editSupplierDebt=async function(supId,supName,currentDebt){
+  const newDebt=prompt(`"${supName}" için yeni toplam borç:\n(Mevcut: ₺${fmt(currentDebt)})`,currentDebt);
+  if(newDebt===null)return;
+  const parsed=parseFloat(newDebt);
+  if(isNaN(parsed)||parsed<0){toast('Geçersiz miktar','w');return;}
+  try{
+    await updateDoc(doc(db,C.suppliers(cu.uid),supId),{totalDebt:parsed});
+    const s=SUPPLIERS.find(x=>x.id===supId);if(s)s.totalDebt=parsed;
+    renderSuppliers();
+    toast('Borç güncellendi ✓','s');
+  }catch(e){toast('Hata: '+e.message,'e');}
+};
+
+window.deleteSupplier=async function(supId){
+  if(!confirm('Bu tedarikçi silinecek. Ödeme kayıtları da kaldırılacak. Emin misiniz?'))return;
+  try{
+    await deleteDoc(doc(db,C.suppliers(cu.uid),supId));
+    SUPPLIERS=SUPPLIERS.filter(s=>s.id!==supId);
+    PAYMENTS=PAYMENTS.filter(p=>p.supplierId!==supId);
+    renderSuppliers();
+    toast('Tedarikçi silindi','w');
+  }catch(e){toast('Hata: '+e.message,'e');}
+};
+
+window.openPayModal=function(supId,supName,remaining){
+  const m=document.getElementById('payModal');
+  if(!m)return;
+  document.getElementById('paySupId').value=supId;
+  document.getElementById('paySupName').textContent=supName;
+  document.getElementById('paySupRemaining').textContent='₺'+fmt(remaining);
+  document.getElementById('payAmount').value='';
+  document.getElementById('payDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('payNote').value='';
+  m.style.display='flex';
+  setTimeout(()=>document.getElementById('payAmount').focus(),100);
+};
+
+window.closePayModal=function(){document.getElementById('payModal').style.display='none';};
+
+window.confirmPayment=async function(){
+  const supId=document.getElementById('paySupId').value;
+  const supName=document.getElementById('paySupName').textContent;
+  const amount=parseFloat(document.getElementById('payAmount').value||'0');
+  const date=document.getElementById('payDate').value;
+  const note=document.getElementById('payNote').value.trim();
+  if(!amount||amount<=0){toast('Geçerli bir miktar girin','w');return;}
+  if(!date){toast('Tarih seçin','w');return;}
+  try{
+    const ref=await addDoc(collection(db,C.payments(cu.uid)),{supplierId:supId,supplierName:supName,amount,date,note,createdAt:serverTimestamp()});
+    PAYMENTS.unshift({id:ref.id,supplierId:supId,supplierName:supName,amount,date,note});
+    closePayModal();
+    renderSuppliers();
+    toast(`₺${fmt(amount)} ödeme kaydedildi ✓`,'s');
+  }catch(e){toast('Hata: '+e.message,'e');}
+};
+
+window.deletePayment=async function(payId){
+  if(!confirm('Bu ödeme kaydı silinsin mi?'))return;
+  try{
+    await deleteDoc(doc(db,C.payments(cu.uid),payId));
+    PAYMENTS=PAYMENTS.filter(p=>p.id!==payId);
+    renderSuppliers();
+    toast('Ödeme silindi','w');
+  }catch(e){toast('Hata: '+e.message,'e');}
+};
+
 function pLabel(p){const m={baslangic:'Başlangıç',pro:'Pro',kurumsal:'Kurumsal','14gun':'14 Gün Deneme'};return m[p]||p||'—';}
 function errTR(code){const m={'auth/invalid-credential':'E-posta veya şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Hatalı şifre','auth/too-many-requests':'Çok fazla deneme, bekleyin'};return m[code]||'Hata: '+code;}
 window.toast=function(msg,type='s'){const c=document.getElementById('toastC');const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=(type==='s'?'✓':type==='w'?'⚠️':'✕')+' '+msg;c.appendChild(t);setTimeout(()=>t.remove(),4500);};
