@@ -2910,13 +2910,20 @@ async function loadSuppliers(){
       getDocs(query(collection(db,C.payments(cu.uid)),orderBy('date','desc'),limit(100)))
     ]);
     SUPPLIERS=supSnap.docs.map(d=>({id:d.id,...d.data()}));
-    PAYMENTS=paySnap.docs.map(d=>({id:d.id,...d.data()}));
+    PAYMENTS=paySnap.docs.map(d=>{
+      const data={id:d.id,...d.data()};
+      // Eski kayıtlarda type alanı yoksa payment varsay
+      if(!data.type) data.type='payment';
+      return data;
+    });
   }catch(e){SUPPLIERS=[];PAYMENTS=[];}
   renderSuppliers();
 }
 
 function getSupplierPaid(supId){
-  return PAYMENTS.filter(p=>p.supplierId===supId).reduce((s,p)=>s+Number(p.amount),0);
+  // type='payment' olanlar + eski kayıtlar (type alanı yok) = gerçek ödeme
+  // type='debt' olanlar kesinlikle dahil edilmez
+  return PAYMENTS.filter(p=>p.supplierId===supId && p.type!=='debt').reduce((s,p)=>s+Number(p.amount),0);
 }
 
 function renderSuppliers(){
