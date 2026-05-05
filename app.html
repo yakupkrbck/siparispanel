@@ -1382,29 +1382,89 @@ body { font-weight: 500; }
         </div>
       </div>
 
-      <!-- Ödeme Geçmişi -->
-      <div style="font-family:var(--font-display);font-size:1rem;font-weight:800;margin:.5rem 0 .75rem">Son Ödemeler</div>
-      <div class="payment-log" id="paymentLog">
-        <div class="empty-state"><div class="empty-state-icon">💳</div><h3>Ödeme kaydı yok</h3><p>Tedarikçi kartından ödeme yapın</p></div>
-      </div>
     </div>
 
-    <!-- ════ ÖDEME / BORÇ MODAL ════ -->
-    <div id="payModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;width:100%;max-width:420px;box-shadow:0 24px 64px var(--sh);position:relative">
-        <div id="payModalTitle" style="font-family:var(--font-display);font-size:1.15rem;font-weight:800;margin-bottom:1.25rem">💳 Ödeme Yap</div>
-        <input type="hidden" id="paySupId">
-        <div style="font-size:.82rem;color:var(--muted);margin-bottom:.4rem">Tedarikçi: <strong id="paySupName" style="color:var(--text)">—</strong></div>
-        <div style="font-size:.82rem;color:var(--supplier-color);margin-bottom:1rem;font-weight:700" id="paySupRemaining">—</div>
-        <div class="form-group"><label id="payModalAmountLabel">Ödeme Miktarı (₺)</label><div class="amt-wrap"><span class="cur">₺</span><input type="number" id="payAmount" placeholder="0" min="0"></div></div>
-        <div class="form-group"><label>Tarih</label><input type="date" id="payDate"></div>
-        <div class="form-group"><label>Not (Opsiyonel)</label><input type="text" id="payNote" placeholder="Açıklama..."></div>
-        <div style="display:flex;gap:.75rem;margin-top:1rem">
-          <button class="btn-save" id="payModalBtn" style="flex:1" onclick="confirmPayment()">✓ Ödemeyi Kaydet</button>
-          <button class="btn-secondary" onclick="closePayModal()">İptal</button>
+    <!-- ════ TEDARİKÇİ DETAY MODAL ════ -->
+    <div id="supDetailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:520px;box-shadow:0 24px 64px rgba(0,0,0,.5);margin:auto;overflow:hidden">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,color-mix(in srgb,var(--supplier-color) 12%,var(--surface)),var(--surface));border-bottom:1px solid var(--border);padding:1.25rem 1.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem">
+          <div>
+            <div id="sdName" style="font-family:var(--font-display);font-size:1.2rem;font-weight:800">—</div>
+            <div id="sdNote" style="font-size:.75rem;color:var(--muted);margin-top:.15rem"></div>
+          </div>
+          <button onclick="closeSupDetail()" style="background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:.875rem;flex-shrink:0">✕</button>
+        </div>
+        <!-- Borç Özeti -->
+        <div style="display:flex;gap:0;border-bottom:1px solid var(--border)">
+          <div style="flex:1;padding:1rem;text-align:center;border-right:1px solid var(--border)">
+            <div style="font-size:.62rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">Toplam Borç</div>
+            <div id="sdTotalDebt" style="font-family:var(--font-display);font-size:1.3rem;font-weight:800">₺0</div>
+          </div>
+          <div style="flex:1;padding:1rem;text-align:center;border-right:1px solid var(--border)">
+            <div style="font-size:.62rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">Ödenen</div>
+            <div id="sdPaid" style="font-family:var(--font-display);font-size:1.3rem;font-weight:800;color:var(--success)">₺0</div>
+          </div>
+          <div style="flex:1;padding:1rem;text-align:center">
+            <div style="font-size:.62rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">Kalan</div>
+            <div id="sdRemaining" style="font-family:var(--font-display);font-size:1.3rem;font-weight:800;color:var(--supplier-color)">₺0</div>
+          </div>
+        </div>
+        <!-- Progress -->
+        <div style="padding:.875rem 1.5rem;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:.4rem"><span>Ödeme ilerlemesi</span><span id="sdPct">%0</span></div>
+          <div style="height:7px;background:var(--surface2);border-radius:99px;overflow:hidden"><div id="sdBar" style="height:100%;border-radius:99px;background:linear-gradient(90deg,var(--supplier-color),var(--accent2));width:0%;transition:width 1s ease"></div></div>
+        </div>
+        <!-- Aksiyonlar -->
+        <div style="padding:.875rem 1.5rem;display:flex;gap:.5rem;border-bottom:1px solid var(--border);flex-wrap:wrap">
+          <button id="sdPayBtn" class="btn-save" style="flex:1" onclick="sdOpenPay()">💳 Ödeme Yap</button>
+          <button class="btn-secondary" style="flex:1" onclick="sdOpenDebt()">➕ Borç Ekle</button>
+          <button class="btn-secondary" style="color:var(--danger);border-color:var(--danger)" onclick="sdDelete()">🗑️</button>
+        </div>
+        <!-- İşlem Formu (ödeme veya borç) -->
+        <div id="sdForm" style="display:none;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:var(--surface2)">
+          <div id="sdFormTitle" style="font-size:.78rem;font-weight:800;margin-bottom:.75rem;color:var(--text)">💳 Ödeme Yap</div>
+          <input type="hidden" id="sdMode">
+          <div style="display:flex;gap:.625rem;flex-wrap:wrap">
+            <div style="flex:1;min-width:100px">
+              <div style="font-size:.67rem;font-weight:700;color:var(--muted);margin-bottom:.25rem;text-transform:uppercase">Miktar (₺)</div>
+              <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+                <span style="padding:.6rem .6rem;color:var(--muted);font-size:.8rem;border-right:1px solid var(--border)">₺</span>
+                <input type="number" id="sdAmount" placeholder="0" min="0" style="flex:1;border:none;background:transparent;padding:.6rem .75rem;color:var(--text);font-family:var(--font-body);font-size:.9rem;outline:none">
+              </div>
+            </div>
+            <div style="flex:1;min-width:100px">
+              <div style="font-size:.67rem;font-weight:700;color:var(--muted);margin-bottom:.25rem;text-transform:uppercase">Tarih</div>
+              <input type="date" id="sdDate" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.625rem .75rem;color:var(--text);font-family:var(--font-body);font-size:.82rem;outline:none">
+            </div>
+          </div>
+          <div style="margin-top:.625rem">
+            <div style="font-size:.67rem;font-weight:700;color:var(--muted);margin-bottom:.25rem;text-transform:uppercase">Not (opsiyonel)</div>
+            <input type="text" id="sdNote2" placeholder="Açıklama..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.625rem .75rem;color:var(--text);font-family:var(--font-body);font-size:.82rem;outline:none">
+          </div>
+          <div style="display:flex;gap:.5rem;margin-top:.75rem">
+            <button id="sdFormBtn" class="btn-save" style="flex:1" onclick="sdConfirm()">✓ Kaydet</button>
+            <button class="btn-secondary" onclick="document.getElementById('sdForm').style.display='none'">İptal</button>
+          </div>
+        </div>
+        <!-- Geçmiş -->
+        <div style="padding:1rem 1.5rem">
+          <div style="font-size:.67rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem">İşlem Geçmişi</div>
+          <div id="sdHistory">Yükleniyor...</div>
         </div>
       </div>
     </div>
+
+    <!-- ════ ÖDEME / BORÇ MODAL (pay modal — fallback) ════ -->
+    <input type="hidden" id="paySupId">
+    <input type="hidden" id="payModalTitle">
+    <input type="hidden" id="payModalAmountLabel">
+    <input type="hidden" id="payModalBtn">
+    <input type="hidden" id="paySupName">
+    <input type="hidden" id="paySupRemaining">
+    <input type="hidden" id="payAmount">
+    <input type="hidden" id="payDate">
+    <input type="hidden" id="payNote">
 
   </div><!-- /main-content -->
 </div><!-- /screenApp -->
@@ -2873,54 +2933,36 @@ function renderSuppliers(){
   if(!grid)return;
   if(!SUPPLIERS.length){
     grid.innerHTML='<div class="empty-state"><div class="empty-state-icon">🏭</div><h3>Henüz tedarikçi yok</h3><p>Yukarıdan ilk tedarikçinizi ekleyin</p></div>';
-  } else {
-    grid.innerHTML=SUPPLIERS.map(sup=>{
-      const paid=getSupplierPaid(sup.id);
-      const remaining=Math.max(0,Number(sup.totalDebt||0)-paid);
-      const pct=Number(sup.totalDebt)>0?Math.min(100,Math.round((paid/Number(sup.totalDebt))*100)):100;
-      const isCleared=remaining===0;
-      return`<div class="supplier-card">
-        <div class="supplier-name">${sup.name}</div>
-        ${sup.note?`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.625rem">📝 ${sup.note}</div>`:''}
-        <div class="supplier-debt-row"><span class="debt-label">Toplam Borç</span><span class="debt-val">₺${fmt(sup.totalDebt||0)}</span></div>
-        <div class="supplier-debt-row"><span class="debt-label">Ödenen</span><span class="debt-val" style="color:var(--success)">₺${fmt(paid)}</span></div>
-        <div class="supplier-debt-row" style="margin-top:.1rem"><span class="debt-label" style="font-weight:700">Kalan Borç</span><span class="debt-val debt-remaining ${isCleared?'debt-zero':''}">₺${fmt(remaining)}</span></div>
-        <div style="margin-top:.75rem">
-          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-bottom:.3rem"><span>Ödeme ilerlemesi</span><span>%${pct}</span></div>
-          <div style="height:6px;background:var(--surface2);border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:${isCleared?'var(--success)':'linear-gradient(90deg,var(--supplier-color),var(--accent2))'};width:${pct}%;transition:width 1.2s ease"></div></div>
-        </div>
-        ${isCleared?'<div style="margin-top:.625rem;text-align:center;font-size:.75rem;color:var(--success);font-weight:700;background:rgba(52,216,138,.08);border-radius:var(--radius-sm);padding:.4rem">✓ Borç Kapatıldı</div>':''}
-        <div class="supplier-actions">
-          ${!isCleared?`<button class="sup-btn pay" onclick="openPayModal('${sup.id}','${sup.name.replace(/'/g,"\\'")}',${remaining})">💳 Ödeme Yap</button>`:''}
-          <button class="sup-btn" onclick="openAddDebtModal('${sup.id}','${sup.name.replace(/'/g,"\\'")}')">➕ Borç Ekle</button>
-          <button class="sup-btn danger" onclick="deleteSupplier('${sup.id}')">🗑️</button>
-        </div>
-      </div>`;
-    }).join('');
+    return;
   }
-
-  const log=ge('paymentLog');
-  if(!log)return;
-  if(!PAYMENTS.length){
-    log.innerHTML='<div class="empty-state"><div class="empty-state-icon">💳</div><h3>Ödeme kaydı yok</h3><p>Tedarikçi kartından ödeme yapın</p></div>';
-  } else {
-    log.innerHTML=PAYMENTS.slice(0,40).map(p=>{
-      const d=new Date(p.date+'T00:00:00');
-      return`<div class="payment-item">
-        <div class="pay-date"><div class="pay-day">${d.getDate()}</div><div class="pay-month">${MSH[d.getMonth()]} ${d.getFullYear()}</div></div>
-        <div class="pay-divider"></div>
-        <div class="pay-info">
-          <div class="pay-supplier">${p.supplierName||'—'}</div>
-          ${p.note?`<div class="pay-note">${p.type==='debt'?'➕ Borç':'📝'} ${p.note}</div>`:p.type==='debt'?'<div class="pay-note" style="color:var(--warn)">➕ Yeni borç eklendi</div>':''}
+  grid.innerHTML=SUPPLIERS.map(sup=>{
+    const paid=getSupplierPaid(sup.id);
+    const remaining=Math.max(0,Number(sup.totalDebt||0)-paid);
+    const pct=Number(sup.totalDebt)>0?Math.min(100,Math.round((paid/Number(sup.totalDebt))*100)):100;
+    const isCleared=remaining===0;
+    const supPayments=PAYMENTS.filter(p=>p.supplierId===sup.id);
+    return`<div class="supplier-card" onclick="openSupDetail('${sup.id}')" style="cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
+        <div class="supplier-name" style="margin-bottom:0">${sup.name}</div>
+        <div style="font-size:.65rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:.1rem .5rem">${supPayments.length} işlem</div>
+      </div>
+      ${sup.note?`<div style="font-size:.72rem;color:var(--muted);margin-bottom:.625rem">📝 ${sup.note}</div>`:''}
+      <div class="supplier-debt-row"><span class="debt-label">Toplam Borç</span><span class="debt-val">₺${fmt(sup.totalDebt||0)}</span></div>
+      <div class="supplier-debt-row"><span class="debt-label">Ödenen</span><span class="debt-val" style="color:var(--success)">₺${fmt(paid)}</span></div>
+      <div class="supplier-debt-row"><span class="debt-label" style="font-weight:700">Kalan</span><span class="debt-val ${isCleared?'debt-zero':''}" style="${isCleared?'':'color:var(--supplier-color)'}">₺${fmt(remaining)}</span></div>
+      <div style="margin-top:.75rem">
+        <div style="height:5px;background:var(--surface2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;border-radius:99px;background:${isCleared?'var(--success)':'linear-gradient(90deg,var(--supplier-color),var(--accent2))'};width:${pct}%;transition:width 1s ease"></div>
         </div>
-        <div class="pay-amount" style="${p.type==='debt'?'color:var(--warn)':''}">
-          ${p.type==='debt'?'+':''}₺${fmt(p.amount)}
-        </div>
-        <div class="icon-btn danger" onclick="deletePayment('${p.id}','${p.supplierId}')">🗑️</div>
-      </div>`;
-    }).join('');
-  }
+      </div>
+      ${isCleared?'<div style="margin-top:.625rem;text-align:center;font-size:.72rem;color:var(--success);font-weight:700;background:rgba(52,216,138,.08);border-radius:var(--radius-sm);padding:.35rem">✓ Borç Kapatıldı</div>':''}
+      <div style="margin-top:.75rem;font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.3rem">
+        <span style="color:var(--supplier-color)">→</span> Detaylar için tıklayın
+      </div>
+    </div>`;
+  }).join('');
 }
+
 
 window.addSupplier=async function(){
   const name=document.getElementById('supName')?.value.trim();
@@ -2939,6 +2981,173 @@ window.addSupplier=async function(){
     toast(`"${name}" eklendi ✓`,'s');
   }catch(e){toast('Hata: '+e.message,'e');}
 };
+
+/* ══ TEDARİKÇİ DETAY MODAL ══ */
+let _sdSupId = null;
+
+window.openSupDetail=function(supId){
+  const sup=SUPPLIERS.find(s=>s.id===supId);if(!sup)return;
+  _sdSupId=supId;
+  const paid=getSupplierPaid(supId);
+  const remaining=Math.max(0,Number(sup.totalDebt||0)-paid);
+  const pct=Number(sup.totalDebt)>0?Math.min(100,Math.round((paid/Number(sup.totalDebt))*100)):100;
+  const isCleared=remaining===0;
+
+  // Header
+  document.getElementById('sdName').textContent=sup.name;
+  document.getElementById('sdNote').textContent=sup.note||'';
+  // Stats
+  document.getElementById('sdTotalDebt').textContent='₺'+fmt(sup.totalDebt||0);
+  document.getElementById('sdPaid').textContent='₺'+fmt(paid);
+  document.getElementById('sdRemaining').textContent='₺'+fmt(remaining);
+  document.getElementById('sdRemaining').style.color=isCleared?'var(--success)':'var(--supplier-color)';
+  document.getElementById('sdPct').textContent='%'+pct;
+  document.getElementById('sdBar').style.width=pct+'%';
+  document.getElementById('sdBar').style.background=isCleared?'var(--success)':'linear-gradient(90deg,var(--supplier-color),var(--accent2))';
+  // Pay button
+  const payBtn=document.getElementById('sdPayBtn');
+  if(payBtn){payBtn.style.display=isCleared?'none':'flex';}
+  // Form kapat
+  document.getElementById('sdForm').style.display='none';
+  // Geçmişi yükle
+  renderSupHistory(supId);
+  // Modalı aç
+  const m=document.getElementById('supDetailModal');
+  m.style.display='flex';
+  document.body.style.overflow='hidden';
+};
+
+window.closeSupDetail=function(){
+  document.getElementById('supDetailModal').style.display='none';
+  document.body.style.overflow='';
+  _sdSupId=null;
+};
+
+function renderSupHistory(supId){
+  const el=document.getElementById('sdHistory');
+  const recs=PAYMENTS.filter(p=>p.supplierId===supId).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!recs.length){
+    el.innerHTML='<div style="text-align:center;padding:1.25rem 0;color:var(--muted);font-size:.82rem">Henüz işlem kaydı yok</div>';
+    return;
+  }
+  el.innerHTML=recs.map(p=>{
+    const d=new Date(p.date+'T00:00:00');
+    const isDebt=p.type==='debt';
+    return`<div style="display:flex;align-items:center;gap:.875rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+      <div style="min-width:40px;text-align:center">
+        <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;line-height:1">${d.getDate()}</div>
+        <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase">${MSH[d.getMonth()]}</div>
+      </div>
+      <div style="width:1px;height:32px;background:var(--border)"></div>
+      <div style="flex:1">
+        <div style="font-size:.82rem;font-weight:700;color:${isDebt?'var(--warn)':'var(--text)'}">
+          ${isDebt?'➕ Yeni Borç':'💳 Ödeme'}
+        </div>
+        ${p.note?`<div style="font-size:.7rem;color:var(--muted);margin-top:.1rem">📝 ${p.note}</div>`:''}
+      </div>
+      <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:${isDebt?'var(--warn)':'var(--supplier-color)'}">
+        ${isDebt?'+':'−'}₺${fmt(p.amount)}
+      </div>
+      <button onclick="sdDelRecord('${p.id}','${p.type}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;padding:.2rem;transition:color .15s" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--muted)'">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+window.sdOpenPay=function(){
+  document.getElementById('sdMode').value='payment';
+  document.getElementById('sdFormTitle').textContent='💳 Ödeme Yap';
+  document.getElementById('sdFormBtn').textContent='✓ Ödeme Kaydet';
+  document.getElementById('sdFormBtn').style.background='var(--supplier-color)';
+  document.getElementById('sdAmount').value='';
+  document.getElementById('sdDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('sdNote2').value='';
+  document.getElementById('sdForm').style.display='block';
+  setTimeout(()=>document.getElementById('sdAmount').focus(),80);
+};
+
+window.sdOpenDebt=function(){
+  document.getElementById('sdMode').value='debt';
+  document.getElementById('sdFormTitle').textContent='➕ Yeni Borç Ekle';
+  document.getElementById('sdFormBtn').textContent='➕ Borç Ekle';
+  document.getElementById('sdFormBtn').style.background='var(--warn)';
+  document.getElementById('sdAmount').value='';
+  document.getElementById('sdDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('sdNote2').value='';
+  document.getElementById('sdForm').style.display='block';
+  setTimeout(()=>document.getElementById('sdAmount').focus(),80);
+};
+
+window.sdConfirm=async function(){
+  const supId=_sdSupId;
+  if(!supId)return;
+  const sup=SUPPLIERS.find(s=>s.id===supId);if(!sup)return;
+  const mode=document.getElementById('sdMode').value;
+  const amount=parseFloat(document.getElementById('sdAmount').value||'0');
+  const date=document.getElementById('sdDate').value;
+  const note=document.getElementById('sdNote2').value.trim();
+  if(!amount||amount<=0){toast('Geçerli bir miktar girin','w');return;}
+  if(!date){toast('Tarih seçin','w');return;}
+  const btn=document.getElementById('sdFormBtn');
+  btn.disabled=true;btn.textContent='⏳...';
+  try{
+    if(mode==='debt'){
+      const newDebt=Number(sup.totalDebt||0)+amount;
+      await updateDoc(doc(db,C.suppliers(cu.uid),supId),{totalDebt:newDebt});
+      sup.totalDebt=newDebt;
+      const ref=await addDoc(collection(db,C.payments(cu.uid)),{supplierId:supId,supplierName:sup.name,amount,date,note,type:'debt',createdAt:serverTimestamp()});
+      PAYMENTS.unshift({id:ref.id,supplierId:supId,supplierName:sup.name,amount,date,note,type:'debt'});
+      toast('₺'+fmt(amount)+' borç eklendi ✓','s');
+    } else {
+      const ref=await addDoc(collection(db,C.payments(cu.uid)),{supplierId:supId,supplierName:sup.name,amount,date,note,type:'payment',createdAt:serverTimestamp()});
+      PAYMENTS.unshift({id:ref.id,supplierId:supId,supplierName:sup.name,amount,date,note,type:'payment'});
+      toast('₺'+fmt(amount)+' ödeme kaydedildi ✓','s');
+    }
+    document.getElementById('sdForm').style.display='none';
+    // Modalı güncelle
+    openSupDetail(supId);
+    renderSuppliers();
+  }catch(e){toast('Hata: '+e.message,'e');}
+  finally{btn.disabled=false;btn.textContent=mode==='debt'?'➕ Borç Ekle':'✓ Ödeme Kaydet';}
+};
+
+window.sdDelRecord=async function(payId,type){
+  if(!confirm('Bu kayıt silinsin mi?'))return;
+  try{
+    const pay=PAYMENTS.find(p=>p.id===payId);
+    await deleteDoc(doc(db,C.payments(cu.uid),payId));
+    if(type==='debt'&&pay){
+      const sup=SUPPLIERS.find(s=>s.id===pay.supplierId);
+      if(sup){
+        const nd=Math.max(0,Number(sup.totalDebt||0)-Number(pay.amount));
+        await updateDoc(doc(db,C.suppliers(cu.uid),pay.supplierId),{totalDebt:nd});
+        sup.totalDebt=nd;
+      }
+    }
+    PAYMENTS=PAYMENTS.filter(p=>p.id!==payId);
+    if(_sdSupId)openSupDetail(_sdSupId);
+    renderSuppliers();
+    toast('Silindi','w');
+  }catch(e){toast('Hata: '+e.message,'e');}
+};
+
+window.sdDelete=async function(){
+  const sup=SUPPLIERS.find(s=>s.id===_sdSupId);
+  if(!sup||!confirm(`"${sup.name}" silinecek. Tüm kayıtlar da kaldırılacak. Emin misiniz?`))return;
+  try{
+    await deleteDoc(doc(db,C.suppliers(cu.uid),_sdSupId));
+    SUPPLIERS=SUPPLIERS.filter(s=>s.id!==_sdSupId);
+    PAYMENTS=PAYMENTS.filter(p=>p.supplierId!==_sdSupId);
+    closeSupDetail();
+    renderSuppliers();
+    toast('"'+sup.name+'" silindi','w');
+  }catch(e){toast('Hata: '+e.message,'e');}
+};
+
+/* Eski openPayModal/confirmPayment — sdConfirm'e yönlendir */
+window.openPayModal=function(supId,supName,remaining){openSupDetail(supId);};
+window.closePayModal=function(){closeSupDetail();};
+window.confirmPayment=async function(){await sdConfirm();};
+window.openAddDebtModal=function(supId){_sdSupId=supId;sdOpenDebt();};
 
 /* Yeni borç ekleme */
 window.openAddDebtModal=function(supId,supName){
