@@ -2343,7 +2343,7 @@ window.navTo=function(page,el){
 };
 window.switchTab=function(name,el){
   document.querySelectorAll('#page-raporlar .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
-  ['haftalik','aylik','yillik','gunler'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
+  ['haftalik','aylik','yillik','gunler','gelir-gider'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
   if(name==='haftalik')renderWeekTab();
   if(name==='aylik'){initPickers();renderMonthTab();}
   if(name==='yillik'){initPickers();renderYearTab();}
