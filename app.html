@@ -997,6 +997,7 @@ body { font-weight: 500; }
         <button class="tab" onclick="switchTab('aylik',this)">🗓 Aylık</button>
         <button class="tab" onclick="switchTab('yillik',this)">📆 Yıllık</button>
         <button class="tab" onclick="switchTab('gunler',this)">📊 Gün Analizi</button>
+        <button class="tab" onclick="switchTab('gelir-gider',this)">💰 Kar & Gider</button>
       </div>
       <div id="tab-haftalik">
         <div class="two-col" style="margin-bottom:1rem">
@@ -1054,6 +1055,62 @@ body { font-weight: 500; }
         <div class="two-col">
           <div class="card"><div class="chart-title">🏆 En Yüksek 10 Gün</div><div id="rD_top"></div></div>
           <div class="card"><div class="chart-title">📉 En Düşük 10 Gün</div><div id="rD_bot"></div></div>
+        </div>
+      </div>
+
+      <!-- ── KAR & GİDER ── -->
+      <div id="tab-gelir-gider" style="display:none">
+        <!-- Özet Kartlar -->
+        <div class="stat-grid" style="margin-bottom:1rem">
+          <div class="stat-card" style="border-left:3px solid var(--success)">
+            <div class="stat-label">Toplam Ciro (Gelir)</div>
+            <div class="stat-value" id="pg_gelir" style="color:var(--success)">₺0</div>
+            <div class="stat-delta" id="pg_gelirSub" style="color:var(--muted)"></div>
+          </div>
+          <div class="stat-card" style="border-left:3px solid var(--danger)">
+            <div class="stat-label">Tedarikçi Ödemeleri (Gider)</div>
+            <div class="stat-value" id="pg_gider" style="color:var(--danger)">₺0</div>
+            <div class="stat-delta" id="pg_giderSub" style="color:var(--muted)"></div>
+          </div>
+          <div class="stat-card" style="border-left:3px solid var(--accent)">
+            <div class="stat-label">Tahmini Net Kar</div>
+            <div class="stat-value" id="pg_kar">₺0</div>
+            <div class="stat-delta" id="pg_karSub" style="color:var(--muted)"></div>
+          </div>
+          <div class="stat-card" style="border-left:3px solid var(--warn)">
+            <div class="stat-label">Kar Marjı</div>
+            <div class="stat-value" id="pg_marj">—</div>
+            <div class="stat-delta" style="color:var(--muted);font-size:.7rem">Gider / Ciro</div>
+          </div>
+        </div>
+
+        <!-- Dönem seçici -->
+        <div style="display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+          <select id="ggRange" onchange="renderProfitTab()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.55rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.875rem;outline:none">
+            <option value="3">Son 3 Ay</option>
+            <option value="6" selected>Son 6 Ay</option>
+            <option value="12">Son 12 Ay</option>
+            <option value="all">Tüm Dönem</option>
+          </select>
+          <div style="font-size:.75rem;color:var(--muted)">⚠ Tedarikçi ödemeleri girilen kayıtlara göre hesaplanır</div>
+        </div>
+
+        <!-- Aylık Kar Tablosu -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">📅 Aylık Gelir / Gider / Kar</div>
+          <div id="pg_monthlyTable" style="overflow-x:auto"></div>
+        </div>
+
+        <!-- Grafik -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="chart-title">📊 Aylık Ciro vs Gider</div>
+          <div id="pg_chart" style="display:flex;flex-direction:column;gap:.5rem;padding:.5rem 0"></div>
+        </div>
+
+        <!-- Tedarikçi Bazlı Gider -->
+        <div class="card">
+          <div class="chart-title">🏭 Tedarikçi Bazlı Gider Dağılımı</div>
+          <div id="pg_supBreakdown"></div>
         </div>
       </div>
     </div>
@@ -2291,6 +2348,7 @@ window.switchTab=function(name,el){
   if(name==='aylik'){initPickers();renderMonthTab();}
   if(name==='yillik'){initPickers();renderYearTab();}
   if(name==='gunler')renderDayTab();
+  if(name==='gelir-gider')renderProfitTab();
 };
 window.toggleSidebar=function(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');};
 
@@ -3253,6 +3311,168 @@ window.deletePayment=async function(payId){
 
 function pLabel(p){const m={baslangic:'Başlangıç',pro:'Pro',kurumsal:'Kurumsal','14gun':'14 Gün Deneme'};return m[p]||p||'—';}
 function errTR(code){const m={'auth/invalid-credential':'E-posta veya şifre hatalı','auth/user-not-found':'Kullanıcı bulunamadı','auth/wrong-password':'Hatalı şifre','auth/too-many-requests':'Çok fazla deneme, bekleyin'};return m[code]||'Hata: '+code;}
+/* ══════════════════════════════════════
+   KAR & GİDER RAPORU
+══════════════════════════════════════ */
+window.renderProfitTab=function(){
+  const rangeVal=document.getElementById('ggRange')?.value||'6';
+
+  // Dönem filtresi
+  let cutDate=null;
+  if(rangeVal!=='all'){
+    cutDate=new Date();
+    cutDate.setMonth(cutDate.getMonth()-parseInt(rangeVal));
+  }
+
+  // Gelir: ciro kayıtları
+  const gelirRecs=AR.filter(r=>!isClosedDay(r.id).closed&&(!cutDate||r.date>=cutDate.toISOString().split('T')[0]));
+  const toplamGelir=gelirRecs.reduce((s,r)=>s+Number(r.amount),0);
+
+  // Gider: sadece type='payment' tedarikçi ödemeleri
+  const giderRecs=PAYMENTS.filter(p=>p.type!=='debt'&&(!cutDate||p.date>=cutDate.toISOString().split('T')[0]));
+  const toplamGider=giderRecs.reduce((s,p)=>s+Number(p.amount),0);
+
+  const netKar=toplamGelir-toplamGider;
+  const marj=toplamGelir>0?Math.round((toplamGider/toplamGelir)*100):0;
+  const karPct=toplamGelir>0?Math.round((netKar/toplamGelir)*100):0;
+
+  // Özet kartları güncelle
+  const ge=id=>document.getElementById(id);
+  ge('pg_gelir').textContent='₺'+fmt(toplamGelir);
+  ge('pg_gelirSub').textContent=gelirRecs.length+' açık gün kaydı';
+  ge('pg_gider').textContent='₺'+fmt(toplamGider);
+  ge('pg_giderSub').textContent=giderRecs.length+' ödeme kaydı';
+  ge('pg_kar').textContent='₺'+fmt(netKar);
+  ge('pg_kar').style.color=netKar>=0?'var(--success)':'var(--danger)';
+  ge('pg_karSub').textContent='Kar payı: %'+karPct;
+  ge('pg_karSub').style.color=karPct>=0?'var(--success)':'var(--danger)';
+  ge('pg_marj').textContent='%'+marj;
+  ge('pg_marj').style.color=marj<30?'var(--success)':marj<60?'var(--warn)':'var(--danger)';
+
+  // ── Aylık kırılım ──
+  const monthMap={};
+  gelirRecs.forEach(r=>{
+    const k=r.date.slice(0,7);
+    if(!monthMap[k])monthMap[k]={gelir:0,gider:0};
+    monthMap[k].gelir+=Number(r.amount);
+  });
+  giderRecs.forEach(p=>{
+    const k=p.date.slice(0,7);
+    if(!monthMap[k])monthMap[k]={gelir:0,gider:0};
+    monthMap[k].gider+=Number(p.amount);
+  });
+
+  const months=Object.entries(monthMap).sort().map(([k,v])=>({
+    key:k,
+    gelir:Math.round(v.gelir),
+    gider:Math.round(v.gider),
+    kar:Math.round(v.gelir-v.gider),
+    marj:v.gelir>0?Math.round((v.gider/v.gelir)*100):0
+  }));
+
+  // ── Tablo ──
+  const tableEl=ge('pg_monthlyTable');
+  if(months.length){
+    tableEl.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.82rem">
+      <thead>
+        <tr style="border-bottom:2px solid var(--border)">
+          <th style="text-align:left;padding:.5rem .6rem;font-size:.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Ay</th>
+          <th style="text-align:right;padding:.5rem .6rem;font-size:.65rem;font-weight:800;color:var(--success);text-transform:uppercase;letter-spacing:.08em">Ciro (Gelir)</th>
+          <th style="text-align:right;padding:.5rem .6rem;font-size:.65rem;font-weight:800;color:var(--danger);text-transform:uppercase;letter-spacing:.08em">Gider</th>
+          <th style="text-align:right;padding:.5rem .6rem;font-size:.65rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em">Net Kar</th>
+          <th style="text-align:right;padding:.5rem .6rem;font-size:.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Marj</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${months.slice().reverse().map(m=>{
+          const [y,mn]=m.key.split('-');
+          const label=MON[parseInt(mn)-1]+' '+y;
+          const karColor=m.kar>=0?'var(--success)':'var(--danger)';
+          const marjColor=m.marj<30?'var(--success)':m.marj<60?'var(--warn)':'var(--danger)';
+          return`<tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:.55rem .6rem;font-weight:600">${label}</td>
+            <td style="padding:.55rem .6rem;text-align:right;font-weight:700;color:var(--success)">₺${fmt(m.gelir)}</td>
+            <td style="padding:.55rem .6rem;text-align:right;font-weight:700;color:var(--danger)">${m.gider>0?'₺'+fmt(m.gider):'<span style="color:var(--muted)">—</span>'}</td>
+            <td style="padding:.55rem .6rem;text-align:right;font-weight:800;color:${karColor}">₺${fmt(m.kar)}</td>
+            <td style="padding:.55rem .6rem;text-align:right;font-size:.75rem;font-weight:700;color:${marjColor}">%${m.marj}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+  } else {
+    tableEl.innerHTML='<div style="color:var(--muted);font-size:.82rem;padding:1rem 0">Bu dönemde kayıt yok</div>';
+  }
+
+  // ── Çift bar grafik ──
+  const chartEl=ge('pg_chart');
+  const maxVal=Math.max(...months.map(m=>m.gelir),1);
+  chartEl.innerHTML=months.slice(-6).map(m=>{
+    const [y,mn]=m.key.split('-');
+    const label=MON[parseInt(mn)-1].slice(0,3);
+    const gelirPct=Math.round((m.gelir/maxVal)*100);
+    const giderPct=Math.round((m.gider/maxVal)*100);
+    const karPct2=Math.round((Math.max(0,m.kar)/maxVal)*100);
+    return`<div>
+      <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-bottom:.2rem">
+        <span style="font-weight:700">${label} ${y}</span>
+        <span style="color:${m.kar>=0?'var(--success)':'var(--danger)'}">Net: ₺${fmt(m.kar)}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.2rem">
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <div style="width:38px;font-size:.6rem;color:var(--success);text-align:right;flex-shrink:0">Gelir</div>
+          <div style="flex:1;background:var(--surface2);border-radius:99px;height:10px;overflow:hidden">
+            <div style="height:100%;border-radius:99px;background:var(--success);width:${gelirPct}%;opacity:.85"></div>
+          </div>
+          <div style="font-size:.68rem;font-weight:700;min-width:70px;color:var(--success)">₺${fmt(m.gelir)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <div style="width:38px;font-size:.6rem;color:var(--danger);text-align:right;flex-shrink:0">Gider</div>
+          <div style="flex:1;background:var(--surface2);border-radius:99px;height:10px;overflow:hidden">
+            <div style="height:100%;border-radius:99px;background:var(--danger);width:${giderPct}%;opacity:.75"></div>
+          </div>
+          <div style="font-size:.68rem;font-weight:700;min-width:70px;color:var(--danger)">${m.gider>0?'₺'+fmt(m.gider):'—'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── Tedarikçi bazlı gider ──
+  const supMap={};
+  giderRecs.forEach(p=>{
+    const name=p.supplierName||'Bilinmiyor';
+    if(!supMap[name])supMap[name]=0;
+    supMap[name]+=Number(p.amount);
+  });
+  const supList=Object.entries(supMap).sort((a,b)=>b[1]-a[1]);
+  const maxGider=supList.length?supList[0][1]:1;
+  const supEl=ge('pg_supBreakdown');
+  if(!supList.length){
+    supEl.innerHTML='<div style="color:var(--muted);font-size:.82rem;padding:1rem 0;text-align:center">Bu dönemde tedarikçi ödemesi yok</div>';
+  } else {
+    supEl.innerHTML=supList.map(([name,total],i)=>{
+      const pct=Math.round((total/toplamGider)*100);
+      const barPct=Math.round((total/maxGider)*100);
+      const colors=['var(--accent)','var(--supplier-color)','var(--warn)','#e879f9','#34d399'];
+      const c=colors[i%colors.length];
+      return`<div style="margin-bottom:.875rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:${c};flex-shrink:0"></div>
+            <span style="font-size:.82rem;font-weight:700">${name}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem">
+            <span style="font-size:.75rem;color:var(--muted)">%${pct}</span>
+            <span style="font-size:.875rem;font-weight:700;font-family:var(--font-display)">₺${fmt(total)}</span>
+          </div>
+        </div>
+        <div style="height:7px;background:var(--surface2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;border-radius:99px;background:${c};width:${barPct}%;opacity:.8;transition:width .8s ease"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+};
+
 window.toast=function(msg,type='s'){const c=document.getElementById('toastC');const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=(type==='s'?'✓':type==='w'?'⚠️':'✕')+' '+msg;c.appendChild(t);setTimeout(()=>t.remove(),4500);};
 
 /* ══════════════════════════════════════════════
